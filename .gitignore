@@ -1,0 +1,41 @@
+# Archivos compilados y binarios de Delphi
+*.dcu
+*.exe
+*.dll
+*.bpl
+*.bpi
+*.dcp
+*.so
+*.rsm
+*.map
+*.drc
+*.local
+*.identcache
+*.projdata
+*.tvsconfig
+*.dsk
+*.~*
+
+# Archivos de proyecto específicos
+__history/
+__recovery/
+Win32/
+Win64/
+Debug/
+Release/
+*.stat
+
+# Archivos de configuración personal
+*.res
+*.tds
+
+# Archivos temporales y de respaldo
+~*
+*.~*
+*.bak
+*.orig
+Thumbs.db
+desktop.ini
+
+# Otros archivos que podrías querer ignorar
+*.log
