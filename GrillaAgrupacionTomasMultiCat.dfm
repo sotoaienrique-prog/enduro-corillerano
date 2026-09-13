@@ -1,0 +1,1778 @@
+object GrillaAgrupacionMultiCatForm: TGrillaAgrupacionMultiCatForm
+  Left = 0
+  Top = 0
+  Caption = 'Grilla de Agrupaciones'
+  ClientHeight = 538
+  ClientWidth = 1362
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  WindowState = wsMaximized
+  OnCreate = FormCreate
+  PixelsPerInch = 96
+  TextHeight = 13
+  object JvNetscapeSplitter: TJvNetscapeSplitter
+    Left = 0
+    Top = 97
+    Width = 1362
+    Height = 10
+    Cursor = crVSplit
+    Align = alTop
+    MinSize = 1
+    Maximized = False
+    Minimized = False
+    ButtonCursor = crDefault
+    ExplicitLeft = 1
+    ExplicitTop = 63
+    ExplicitWidth = 748
+  end
+  object topPanel: TPanel
+    Left = 0
+    Top = 0
+    Width = 1362
+    Height = 97
+    Align = alTop
+    TabOrder = 0
+    DesignSize = (
+      1362
+      97)
+    object btnStart: TAeroButton
+      AlignWithMargins = True
+      Left = 1219
+      Top = 8
+      Width = 123
+      Height = 35
+      ImageIndex = 0
+      Images = cxImageList
+      Spacing = 10
+      Version = '1.0.0.1'
+      Anchors = [akTop, akRight]
+      Caption = 'Comenzar'
+      TabOrder = 1
+      OnClick = btnStartClick
+    end
+    object btnStop: TAeroButton
+      AlignWithMargins = True
+      Left = 1219
+      Top = 43
+      Width = 123
+      Height = 35
+      ImageIndex = 1
+      Images = cxImageList
+      Spacing = 10
+      Version = '1.0.0.1'
+      Anchors = [akTop, akRight]
+      Caption = 'Detener'
+      Enabled = False
+      TabOrder = 2
+      OnClick = btnStopClick
+    end
+    object lblCampeonato: TcxLabel
+      Left = 13
+      Top = 8
+      Caption = 'Campeonato:'
+      ParentFont = False
+      Style.Font.Charset = DEFAULT_CHARSET
+      Style.Font.Color = clWindowText
+      Style.Font.Height = -12
+      Style.Font.Name = 'Tahoma'
+      Style.Font.Style = []
+      Style.TextColor = clInfoText
+      Style.IsFontAssigned = True
+    end
+    object cmbAgrupacion: TDBLookupComboBox
+      Left = 96
+      Top = 4
+      Width = 369
+      Height = 22
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -12
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      KeyField = 'oid'
+      ListField = 'nombre'
+      ListSource = DSAgrupacion
+      ParentFont = False
+      TabOrder = 0
+      OnCloseUp = cmbAgrupacionCloseUp
+    end
+    object lblMostrarPilotos: TcxLabel
+      Left = 35
+      Top = 74
+      Caption = 'Mostrar:'
+      ParentFont = False
+      Style.Font.Charset = DEFAULT_CHARSET
+      Style.Font.Color = clWindowText
+      Style.Font.Height = -12
+      Style.Font.Name = 'Tahoma'
+      Style.Font.Style = []
+      Style.IsFontAssigned = True
+    end
+    object txtNumPilotos: TcxCurrencyEdit
+      Left = 89
+      Top = 74
+      EditValue = 30.000000000000000000
+      ParentFont = False
+      Properties.DecimalPlaces = 0
+      Properties.DisplayFormat = '0;'
+      Style.Font.Charset = DEFAULT_CHARSET
+      Style.Font.Color = clWindowText
+      Style.Font.Height = -12
+      Style.Font.Name = 'Tahoma'
+      Style.Font.Style = []
+      Style.IsFontAssigned = True
+      TabOrder = 5
+      Width = 46
+    end
+    object lblPilotos: TcxLabel
+      Left = 141
+      Top = 74
+      Caption = 'Pilotos'
+      ParentFont = False
+      Style.Font.Charset = DEFAULT_CHARSET
+      Style.Font.Color = clWindowText
+      Style.Font.Height = -12
+      Style.Font.Name = 'Tahoma'
+      Style.Font.Style = []
+      Style.IsFontAssigned = True
+    end
+    object chkMostrarNyA: TcxCheckBox
+      Left = 195
+      Top = 73
+      Caption = 'Apellido'
+      ParentFont = False
+      Style.Font.Charset = DEFAULT_CHARSET
+      Style.Font.Color = clWindowText
+      Style.Font.Height = -12
+      Style.Font.Name = 'Tahoma'
+      Style.Font.Style = []
+      Style.IsFontAssigned = True
+      TabOrder = 7
+      Width = 142
+    end
+    object cxLabel2: TcxLabel
+      Left = 477
+      Top = 8
+      Caption = 'Categor'#237'as:'
+      ParentFont = False
+      Style.Font.Charset = DEFAULT_CHARSET
+      Style.Font.Color = clWindowText
+      Style.Font.Height = -12
+      Style.Font.Name = 'Tahoma'
+      Style.Font.Style = []
+      Style.IsFontAssigned = True
+    end
+    object CategoriaCheckListBox: TJvCheckListBox
+      Left = 547
+      Top = 4
+      Width = 649
+      Height = 91
+      Anchors = [akLeft, akTop, akRight, akBottom]
+      DoubleBuffered = False
+      ItemHeight = 13
+      ParentDoubleBuffered = False
+      TabOrder = 9
+    end
+  end
+  object bottomPanel: TPanel
+    Left = 0
+    Top = 512
+    Width = 1362
+    Height = 26
+    Align = alBottom
+    TabOrder = 1
+    DesignSize = (
+      1362
+      26)
+    object lblTiempoCaption: TLabel
+      Left = 1152
+      Top = 5
+      Width = 156
+      Height = 16
+      Anchors = [akTop, akRight]
+      Caption = 'Tiempo para Actualizaci'#243'n:'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      Visible = False
+      ExplicitLeft = 737
+    end
+    object lblTiempoValue: TLabel
+      Left = 1314
+      Top = 5
+      Width = 4
+      Height = 16
+      Anchors = [akTop, akRight]
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
+      ParentFont = False
+      Visible = False
+      ExplicitLeft = 899
+    end
+  end
+  object gridPanel: TPanel
+    Left = 0
+    Top = 107
+    Width = 1362
+    Height = 405
+    Align = alClient
+    TabOrder = 2
+    object cxGridPosiciones1: TcxGrid
+      Left = 1
+      Top = 1
+      Width = 168
+      Height = 403
+      Align = alLeft
+      TabOrder = 1
+      Visible = False
+      object cxGridPosiciones1DBTableView: TcxGridDBTableView
+        DataController.DataSource = DSPosiciones1
+        DataController.Summary.DefaultGroupSummaryItems = <>
+        DataController.Summary.FooterSummaryItems = <>
+        DataController.Summary.SummaryGroups = <>
+        OptionsCustomize.ColumnFiltering = False
+        OptionsCustomize.ColumnSorting = False
+        OptionsData.CancelOnExit = False
+        OptionsData.Deleting = False
+        OptionsData.DeletingConfirmation = False
+        OptionsData.Editing = False
+        OptionsData.Inserting = False
+        OptionsSelection.CellSelect = False
+        OptionsSelection.HideFocusRectOnExit = False
+        OptionsSelection.InvertSelect = False
+        OptionsSelection.UnselectFocusedRecordOnExit = False
+        OptionsView.NoDataToDisplayInfoText = '<No hay datos para mostrar>'
+        OptionsView.GroupByBox = False
+        Styles.Content = cxStyle1
+        Styles.Header = cxStyle2
+        object cxGridPosiciones1DBTableViewColumn1: TcxGridDBColumn
+          Caption = 'Pos'
+          DataBinding.FieldName = 'posicion'
+          Width = 24
+        end
+        object cxGridPosiciones1DBTableViewnro_moto: TcxGridDBColumn
+          Caption = 'Nro'
+          DataBinding.FieldName = 'nro_moto'
+          Options.Sorting = False
+          Width = 30
+        end
+        object cxGridPosiciones1DBTableViewcategoria: TcxGridDBColumn
+          DataBinding.FieldName = 'categoria'
+          Visible = False
+          GroupIndex = 0
+          Options.Sorting = False
+          Width = 280
+          IsCaptionAssigned = True
+        end
+        object cxGridPosiciones1DBTableViewColumn2: TcxGridDBColumn
+          Caption = 'Apellido'
+          DataBinding.FieldName = 'nombre_piloto'
+          Width = 20
+        end
+        object cxGridPosiciones1DBTableViewColumn3: TcxGridDBColumn
+          Caption = 'PE'
+          DataBinding.FieldName = 'vueltas'
+          Width = 29
+        end
+        object cxGridPosiciones1DBTableViewColumn4: TcxGridDBColumn
+          DataBinding.FieldName = 'Recargo'
+          Width = 30
+        end
+        object cxGridPosiciones1DBTableViewnombre_piloto: TcxGridDBColumn
+          Caption = 'Tiempo Total'
+          DataBinding.FieldName = 'formated_tiempo_sec'
+          Options.Sorting = False
+          Width = 26
+        end
+      end
+      object cxGridPosiciones1Level: TcxGridLevel
+        GridView = cxGridPosiciones1DBTableView
+      end
+    end
+    object cxGridPosiciones2: TcxGrid
+      Left = 169
+      Top = 1
+      Width = 168
+      Height = 403
+      Align = alLeft
+      TabOrder = 0
+      Visible = False
+      object cxGridPosiciones2DBTableView: TcxGridDBTableView
+        DataController.DataSource = DSPosiciones2
+        DataController.Summary.DefaultGroupSummaryItems = <>
+        DataController.Summary.FooterSummaryItems = <>
+        DataController.Summary.SummaryGroups = <>
+        OptionsCustomize.ColumnFiltering = False
+        OptionsCustomize.ColumnSorting = False
+        OptionsData.CancelOnExit = False
+        OptionsData.Deleting = False
+        OptionsData.DeletingConfirmation = False
+        OptionsData.Editing = False
+        OptionsData.Inserting = False
+        OptionsSelection.CellSelect = False
+        OptionsSelection.HideFocusRectOnExit = False
+        OptionsSelection.InvertSelect = False
+        OptionsSelection.UnselectFocusedRecordOnExit = False
+        OptionsView.NoDataToDisplayInfoText = '<No hay datos para mostrar>'
+        OptionsView.GroupByBox = False
+        Styles.Content = cxStyle1
+        Styles.Header = cxStyle2
+        object cxGridPosiciones2DBTableViewColumn1: TcxGridDBColumn
+          Caption = 'Pos'
+          DataBinding.FieldName = 'posicion'
+          Width = 20
+        end
+        object cxGridDBColumn1: TcxGridDBColumn
+          Caption = 'Nro'
+          DataBinding.FieldName = 'nro_moto'
+          Options.Sorting = False
+          Width = 32
+        end
+        object cxGridDBColumn2: TcxGridDBColumn
+          DataBinding.FieldName = 'categoria'
+          Visible = False
+          GroupIndex = 0
+          Options.Sorting = False
+          Width = 280
+          IsCaptionAssigned = True
+        end
+        object cxGridPosiciones2DBTableViewColumn2: TcxGridDBColumn
+          Caption = 'Apellido'
+          DataBinding.FieldName = 'nombre_piloto'
+        end
+        object cxGridPosiciones2DBTableViewColumn3: TcxGridDBColumn
+          Caption = 'PE'
+          DataBinding.FieldName = 'vueltas'
+        end
+        object cxGridPosiciones2DBTableViewColumn4: TcxGridDBColumn
+          DataBinding.FieldName = 'Recargo'
+        end
+        object cxGridDBColumn3: TcxGridDBColumn
+          Caption = 'Tiempo Total'
+          DataBinding.FieldName = 'formated_tiempo_sec'
+          Options.Sorting = False
+          Width = 99
+        end
+      end
+      object cxGridLevel1: TcxGridLevel
+        GridView = cxGridPosiciones2DBTableView
+      end
+    end
+    object cxGridPosiciones3: TcxGrid
+      Left = 337
+      Top = 1
+      Width = 168
+      Height = 403
+      Align = alLeft
+      TabOrder = 2
+      Visible = False
+      object cxGridPosiciones3DBTableView: TcxGridDBTableView
+        DataController.DataSource = DSPosiciones3
+        DataController.Summary.DefaultGroupSummaryItems = <>
+        DataController.Summary.FooterSummaryItems = <>
+        DataController.Summary.SummaryGroups = <>
+        OptionsCustomize.ColumnFiltering = False
+        OptionsCustomize.ColumnSorting = False
+        OptionsData.CancelOnExit = False
+        OptionsData.Deleting = False
+        OptionsData.DeletingConfirmation = False
+        OptionsData.Editing = False
+        OptionsData.Inserting = False
+        OptionsSelection.CellSelect = False
+        OptionsSelection.HideFocusRectOnExit = False
+        OptionsSelection.InvertSelect = False
+        OptionsSelection.UnselectFocusedRecordOnExit = False
+        OptionsView.NoDataToDisplayInfoText = '<No hay datos para mostrar>'
+        OptionsView.GroupByBox = False
+        Styles.Content = cxStyle1
+        Styles.Header = cxStyle2
+        object cxGridPosiciones3DBTableViewColumn1: TcxGridDBColumn
+          Caption = 'Pos'
+          DataBinding.FieldName = 'posicion'
+          Width = 20
+        end
+        object cxGridDBColumn4: TcxGridDBColumn
+          Caption = 'Nro'
+          DataBinding.FieldName = 'nro_moto'
+          Options.Sorting = False
+          Width = 32
+        end
+        object cxGridDBColumn5: TcxGridDBColumn
+          DataBinding.FieldName = 'categoria'
+          Visible = False
+          GroupIndex = 0
+          Options.Sorting = False
+          Width = 280
+          IsCaptionAssigned = True
+        end
+        object cxGridPosiciones3DBTableViewColumn2: TcxGridDBColumn
+          Caption = 'Apellido'
+          DataBinding.FieldName = 'nombre_piloto'
+        end
+        object cxGridPosiciones3DBTableViewColumn3: TcxGridDBColumn
+          Caption = 'PE'
+          DataBinding.FieldName = 'vueltas'
+        end
+        object cxGridPosiciones3DBTableViewColumn4: TcxGridDBColumn
+          DataBinding.FieldName = 'Recargo'
+        end
+        object cxGridDBColumn6: TcxGridDBColumn
+          Caption = 'Tiempo Total'
+          DataBinding.FieldName = 'formated_tiempo_sec'
+          Options.Sorting = False
+          Width = 114
+        end
+      end
+      object cxGridLevel2: TcxGridLevel
+        GridView = cxGridPosiciones3DBTableView
+      end
+    end
+    object cxGridPosiciones4: TcxGrid
+      Left = 505
+      Top = 1
+      Width = 168
+      Height = 403
+      Align = alLeft
+      TabOrder = 3
+      Visible = False
+      object cxGridPosiciones4DBTableView: TcxGridDBTableView
+        DataController.DataSource = DSPosiciones4
+        DataController.Summary.DefaultGroupSummaryItems = <>
+        DataController.Summary.FooterSummaryItems = <>
+        DataController.Summary.SummaryGroups = <>
+        OptionsCustomize.ColumnFiltering = False
+        OptionsCustomize.ColumnSorting = False
+        OptionsData.CancelOnExit = False
+        OptionsData.Deleting = False
+        OptionsData.DeletingConfirmation = False
+        OptionsData.Editing = False
+        OptionsData.Inserting = False
+        OptionsSelection.CellSelect = False
+        OptionsSelection.HideFocusRectOnExit = False
+        OptionsSelection.InvertSelect = False
+        OptionsSelection.UnselectFocusedRecordOnExit = False
+        OptionsView.NoDataToDisplayInfoText = '<No hay datos para mostrar>'
+        OptionsView.GroupByBox = False
+        Styles.Content = cxStyle1
+        Styles.Header = cxStyle2
+        object cxGridDBColumn7: TcxGridDBColumn
+          Caption = 'Pos'
+          DataBinding.FieldName = 'posicion'
+          Width = 20
+        end
+        object cxGridDBColumn8: TcxGridDBColumn
+          Caption = 'Nro'
+          DataBinding.FieldName = 'nro_moto'
+          Options.Sorting = False
+          Width = 32
+        end
+        object cxGridDBColumn9: TcxGridDBColumn
+          DataBinding.FieldName = 'categoria'
+          Visible = False
+          GroupIndex = 0
+          Options.Sorting = False
+          Width = 280
+          IsCaptionAssigned = True
+        end
+        object cxGridPosiciones4DBTableViewColumn1: TcxGridDBColumn
+          Caption = 'Apellido'
+          DataBinding.FieldName = 'nombre_piloto'
+        end
+        object cxGridPosiciones4DBTableViewColumn2: TcxGridDBColumn
+          Caption = 'PE'
+          DataBinding.FieldName = 'vueltas'
+        end
+        object cxGridPosiciones4DBTableViewColumn3: TcxGridDBColumn
+          DataBinding.FieldName = 'Recargo'
+        end
+        object cxGridDBColumn10: TcxGridDBColumn
+          Caption = 'Tiempo Total'
+          DataBinding.FieldName = 'formated_tiempo_sec'
+          Options.Sorting = False
+          Width = 114
+        end
+      end
+      object cxGridLevel3: TcxGridLevel
+        GridView = cxGridPosiciones4DBTableView
+      end
+    end
+    object cxGridPosiciones5: TcxGrid
+      Left = 673
+      Top = 1
+      Width = 168
+      Height = 403
+      Align = alLeft
+      TabOrder = 4
+      Visible = False
+      object cxGridPosiciones5DBTableView: TcxGridDBTableView
+        DataController.DataSource = DSPosiciones5
+        DataController.Summary.DefaultGroupSummaryItems = <>
+        DataController.Summary.FooterSummaryItems = <>
+        DataController.Summary.SummaryGroups = <>
+        OptionsCustomize.ColumnFiltering = False
+        OptionsCustomize.ColumnSorting = False
+        OptionsData.CancelOnExit = False
+        OptionsData.Deleting = False
+        OptionsData.DeletingConfirmation = False
+        OptionsData.Editing = False
+        OptionsData.Inserting = False
+        OptionsSelection.CellSelect = False
+        OptionsSelection.HideFocusRectOnExit = False
+        OptionsSelection.InvertSelect = False
+        OptionsSelection.UnselectFocusedRecordOnExit = False
+        OptionsView.NoDataToDisplayInfoText = '<No hay datos para mostrar>'
+        OptionsView.GroupByBox = False
+        Styles.Content = cxStyle1
+        Styles.Header = cxStyle2
+        object cxGridDBColumn11: TcxGridDBColumn
+          Caption = 'Pos'
+          DataBinding.FieldName = 'posicion'
+          Width = 20
+        end
+        object cxGridDBColumn12: TcxGridDBColumn
+          Caption = 'Nro'
+          DataBinding.FieldName = 'nro_moto'
+          Options.Sorting = False
+          Width = 32
+        end
+        object cxGridDBColumn13: TcxGridDBColumn
+          DataBinding.FieldName = 'categoria'
+          Visible = False
+          GroupIndex = 0
+          Options.Sorting = False
+          Width = 280
+          IsCaptionAssigned = True
+        end
+        object cxGridPosiciones5DBTableViewColumn1: TcxGridDBColumn
+          Caption = 'Apellido'
+          DataBinding.FieldName = 'nombre_piloto'
+        end
+        object cxGridPosiciones5DBTableViewColumn2: TcxGridDBColumn
+          Caption = 'PE'
+          DataBinding.FieldName = 'vueltas'
+        end
+        object cxGridPosiciones5DBTableViewColumn3: TcxGridDBColumn
+          DataBinding.FieldName = 'Recargo'
+        end
+        object cxGridDBColumn14: TcxGridDBColumn
+          Caption = 'Tiempo Total'
+          DataBinding.FieldName = 'formated_tiempo_sec'
+          Options.Sorting = False
+          Width = 114
+        end
+      end
+      object cxGridLevel4: TcxGridLevel
+        GridView = cxGridPosiciones5DBTableView
+      end
+    end
+    object cxGridPosiciones6: TcxGrid
+      Left = 841
+      Top = 1
+      Width = 168
+      Height = 403
+      Align = alLeft
+      TabOrder = 5
+      Visible = False
+      object cxGridPosiciones6DBTableView: TcxGridDBTableView
+        DataController.DataSource = DSPosiciones6
+        DataController.Summary.DefaultGroupSummaryItems = <>
+        DataController.Summary.FooterSummaryItems = <>
+        DataController.Summary.SummaryGroups = <>
+        OptionsCustomize.ColumnFiltering = False
+        OptionsCustomize.ColumnSorting = False
+        OptionsData.CancelOnExit = False
+        OptionsData.Deleting = False
+        OptionsData.DeletingConfirmation = False
+        OptionsData.Editing = False
+        OptionsData.Inserting = False
+        OptionsSelection.CellSelect = False
+        OptionsSelection.HideFocusRectOnExit = False
+        OptionsSelection.InvertSelect = False
+        OptionsSelection.UnselectFocusedRecordOnExit = False
+        OptionsView.NoDataToDisplayInfoText = '<No hay datos para mostrar>'
+        OptionsView.GroupByBox = False
+        Styles.Content = cxStyle1
+        Styles.Header = cxStyle2
+        object cxGridDBColumn15: TcxGridDBColumn
+          Caption = 'Pos'
+          DataBinding.FieldName = 'posicion'
+          Width = 20
+        end
+        object cxGridDBColumn16: TcxGridDBColumn
+          Caption = 'Nro'
+          DataBinding.FieldName = 'nro_moto'
+          Options.Sorting = False
+          Width = 32
+        end
+        object cxGridDBColumn17: TcxGridDBColumn
+          DataBinding.FieldName = 'categoria'
+          Visible = False
+          GroupIndex = 0
+          Options.Sorting = False
+          Width = 280
+          IsCaptionAssigned = True
+        end
+        object cxGridPosiciones6DBTableViewColumn1: TcxGridDBColumn
+          Caption = 'Apellido'
+          DataBinding.FieldName = 'nombre_piloto'
+        end
+        object cxGridPosiciones6DBTableViewColumn2: TcxGridDBColumn
+          Caption = 'PE'
+          DataBinding.FieldName = 'vueltas'
+        end
+        object cxGridPosiciones6DBTableViewColumn3: TcxGridDBColumn
+          DataBinding.FieldName = 'Recargo'
+        end
+        object cxGridDBColumn18: TcxGridDBColumn
+          Caption = 'Tiempo Total'
+          DataBinding.FieldName = 'formated_tiempo_sec'
+          Options.Sorting = False
+          Width = 114
+        end
+      end
+      object cxGridLevel5: TcxGridLevel
+        GridView = cxGridPosiciones6DBTableView
+      end
+    end
+    object cxGridPosiciones7: TcxGrid
+      Left = 1009
+      Top = 1
+      Width = 168
+      Height = 403
+      Align = alLeft
+      TabOrder = 6
+      Visible = False
+      object cxGridPosiciones7DBTableView: TcxGridDBTableView
+        DataController.DataSource = DSPosiciones7
+        DataController.Summary.DefaultGroupSummaryItems = <>
+        DataController.Summary.FooterSummaryItems = <>
+        DataController.Summary.SummaryGroups = <>
+        OptionsCustomize.ColumnFiltering = False
+        OptionsCustomize.ColumnSorting = False
+        OptionsData.CancelOnExit = False
+        OptionsData.Deleting = False
+        OptionsData.DeletingConfirmation = False
+        OptionsData.Editing = False
+        OptionsData.Inserting = False
+        OptionsSelection.CellSelect = False
+        OptionsSelection.HideFocusRectOnExit = False
+        OptionsSelection.InvertSelect = False
+        OptionsSelection.UnselectFocusedRecordOnExit = False
+        OptionsView.NoDataToDisplayInfoText = '<No hay datos para mostrar>'
+        OptionsView.GroupByBox = False
+        Styles.Content = cxStyle1
+        Styles.Header = cxStyle2
+        object cxGridDBColumn19: TcxGridDBColumn
+          Caption = 'Pos'
+          DataBinding.FieldName = 'posicion'
+          Width = 20
+        end
+        object cxGridDBColumn20: TcxGridDBColumn
+          Caption = 'Nro'
+          DataBinding.FieldName = 'nro_moto'
+          Options.Sorting = False
+          Width = 32
+        end
+        object cxGridDBColumn21: TcxGridDBColumn
+          DataBinding.FieldName = 'categoria'
+          Visible = False
+          GroupIndex = 0
+          Options.Sorting = False
+          Width = 280
+          IsCaptionAssigned = True
+        end
+        object cxGridPosiciones7DBTableViewColumn1: TcxGridDBColumn
+          Caption = 'Apellido'
+          DataBinding.FieldName = 'nombre_piloto'
+        end
+        object cxGridPosiciones7DBTableViewColumn2: TcxGridDBColumn
+          Caption = 'PE'
+          DataBinding.FieldName = 'vueltas'
+        end
+        object cxGridPosiciones7DBTableViewColumn3: TcxGridDBColumn
+          DataBinding.FieldName = 'Recargo'
+        end
+        object cxGridDBColumn22: TcxGridDBColumn
+          Caption = 'Tiempo Total'
+          DataBinding.FieldName = 'formated_tiempo_sec'
+          Options.Sorting = False
+          Width = 114
+        end
+      end
+      object cxGridLevel6: TcxGridLevel
+        GridView = cxGridPosiciones7DBTableView
+      end
+    end
+  end
+  object DSTomaTiempoEvento: TDataSource
+    DataSet = ZTomaTiempoEvento
+    Left = 616
+    Top = 264
+  end
+  object cxImageList: TcxImageList
+    Height = 24
+    Width = 24
+    FormatVersion = 1
+    DesignInfo = 13632184
+    ImageInfo = <
+      item
+        Image.Data = {
+          36090000424D3609000000000000360000002800000018000000180000000100
+          2000000000000009000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000050101
+          0122060606460D0D0D5F0E0E0E600707074B0101012800000008000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000000000000000011191919766A6A6ACCAFAF
+          AFF2C9C9C9FFC7C7C7FFC1C1C1FFBBBBBBFF9F9F9FF5656565D41E1E1E840000
+          001A000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000909094E7E7E7ED6E8E8E8FFCACACAFF8B8B
+          8BFF595959FF414141FF3E3E3EFF4C4C4CFF727272FFA0A0A0FFB9B9B9FF7B7B
+          7BE60E0E0E610000000100000000000000000000000000000000000000000000
+          000000000000000000001C1C1C7AE8E8E8FFE3E3E3FF5B5B5BFF212121FF1717
+          17FF181818FF181818FF151515FF111111FF0B0B0BFF0F0F0FFF383838FFA4A4
+          A4FFBABABAFF2828289800000006000000000000000000000000000000000000
+          0000000000001D1D1D77ECECECFFBEBEBEFF333333FF202020FF282828FF2525
+          25FF232323FF212121FF1E1E1EFF1C1C1CFF191919FF161616FF0C0C0CFF0F0F
+          0FFF7E7E7EFFC1C1C1FF25252590000000000000000000000000000000000000
+          000006060642DFDFDFFCC0C0C0FF292929FF2C2C2CFF2E2E2EFF2B2B2BFF2929
+          29FF1E1E1EFF222222FF212121FF1E1E1EFF1C1C1CFF191919FF171717FF1111
+          11FF070707FF7D7D7DFFB8B8B8FF0D0D0D620000000000000000000000000000
+          000D7A7A7ACBDEDEDEFF404040FF313131FF333333FF303030FF242424FF8181
+          81FF888888FF212121FF1E1E1EFF212121FF1E1E1EFF1B1B1BFF191919FF1616
+          16FF111111FF0F0F0FFF9B9B9BFF7E7E7EE60101012100000000000000001313
+          1361F1F1F1FF787878FF313131FF383838FF363636FF333333FF252525FF8F8F
+          8FFFEDEDEDFFA8A8A8FF343434FF191919FF212121FF1E1E1EFF1B1B1BFF1919
+          19FF171717FF0A0A0AFF404040FFC1C1C1FF1B1B1B7D00000000000000016666
+          66BADFDFDFFF4B4B4BFF3B3B3BFF3B3B3BFF383838FF363636FF292929FF8C8C
+          8CFFDBDBDBFFDEDEDEFFC7C7C7FF5B5B5BFF191919FF1F1F1FFF1E1E1EFF1C1C
+          1CFF191919FF161616FF101010FFA0A0A0FF5B5B5BC60000000700000015B0B0
+          B0E4B2B2B2FF3F3F3FFF3F3F3FFF3D3D3DFF3B3B3BFF383838FF2B2B2BFF8D8D
+          8DFFD7D7D7FFCECECEFFD6D6D6FFDEDEDEFF878787FF1F1F1FFF1A1A1AFF1F1F
+          1FFF1C1C1CFF191919FF0B0B0BFF6A6A6AFF9E9E9EF60101012B04040430CECE
+          CEF9AEAEAEFF5F5F5FFF3C3C3CFF404040FF3D3D3DFF3B3B3BFF2D2D2DFF9292
+          92FFE0E0E0FFCFCFCFFFCDCDCDFFD0D0D0FFDCDCDCFFB4B4B4FF434343FF1616
+          16FF1F1F1FFF1B1B1BFF111111FF454545FFB8B8B8FF0909095208080842D6D6
+          D6FFB4B4B4FFA1A1A1FF595959FF3C3C3CFF404040FF3E3E3EFF303030FF9696
+          96FFECECECFFDADADAFFD3D3D3FFCECECEFFCDCDCDFFD8D8D8FFD4D4D4FF6262
+          62FF1B1B1BFF1E1E1EFF161616FF383838FFBFBFBFFF0F0F0F6408080841D2D2
+          D2FFB8B8B8FFB1B1B1FFA4A4A4FF666666FF3E3E3EFF3D3D3DFF323232FF9B9B
+          9BFFF8F8F8FFE6E6E6FFE0E0E0FFD9D9D9FFD3D3D3FFD9D9D9FFC6C6C6FF5858
+          58FF1F1F1FFF202020FF181818FF3B3B3BFFC5C5C5FF0F0F0F630303032DC4C4
+          C4F8BABABAFFB8B8B8FFAEAEAEFFAAAAAAFF818181FF4F4F4FFF303030FF9C9C
+          9CFFFFFFFFFFF2F2F2FFEBEBEBFFE8E8E8FFE8E8E8FFA8A8A8FF3B3B3BFF1E1E
+          1EFF242424FF232323FF1E1E1EFF545454FFC5C5C5FF0808084E00000013A4A4
+          A4E0BFBFBFFFBDBDBDFFB4B4B4FFAFAFAFFFACACACFFA0A0A0FF757575FFB0B0
+          B0FFFFFFFFFFFDFDFDFFFEFEFEFFECECECFF7C7C7CFF242424FF292929FF3131
+          31FF393939FF3F3F3FFF2F2F2FFF878787FFADADADF201010126000000005E5E
+          5EB2D3D3D3FFC6C6C6FFBEBEBEFFB6B6B6FFB0B0B0FFAAAAAAFFA1A1A1FFD1D1
+          D1FFFFFFFFFFFFFFFFFFE9E9E9FF868686FF525252FF5B5B5BFF5E5E5EFF5D5D
+          5DFF585858FF4E4E4EFF3E3E3EFFCACACAFF616161BF00000004000000001010
+          1055D9D9D9FFBBBBBBFFCFCFCFFFBDBDBDFFB8B8B8FFB2B2B2FFA5A5A5FFD3D3
+          D3FFFFFFFFFFD3D3D3FF8F8F8FFF848484FF848484FF7B7B7BFF727272FF6969
+          69FF606060FF4F4F4FFF777777FFEFEFEFFF1919197300000000000000000000
+          0008696969BDCBCBCBFFC4C4C4FFCCCCCCFFBFBFBFFFB9B9B9FFAFAFAFFFCBCB
+          CBFFC8C8C8FF999999FF969696FF919191FF898989FF828282FF7A7A7AFF7272
+          72FF696969FF585858FFD6D6D6FF898989DB0000001800000000000000000000
+          000004040433C5C5C5F6BEBEBEFFCECECEFFCECECEFFC0C0C0FFBBBBBBFFB3B3
+          B3FFAAAAAAFFA7A7A7FFA0A0A0FF999999FF929292FF8B8B8BFF838383FF7B7B
+          7BFF676767FFBEBEBEFFDFDFDFFF090909510000000000000000000000000000
+          00000000000016161663D1D1D1FDBFBFBFFFC4C4C4FFD4D4D4FFC5C5C5FFBBBB
+          BBFFB6B6B6FFAFAFAFFFA9A9A9FFA2A2A2FF9B9B9BFF949494FF8B8B8BFF7D7D
+          7DFFC4C4C4FFF0F0F0FF2020207C000000000000000000000000000000000000
+          0000000000000000000015151561CBCBCBFACCCCCCFFBBBBBBFFCCCCCCFFCACA
+          CAFFC2C2C2FFBCBCBCFFB5B5B5FFACACACFFA3A3A3FF9B9B9BFF9F9F9FFFE1E1
+          E1FFE2E2E2FF2020207E00000000000000000000000000000000000000000000
+          000000000000000000000000000006060639686868BFD7D7D7FFD1D1D1FFC6C6
+          C6FFBABABAFFBDBDBDFFBBBBBBFFB4B4B4FFC3C3C3FFDFDFDFFFE8E8E8FF8080
+          80D2090909490000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000711111159606060B6A6A6
+          A6E4C6C6C6F9D2D2D2FFD4D4D4FFCFCFCFFBB1B1B1E86C6C6CC0161616670000
+          000C000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000010000
+          00140404042F0808084509090946040404330000001800000002000000000000
+          0000000000000000000000000000000000000000000000000000}
+      end
+      item
+        Image.Data = {
+          36090000424D3609000000000000360000002800000018000000180000000100
+          2000000000000009000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000050101
+          0122060606460D0D0D5F0E0E0E600707074B0101012800000008000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000000000000000011191919766A6A6ACCAFAF
+          AFF2C9C9C9FFC7C7C7FFC1C1C1FFBBBBBBFF9F9F9FF5656565D41E1E1E840000
+          001A000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000909094E7E7E7ED6E8E8E8FFCACACAFF8B8B
+          8BFF595959FF414141FF3E3E3EFF4C4C4CFF727272FFA0A0A0FFB9B9B9FF7B7B
+          7BE60E0E0E610000000100000000000000000000000000000000000000000000
+          000000000000000000001C1C1C7AE8E8E8FFE3E3E3FF5B5B5BFF212121FF1717
+          17FF181818FF181818FF151515FF111111FF0B0B0BFF0F0F0FFF383838FFA4A4
+          A4FFBABABAFF2828289800000006000000000000000000000000000000000000
+          0000000000001D1D1D77ECECECFFBEBEBEFF333333FF202020FF282828FF2626
+          26FF232323FF212121FF1E1E1EFF1C1C1CFF191919FF161616FF0C0C0CFF0F0F
+          0FFF7E7E7EFFC1C1C1FF25252590000000000000000000000000000000000000
+          000006060642DFDFDFFCC0C0C0FF292929FF2C2C2CFF2E2E2EFF2B2B2BFF2929
+          29FF262626FF232323FF212121FF1E1E1EFF1C1C1CFF191919FF171717FF1111
+          11FF070707FF7D7D7DFFB8B8B8FF0D0D0D620000000000000000000000000000
+          000D7A7A7ACBDEDEDEFF404040FF313131FF343434FF2E2E2EFF242424FF2121
+          21FF1E1E1EFF1B1B1BFF181818FF151515FF131313FF0F0F0FFF141414FF1717
+          17FF111111FF0F0F0FFF9B9B9BFF7E7E7EE60101012100000000000000001313
+          1361F1F1F1FF787878FF313131FF383838FF333333FF414141FF797979FF7979
+          79FF787878FF777777FF767676FF767676FF757575FF787878FF393939FF1515
+          15FF171717FF0A0A0AFF404040FFC1C1C1FF1B1B1B7D00000000000000016666
+          66BADFDFDFFF4B4B4BFF3B3B3BFF3B3B3BFF2F2F2FFF707070FFE2E2E2FFDCDC
+          DCFFE0E0E0FFE3E3E3FFE7E7E7FFEAEAEAFFEEEEEEFFFEFEFEFF8C8C8CFF0E0E
+          0EFF191919FF161616FF101010FFA0A0A0FF5B5B5BC60000000700000015B0B0
+          B0E4B2B2B2FF3F3F3FFF3F3F3FFF3D3D3DFF323232FF747474FFDDDDDDFFCDCD
+          CDFFCFCFCFFFD3D3D3FFD6D6D6FFDADADAFFDDDDDDFFECECECFF8A8A8AFF1212
+          12FF1C1C1CFF191919FF0B0B0BFF6A6A6AFF9E9E9EF60101012B04040430CECE
+          CEF9AEAEAEFF5F5F5FFF3C3C3CFF404040FF343434FF777777FFEBEBEBFFD7D7
+          D7FFCFCFCFFFCECECEFFD2D2D2FFD5D5D5FFD8D8D8FFE7E7E7FF8A8A8AFF1515
+          15FF1E1E1EFF1B1B1BFF111111FF454545FFB8B8B8FF0909095208080842D6D6
+          D6FFB4B4B4FFA1A1A1FF595959FF3C3C3CFF363636FF7C7C7CFFF7F7F7FFE4E4
+          E4FFD9D9D9FFCFCFCFFFCDCDCDFFD1D1D1FFD4D4D4FFE3E3E3FF8A8A8AFF1818
+          18FF212121FF1E1E1EFF161616FF383838FFBFBFBFFF0F0F0F6408080841D2D2
+          D2FFB8B8B8FFB1B1B1FFA4A4A4FF666666FF343434FF7C7C7CFFFFFFFFFFF1F1
+          F1FFE6E6E6FFDCDCDCFFD3D3D3FFCDCDCDFFD0D0D0FFDEDEDEFF8A8A8AFF1B1B
+          1BFF232323FF202020FF181818FF3B3B3BFFC5C5C5FF0F0F0F630303032DC4C4
+          C4F8BABABAFFB8B8B8FFAEAEAEFFAAAAAAFF787878FF8B8B8BFFFFFFFFFFFCFC
+          FCFFF3F3F3FFE9E9E9FFDFDFDFFFD5D5D5FFCECECEFFD9D9D9FF898989FF1D1D
+          1DFF242424FF232323FF1E1E1EFF545454FFC5C5C5FF0808084E00000013A4A4
+          A4E0BFBFBFFFBDBDBDFFB4B4B4FFAFAFAFFFA7A7A7FFC1C1C1FFFFFFFFFFFFFF
+          FFFFFEFEFEFFF7F7F7FFEDEDEDFFE2E2E2FFD8D8D8FFD9D9D9FF8A8A8AFF2626
+          26FF393939FF3F3F3FFF2F2F2FFF878787FFADADADF201010126000000005E5E
+          5EB2D3D3D3FFC6C6C6FFBEBEBEFFB6B6B6FFACACACFFC3C3C3FFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFEFEFEFFF8F8F8FFF1F1F1FFF1F1F1FFA5A5A5FF5555
+          55FF585858FF4E4E4EFF3E3E3EFFCACACAFF616161BF00000004000000001010
+          1055D9D9D9FFBBBBBBFFCFCFCFFFBDBDBDFFB8B8B8FFB5B5B5FFC4C4C4FFC3C3
+          C3FFBFBFBFFFBABABAFFB6B6B6FFB1B1B1FFABABABFFA5A5A5FF7D7D7DFF6767
+          67FF606060FF4F4F4FFF777777FFEFEFEFFF1919197300000000000000000000
+          0008696969BDCBCBCBFFC4C4C4FFCCCCCCFFBFBFBFFFB9B9B9FFAFAFAFFFA7A7
+          A7FFA0A0A0FF999999FF929292FF8A8A8AFF838383FF7B7B7BFF787878FF7272
+          72FF696969FF585858FFD6D6D6FF898989DB0000001800000000000000000000
+          000004040433C5C5C5F6BEBEBEFFCECECEFFCECECEFFC0C0C0FFBBBBBBFFB4B4
+          B4FFAEAEAEFFA7A7A7FFA0A0A0FF999999FF929292FF8B8B8BFF838383FF7B7B
+          7BFF676767FFBEBEBEFFDFDFDFFF090909510000000000000000000000000000
+          00000000000016161663D1D1D1FDBFBFBFFFC4C4C4FFD4D4D4FFC5C5C5FFBBBB
+          BBFFB6B6B6FFAFAFAFFFA9A9A9FFA2A2A2FF9B9B9BFF949494FF8B8B8BFF7D7D
+          7DFFC4C4C4FFF0F0F0FF2020207C000000000000000000000000000000000000
+          0000000000000000000015151561CBCBCBFACCCCCCFFBBBBBBFFCCCCCCFFCACA
+          CAFFC2C2C2FFBCBCBCFFB5B5B5FFACACACFFA3A3A3FF9B9B9BFF9F9F9FFFE1E1
+          E1FFE2E2E2FF2020207E00000000000000000000000000000000000000000000
+          000000000000000000000000000006060639686868BFD7D7D7FFD1D1D1FFC6C6
+          C6FFBABABAFFBDBDBDFFBBBBBBFFB4B4B4FFC3C3C3FFDFDFDFFFE8E8E8FF8080
+          80D2090909490000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000711111159606060B6A6A6
+          A6E4C6C6C6F9D2D2D2FFD4D4D4FFCFCFCFFBB1B1B1E86C6C6CC0161616670000
+          000C000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000010000
+          00140404042F0808084509090946040404330000001800000002000000000000
+          0000000000000000000000000000000000000000000000000000}
+      end
+      item
+        Image.Data = {
+          36090000424D3609000000000000360000002800000018000000180000000100
+          2000000000000009000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000003020202301616
+          16703434349F4A4A49B84A4A49BA393939A81C1C1C7F050505400000000C0000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000000000006060644515150B7BFBFB8F9DDDD
+          CFFFD1D1C8FFBEBEC2FFB7B7BDFFBCBCB7FFC2C2B4FFAFAFA4FF5E5E5DCF0E0E
+          0F63000000080000000000000000000000000000000000000000000000000000
+          000000000000000000000000000A2D2D2D90DADAD3FFEBEBE3FF9494BDFF4040
+          B9FF1616C8FF0505D8FF0303DCFF0F0FD3FF2C2CC2FF6868ACFFAEAEAEFFBDBD
+          AFFF464645B90101012400000000000000000000000000000000000000000000
+          0000000000000101011F666666C2F8F8EFFF9C9CC7FF2121BCFF0000D8FF0000
+          ECFF0000F1FF0000F4FF0000F7FF0000FCFF0000FFFF0000F9FF0C0CD8FF5B5B
+          B3FFBCBCB2FF7E7E7BE506060643000000000000000000000000000000000000
+          00000000000E636363C1FFFFFDFF6B6BB4FF0000C5FF0000DFFF0000E1FF0000
+          E6FF0000ECFF0000F0FF0000F4FF0000F8FF0000FAFF0000FDFF0000FFFF0000
+          FCFF2E2EBBFFBDBDB4FF82827FE9020202300000000000000000000000000000
+          00002D2D2D8FFCFCF1FF7070AFFF0000C1FF0000D4FF0000D8FF0000DFFF0000
+          E5FF0000EAFF0000EFFF0000F4FF0000F8FF0000FBFF0000FEFF0000FFFF0000
+          FEFF0000FFFF2A2AB9FFBEBEB4FF565655CC0000000D00000000000000000303
+          032FD4D4CEF9B3B3C9FF0000B5FF0000CCFF0000CFFF0000D6FF0000DDFF0000
+          E3FF0000E9FF0000EEFF0000F3FF0000F7FF0000FBFF0000FEFF0000FEFF0000
+          FCFF0000FCFF0000FAFF5F5FB0FFBEBEB0FF0E0E0E6100000000000000003434
+          348FF3F3E8FF4040ABFF0000C4FF0000C5FF0000CCFF0000D3FF0000DAFF0000
+          E1FF0000E7FF0000ECFF0000F1FF0000F5FF0000F8FF0000FBFF0000FBFF0000
+          FAFF0000F9FF0000FEFF0909D4FFA7A7ACFF5C5C5ACE0000000D00000017A5A5
+          A3E4B7B7C5FF0505B3FF0000C1FF0000C0FF0000C6FF0000CFFF0000D6FF0000
+          DDFF0000E3FF0000E9FF0000EEFF0000F2FF0000F5FF0000F7FF0000F8FF0000
+          F8FF0000F7FF0000F6FF0000F8FF5656AFFFAFAFA2FF0606064808080845E2E2
+          D9FF7E7EB2FF0000BAFF0505BEFF2F2FCAFF3333CDFF3232D3FF3232D8FF3131
+          DEFF3131E2FF3030E5FF3131EAFF3131EDFF3131F0FF3131F2FF3232F3FF3232
+          F3FF3333F3FF1010F3FF0000FAFF1F1FC4FFB8B8ADFF202020861C1C1C6CE2E2
+          DCFF8F8FBEFF1212C1FF3D3DC9FFFBFBF1FFF1F1EAFFEBEBE6FFE6E6E1FFE2E2
+          DCFFDDDDD7FFD8D8D2FFD5D5CFFFD6D6D0FFD9D9D2FFDBDBD4FFDDDDD6FFDEDE
+          D8FFEDEDD9FF7D7DEBFF0000F5FF0A0AD8FFB0B0B6FF40403FB02C2C2C82DFDF
+          DBFF9F9FCBFF6565D8FF6565D3FFFEFEF7FFF1F1F0FFECECEBFFE7E7E6FFE2E2
+          E1FFDDDDDDFFD8D8D8FFD3D3D3FFCECECEFFCDCDCCFFCECECEFFD0D0D0FFD3D3
+          D2FFE2E2D3FF8383E6FF0000F0FF0505E1FFAFAFC1FF51514EC02A2A2A7FDCDC
+          D9FFA4A4CAFF8484DFFFABABE7FFFFFFFFFFFCFCFAFFF7F7F5FFF3F3F1FFEFEF
+          ECFFEAEAE7FFE5E5E2FFE0E0DDFFDBDBD8FFD6D6D3FFD1D1CEFFCFCFCCFFD0D0
+          CDFFE0E0CFFF8585E2FF0000EBFF0505DBFFB5B5C5FF51514EBE18181864D9D9
+          D6FFAFAFC3FF9090E2FFA4A4E4FFF4F4FCFFF7F7FDFFF1F1FAFFE1E1F3FFDFDF
+          F0FFDFDFEEFFDDDDEBFFD9D9E7FFD5D5E3FFD1D1E0FFCDCDDCFFC9C9D8FFC5C5
+          D5FFCFCFD5FF6666E1FF0101E8FF1515C9FFC3C3C4FF3D3D3CA80505053ACDCD
+          CBFCBABABFFFA5A5E4FF9090DDFF9292DFFF8E8EDFFF8585DEFF6161D5FF3333
+          CAFF1919C6FF1010CAFF0D0DCEFF0E0ED3FF0E0ED6FF0F0FD9FF1212DCFF1818
+          DFFF2222E1FF1B1BE1FF1313E5FF3B3BB8FFD3D3C8FF1A1A1A780000000F8B8B
+          8AD7C7C7C4FFB4B4DBFF9B9BE2FF9494DEFF8C8CDDFF8585DCFF8181DDFF7878
+          DCFF6565D8FF4E4ED4FF3C3CD2FF3030D3FF2D2DD5FF2E2ED8FF3333DAFF3535
+          DCFF3232DDFF2D2DDEFF1717D9FF8383B8FFC3C3BBFD03030339000000002525
+          2579D8D8D6FFB8B8C3FFAFAFE9FF9E9EE0FF9898E0FF9191DEFF8989DEFF8282
+          DDFF7C7CDDFF7676DCFF7070DCFF6969DBFF6161DBFF5858DBFF4F4FDBFF4646
+          DBFF3E3EDCFF3232E2FF3A3ABBFFE1E1DEFF545453B900000006000000000101
+          011EAEAEAEECC6C6C3FFC1C1D9FFACACE9FFA1A1E1FF9B9BE1FF9393DFFF8B8B
+          DEFF8484DDFF7D7DDDFF7575DCFF6E6EDCFF6666DBFF5F5FDBFF5757DBFF5050
+          DBFF4848DFFF3131CFFFA9A9CAFFE4E4DCFF0707074800000000000000000000
+          00001919196AD8D8D8FFB6B6B4FFC3C3E0FFADADE8FFA3A3E2FF9C9CE1FF9595
+          E0FF8E8EDFFF8686DEFF7E7EDDFF7777DCFF7070DCFF6868DCFF6060DBFF5959
+          DFFF4545D5FF7D7DB4FFFCFCF5FF414141AA0000000400000000000000000000
+          0000000000013F3F3F9AE1E1E0FFB7B7B7FFC4C4DCFFB5B5ECFFA4A4E5FF9C9C
+          E1FF9696E0FF8F8FDFFF8888DFFF8080DEFF7878DDFF7070DEFF6767E1FF5A5A
+          D0FF8C8CB7FFFFFFF9FF727272CC000000160000000000000000000000000000
+          0000000000000000000B4343439CD5D5D4FFC1C1BFFFBDBDC8FFB8B8DBFFB2B2
+          E8FFA5A5E8FF9A9AE5FF9191E3FF8B8BE3FF8585E1FF7A7AD2FF8181C2FFB8B8
+          C5FFF5F5EEFF6E6E6EC601010125000000000000000000000000000000000000
+          00000000000000000000000000001313135DA5A5A5E4DBDBDAFFC6C6C4FFBABA
+          BDFFB7B7C4FFB5B5CCFFAFAFCDFFA7A7C3FFACACBEFFC7C7C9FFEEEEE8FFD0D0
+          CDF8292929860000000A00000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000001C2B2B2B81919191D7D4D4
+          D3FFDCDCDAFFDEDEDBFFE1E1DEFFE4E4E0FFE2E2DFFFABABAAE64141419D0303
+          0333000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000000000000000000000000000000000E0606
+          063C181818662A2A2A812C2C2C841D1D1D6F0A0A0A4800000018000000000000
+          0000000000000000000000000000000000000000000000000000}
+      end
+      item
+        Image.Data = {
+          36090000424D3609000000000000360000002800000018000000180000000100
+          2000000000000009000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000100040210
+          072C0F3C21752B804DAD061C0C42000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000002000702110730134226764F9A72D57DD0
+          9CFF99DDAFFF5AD79BFF4DB663E3000100040000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00000003010903140934143C2578519B73DA79CD98FF9AD39BFF75B456FF3C8E
+          05FF6EB25AFF5ED39CFF4BB060E4000100040000000000000000000000000000
+          000000000000000000000000000000000000000000000003010A0720104F1B47
+          308A5DA17CDC7ECA94FF81C47AFF6AAE46FF358B01FF278300FF3B900DFF2E88
+          00FF6CB25BFF5BCD97FF48AC5CE4000100040000000000000000000000000000
+          000000000000000000000002000C0C2717522D55438E6FAA8EDF87CE9AFF7FC2
+          75FF66AA3DFF338A01FF268300FF49981CFF87BC6AFFC3DFB4FFF0F8ECFF3C90
+          0BFF6AB058FF58C891FF46A759E4000100040000000000000000000000000000
+          0000000000000105032984AF9EDEB6E3C1FF77BB65FF57A22BFF308900FF2885
+          00FF559F2BFFA4CB8DFFD8EACEFFFFFFFDFFFFFFFFFFEAEEEDFFD0DECFFF3F93
+          0DFF6BAF59FF55C18CFF43A256E3000100040000000000000000000000000000
+          0000000000000C181256B2E3B6FF63A535FF469616FF63A73EFFB2D49FFFDEED
+          D6FFFFFFFFFFFFFFFFFFEAF0EBFF82A486FF4A7B4DFF0E5110FF7DA37AFF499A
+          17FF6CAF5AFF52BC87FF419E54E3000100030000000000000000000000000000
+          0000000000000A1510539DD49FFF70AE49FFE9F3E3FFFFFFFFFFFFFFFFFFFAFB
+          FBFFD5E1D6FF8DAD8CFF478048FF759E75FF055000FF296B20FFD8E5D4FF3E92
+          0CFF6EB05CFF52BB86FF3E9951E2000100030000000000000000000000000000
+          0000000000000A140F559BD29DFF7DB559FFF1F5F1FFD7E2D8FF86A885FF2A68
+          28FF14580EFF015300FF8AB688FF5A914DFF0E5F00FFA8C5A0FFFDFFFBFF398E
+          06FF73B865FF60D79EFF3C964EE2000100030000000000000000000000000000
+          0000000000001E271C6B97CC98FF8BBE68FF8AAD87FF4D8349FF4F8648FF3776
+          2BFF0E6100FF63A55CFF90B883FF136800FF166E00FF619E49FFFAFDF8FF388E
+          05FF77B968FF5ED199FF39914BE2000100030000000000000000000000000000
+          0000000000004F584E778FC28EFF8DBF6CFFD0DFCBFF6C9E60FF5E974EFF5D96
+          49FF519D43FFB3D4AAFF287B07FF459023FF65A446FFA4C992FFF6FAF3FF388E
+          05FF79B96CFF58C891FF328843E2010201030000000000000000000000000000
+          000000000000576056748EBE8DFF8EC06FFFFEFFFEFFE3EDE0FF79AC62FF67A9
+          50FFC2E4BCFF529A2EFF2B8600FFB9D7A8FFFFFFFFFFFFFFFFFFF1F6EDFF378E
+          04FF7BB96EFF54C18AFF308541E2010201030000000000000000000000000000
+          000000000000555E567292C090FF93C276FFFBFDF9FFFFFFFFFFD6EACFFFA9DA
+          A1FFAFD29BFF4E9B22FF2C8800FF3C9111FFC5DEB7FFFFFFFFFFF0F5E9FF378E
+          04FF7CB86FFF51B982FF338544E2000100030000000000000000000000000000
+          0000000000004F52437199C79AFF99C57CFFFBFDFAFFFFFFFFFFD3F2D4FFC7E3
+          BDFF71AE4DFF70B14FFF459618FF2A8500FF318B08FFC4DCB3FFF5F5EDFF378D
+          03FF7EB771FF4DB27BFF318141E2000100030000000000000000000000000000
+          0000000000005054486F9EC99FFF9EC883FFFFFEFEFFDFF6E0FFCBEBC8FF8CBD
+          6EFF88BB69FF9FD897FF6ABE59FF33A014FF2A9806FF6FB350FFF7F5EDFF368E
+          03FF7FB671FF46A970FF328142E2010101030000000000000000000000000000
+          000000000000535B536DA1C8A0FFA5CC8CFFEFFAEFFFCFF2D1FFA9CE93FF7AB4
+          58FFD2E5C6FFFEFFFFFFB5E8B6FFB8E4B3FFD5E9CBFFF0F2E5FFEEEEE0FF368E
+          02FF7FB570FF3CA162FF348245E2010202030000000000000000000000000000
+          0000000000004B4B3C6BA6CBA7FFAED196FFD8F2D8FFB1D9A4FFADD198FFD3E6
+          C8FFFFFFFFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFBFEFFEAEAD8FF358D
+          00FF80B570FF359C58FF2E7D40E2010201030000000000000000000000000000
+          00000000000050554D69AACBA8FFAFD299FFF7FBF5FFFBFCF9FFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFBFBF8FFE4EDDAFFCADEB9FFB0D098FF68A841FF2484
+          00FF7FB472FF2C984DFF29793BE2010201030000000000000000000000000000
+          0000000000004D4F4567AECDADFFB5D6A0FFFCFDFBFFFFFFFFFFFAFCF9FFE4F0
+          DDFFCEE4C2FFB8D7A6FF96C47BFF80B860FF7BB658FF82B960FF9AC57CFFA1C7
+          84FF9AC396FF3FA45BFF257838E2010201030000000000000000000000000000
+          00000000000047443465B4D1B4FFB7D7A3FFD5E7CAFFC1DDB2FFA8CF92FF9BC8
+          81FF99C67DFF9FCA85FFB3D49FFFB9D4AAFFB1CCAAFFB2CDB3FFAFCEB7FF94C4
+          A4FF65B57BFF4CB163FF1B6A2EDB000000000000000000000000000000000000
+          0000000000004F524B63B8D1B6FFBADAA6FFB4D6A0FFBDDAACFFCEE3C3FFCEE0
+          C9FFBED2BEFFB2CAB8FFA5C1B1FF89B397FF6CAB7FFF4E9B62FF38864BFF2D7D
+          40F6286637C7173F218802110631000000000000000000000000000000000000
+          0000000000003D433861CAD9CBFFDCE7D8FFC9D9CAFFB8CEBEFF9DBBA8FF7AA7
+          88FF599669FF458755FF468655FB437C4FE6315231BF1B2D1E5A1621193B080E
+          0A1C000000000000000000000000000000000000000000000000000000000000
+          0000000000001E251C4196B19DFB73A17FFF4D885BFF3E7D4CFF3F764AF0587F
+          5FD8687969A64C504B5F212221240909090A0000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000020241E33627460AD676D638A3838353E131212130303
+          0303000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000}
+      end>
+  end
+  object ZROQPosiciones1: TZReadOnlyQuery
+    Connection = ConnectionModule.ZConnectionQueries
+    SQL.Strings = (
+      ''
+      
+        'SELECT sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_catego' +
+        'ria_oid, tte.evento_oid, ipe.piloto_oid) nro_moto, '
+      
+        ' sel_nombre_categoria_by_evento_and_tipo_categoria(ipe.tipo_cate' +
+        'goria_oid, tte.evento_oid, ipe.piloto_oid) categoria,'
+      
+        ' sel_formatted_total_time(sel_total_time(tt.toma_tiempo_evento_o' +
+        'id, tt.piloto_oid)) formated_tiempo_sec'
+      ' from toma_tiempos tt'
+      
+        ' join toma_tiempo_evento tte on tt.toma_tiempo_evento_oid = tte.' +
+        'oid '
+      ' join piloto p on tt.piloto_oid = p.oid '
+      
+        ' join inscripcion_piloto_evento ipe on (ipe.evento_oid = tte.eve' +
+        'nto_oid and ipe.piloto_oid = tt.piloto_oid) '
+      ' where tte.oid = :toma_tiempo_evento_oid'
+      
+        '        and (:categoria_oid is null or :categoria_oid = 0 or :ca' +
+        'tegoria_oid = sel_categoria_oid_by_evento_and_tipo_categoria(ipe' +
+        '.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid)) '
+      ' group by p.oid '
+      
+        ' order by sel_can_vueltas(tt.toma_tiempo_evento_oid, tt.piloto_o' +
+        'id) desc,  '
+      
+        '       sel_total_time(tt.toma_tiempo_evento_oid, tt.piloto_oid) ' +
+        'asc, tt.oid asc'
+      '')
+    Params = <
+      item
+        DataType = ftInteger
+        Name = 'toma_tiempo_evento_oid'
+        ParamType = ptInput
+      end
+      item
+        DataType = ftInteger
+        Name = 'categoria_oid'
+        ParamType = ptInput
+      end>
+    Left = 32
+    Top = 392
+    ParamData = <
+      item
+        DataType = ftInteger
+        Name = 'toma_tiempo_evento_oid'
+        ParamType = ptInput
+      end
+      item
+        DataType = ftInteger
+        Name = 'categoria_oid'
+        ParamType = ptInput
+      end>
+  end
+  object DSPosiciones1: TDataSource
+    DataSet = ZROQPosiciones1
+    Left = 104
+    Top = 392
+  end
+  object JvTimerCategorias: TJvTimer
+    Enabled = False
+    Interval = 30000
+    Left = 760
+    Top = 424
+  end
+  object cxStyleRepository: TcxStyleRepository
+    Left = 232
+    Top = 40
+    PixelsPerInch = 96
+    object cxStyle1: TcxStyle
+      AssignedValues = [svFont]
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+    end
+    object cxStyle2: TcxStyle
+      AssignedValues = [svFont]
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+    end
+  end
+  object ZTomaTiempoEvento: TZReadOnlyQuery
+    Connection = ConnectionModule.ZConnection
+    SQL.Strings = (
+      
+        'select oid, CONCAT(date_format(toma_tiempo_start_time, '#39'%d/%m/%Y' +
+        ' %H:%i:%s'#39'), '#39' - '#39', nombre) as nombre, evento_oid'
+      'from toma_tiempo_evento'
+      'where tipo_toma_tiempo = '#39'CARRERA'#39
+      'order by oid desc')
+    Params = <>
+    MasterFields = 'oid'
+    LinkedFields = 'evento_oid'
+    Left = 616
+    Top = 216
+  end
+  object JvTimerCount: TJvTimer
+    Enabled = False
+    OnTimer = JvTimerCountTimer
+    Left = 304
+    Top = 176
+  end
+  object DSAgrupacion: TDataSource
+    DataSet = ZAgrupacion
+    Left = 456
+    Top = 152
+  end
+  object ZAgrupacion: TZTable
+    Connection = ConnectionModule.ZConnection
+    SortedFields = 'oid'
+    CachedUpdates = True
+    TableName = 'toma_tiempo_agrupacion'
+    IndexFieldNames = 'oid Asc'
+    Left = 456
+    Top = 96
+  end
+  object ZReSetPosition: TZQuery
+    Connection = ConnectionModule.ZConnectionQueries
+    SQL.Strings = (
+      'SET @posicion=:posicion;')
+    Params = <
+      item
+        DataType = ftInteger
+        Name = 'posicion'
+        ParamType = ptInput
+      end>
+    Left = 672
+    Top = 96
+    ParamData = <
+      item
+        DataType = ftInteger
+        Name = 'posicion'
+        ParamType = ptInput
+      end>
+  end
+  object ZROQPosicionesCount: TZReadOnlyQuery
+    Connection = ConnectionModule.ZConnectionQueries
+    SQL.Strings = (
+      'select max(cp.cuenta_piloto) cuenta from ('
+      'select count(distinct p.oid) as cuenta_piloto'
+      'from toma_tiempos tt '
+      
+        '     join toma_tiempo_evento tte on tt.toma_tiempo_evento_oid = ' +
+        'tte.oid '
+      '     join piloto p on tt.piloto_oid = p.oid '
+      '     join inscripcion_piloto_evento ipe on '
+      
+        '          (ipe.evento_oid = tte.evento_oid and ipe.piloto_oid = ' +
+        'tt.piloto_oid) '
+      'where tte.oid = :toma_tiempo_evento_oid'
+      
+        'group by sel_categoria_oid_by_evento_and_tipo_categoria(ipe.tipo' +
+        '_categoria_oid, tte.evento_oid, ipe.piloto_oid)) cp')
+    Params = <
+      item
+        DataType = ftUnknown
+        Name = 'toma_tiempo_evento_oid'
+        ParamType = ptUnknown
+      end>
+    Left = 552
+    Top = 456
+    ParamData = <
+      item
+        DataType = ftUnknown
+        Name = 'toma_tiempo_evento_oid'
+        ParamType = ptUnknown
+      end>
+  end
+  object QueryCategoriasFilter: TZQuery
+    Connection = ConnectionModule.ZConnection
+    SQL.Strings = (
+      'select distinct cat.oid, cat.nombre'
+      'from toma_tiempos tt'
+      
+        '     join toma_tiempo_evento tte on tt.toma_tiempo_evento_oid = ' +
+        'tte.oid'
+      '     join piloto p on tt.piloto_oid = p.oid, categorias cat '
+      
+        'where sel_categoria_oid_by_evento_and_tipo_categoria((select min' +
+        '(ipe.tipo_categoria_oid)'
+      
+        '                                               from inscripcion_' +
+        'piloto_evento ipe'
+      
+        '                                               where ipe.evento_' +
+        'oid = tte.evento_oid '
+      
+        '                                               and ipe.piloto_oi' +
+        'd = p.oid), tte.evento_oid, p.oid) = cat.oid'
+      'and tte.oid = :toma_tiempo_evento_oid'
+      
+        'and (:categorias is null or LENGTH(:categorias) = 0 or cat.nombr' +
+        'e IN (:categorias))'
+      'and tt.is_deleted = 0'
+      'order by cat.orden is null, cat.orden asc;')
+    Params = <
+      item
+        DataType = ftUnknown
+        Name = 'toma_tiempo_evento_oid'
+        ParamType = ptUnknown
+      end
+      item
+        DataType = ftUnknown
+        Name = 'categorias'
+        ParamType = ptInput
+      end>
+    Left = 888
+    Top = 192
+    ParamData = <
+      item
+        DataType = ftUnknown
+        Name = 'toma_tiempo_evento_oid'
+        ParamType = ptUnknown
+      end
+      item
+        DataType = ftUnknown
+        Name = 'categorias'
+        ParamType = ptInput
+      end>
+  end
+  object ZROQPosiciones2: TZReadOnlyQuery
+    Connection = ConnectionModule.ZConnectionQueries
+    SQL.Strings = (
+      ''
+      
+        'SELECT sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_catego' +
+        'ria_oid, tte.evento_oid, ipe.piloto_oid) nro_moto, '
+      
+        ' sel_nombre_categoria_by_evento_and_tipo_categoria(ipe.tipo_cate' +
+        'goria_oid, tte.evento_oid, ipe.piloto_oid) categoria,'
+      
+        ' sel_formatted_total_time(sel_total_time(tt.toma_tiempo_evento_o' +
+        'id, tt.piloto_oid)) formated_tiempo_sec'
+      ' from toma_tiempos tt'
+      
+        ' join toma_tiempo_evento tte on tt.toma_tiempo_evento_oid = tte.' +
+        'oid '
+      ' join piloto p on tt.piloto_oid = p.oid '
+      
+        ' join inscripcion_piloto_evento ipe on (ipe.evento_oid = tte.eve' +
+        'nto_oid and ipe.piloto_oid = tt.piloto_oid) '
+      ' where tte.oid = :toma_tiempo_evento_oid'
+      
+        '        and (:categoria_oid is null or :categoria_oid = 0 or :ca' +
+        'tegoria_oid = sel_categoria_oid_by_evento_and_tipo_categoria(ipe' +
+        '.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid)) '
+      ' group by p.oid '
+      
+        ' order by sel_can_vueltas(tt.toma_tiempo_evento_oid, tt.piloto_o' +
+        'id) desc,  '
+      
+        '       sel_total_time(tt.toma_tiempo_evento_oid, tt.piloto_oid) ' +
+        'asc, tt.oid asc'
+      ''
+      '')
+    Params = <
+      item
+        DataType = ftInteger
+        Name = 'toma_tiempo_evento_oid'
+        ParamType = ptInput
+      end
+      item
+        DataType = ftUnknown
+        Name = 'categoria_oid'
+        ParamType = ptUnknown
+      end>
+    Left = 200
+    Top = 392
+    ParamData = <
+      item
+        DataType = ftInteger
+        Name = 'toma_tiempo_evento_oid'
+        ParamType = ptInput
+      end
+      item
+        DataType = ftUnknown
+        Name = 'categoria_oid'
+        ParamType = ptUnknown
+      end>
+  end
+  object DSPosiciones2: TDataSource
+    DataSet = ZROQPosiciones2
+    Left = 272
+    Top = 392
+  end
+  object ZROQPosiciones3: TZReadOnlyQuery
+    Connection = ConnectionModule.ZConnectionQueries
+    SQL.Strings = (
+      ''
+      
+        'SELECT sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_catego' +
+        'ria_oid, tte.evento_oid, ipe.piloto_oid) nro_moto, '
+      
+        ' sel_nombre_categoria_by_evento_and_tipo_categoria(ipe.tipo_cate' +
+        'goria_oid, tte.evento_oid, ipe.piloto_oid) categoria,'
+      
+        ' sel_formatted_total_time(sel_total_time(tt.toma_tiempo_evento_o' +
+        'id, tt.piloto_oid)) formated_tiempo_sec'
+      ' from toma_tiempos tt'
+      
+        ' join toma_tiempo_evento tte on tt.toma_tiempo_evento_oid = tte.' +
+        'oid '
+      ' join piloto p on tt.piloto_oid = p.oid '
+      
+        ' join inscripcion_piloto_evento ipe on (ipe.evento_oid = tte.eve' +
+        'nto_oid and ipe.piloto_oid = tt.piloto_oid) '
+      ' where tte.oid = :toma_tiempo_evento_oid'
+      
+        '        and (:categoria_oid is null or :categoria_oid = 0 or :ca' +
+        'tegoria_oid = sel_categoria_oid_by_evento_and_tipo_categoria(ipe' +
+        '.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid)) '
+      ' group by p.oid '
+      
+        ' order by sel_can_vueltas(tt.toma_tiempo_evento_oid, tt.piloto_o' +
+        'id) desc,  '
+      
+        '       sel_total_time(tt.toma_tiempo_evento_oid, tt.piloto_oid) ' +
+        'asc, tt.oid asc'
+      ''
+      '')
+    Params = <
+      item
+        DataType = ftInteger
+        Name = 'toma_tiempo_evento_oid'
+        ParamType = ptInput
+      end
+      item
+        DataType = ftUnknown
+        Name = 'categoria_oid'
+        ParamType = ptUnknown
+      end>
+    Left = 376
+    Top = 392
+    ParamData = <
+      item
+        DataType = ftInteger
+        Name = 'toma_tiempo_evento_oid'
+        ParamType = ptInput
+      end
+      item
+        DataType = ftUnknown
+        Name = 'categoria_oid'
+        ParamType = ptUnknown
+      end>
+  end
+  object DSPosiciones3: TDataSource
+    DataSet = ZROQPosiciones3
+    Left = 448
+    Top = 392
+  end
+  object ZROQPosiciones4: TZReadOnlyQuery
+    Connection = ConnectionModule.ZConnectionQueries
+    SQL.Strings = (
+      ''
+      
+        'SELECT sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_catego' +
+        'ria_oid, tte.evento_oid, ipe.piloto_oid) nro_moto, '
+      
+        ' sel_nombre_categoria_by_evento_and_tipo_categoria(ipe.tipo_cate' +
+        'goria_oid, tte.evento_oid, ipe.piloto_oid) categoria,'
+      
+        ' sel_formatted_total_time(sel_total_time(tt.toma_tiempo_evento_o' +
+        'id, tt.piloto_oid)) formated_tiempo_sec'
+      ' from toma_tiempos tt'
+      
+        ' join toma_tiempo_evento tte on tt.toma_tiempo_evento_oid = tte.' +
+        'oid '
+      ' join piloto p on tt.piloto_oid = p.oid '
+      
+        ' join inscripcion_piloto_evento ipe on (ipe.evento_oid = tte.eve' +
+        'nto_oid and ipe.piloto_oid = tt.piloto_oid) '
+      ' where tte.oid = :toma_tiempo_evento_oid'
+      
+        '        and (:categoria_oid is null or :categoria_oid = 0 or :ca' +
+        'tegoria_oid = sel_categoria_oid_by_evento_and_tipo_categoria(ipe' +
+        '.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid)) '
+      ' group by p.oid '
+      
+        ' order by sel_can_vueltas(tt.toma_tiempo_evento_oid, tt.piloto_o' +
+        'id) desc,  '
+      
+        '       sel_total_time(tt.toma_tiempo_evento_oid, tt.piloto_oid) ' +
+        'asc, tt.oid asc'
+      ''
+      '')
+    Params = <
+      item
+        DataType = ftInteger
+        Name = 'toma_tiempo_evento_oid'
+        ParamType = ptInput
+      end
+      item
+        DataType = ftUnknown
+        Name = 'categoria_oid'
+        ParamType = ptUnknown
+      end>
+    Left = 544
+    Top = 384
+    ParamData = <
+      item
+        DataType = ftInteger
+        Name = 'toma_tiempo_evento_oid'
+        ParamType = ptInput
+      end
+      item
+        DataType = ftUnknown
+        Name = 'categoria_oid'
+        ParamType = ptUnknown
+      end>
+  end
+  object DSPosiciones4: TDataSource
+    DataSet = ZROQPosiciones4
+    Left = 616
+    Top = 384
+  end
+  object ZROQPosiciones5: TZReadOnlyQuery
+    Connection = ConnectionModule.ZConnectionQueries
+    SQL.Strings = (
+      ''
+      
+        'SELECT sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_catego' +
+        'ria_oid, tte.evento_oid, ipe.piloto_oid) nro_moto, '
+      
+        ' sel_nombre_categoria_by_evento_and_tipo_categoria(ipe.tipo_cate' +
+        'goria_oid, tte.evento_oid, ipe.piloto_oid) categoria,'
+      
+        ' sel_formatted_total_time(sel_total_time(tt.toma_tiempo_evento_o' +
+        'id, tt.piloto_oid)) formated_tiempo_sec'
+      ' from toma_tiempos tt'
+      
+        ' join toma_tiempo_evento tte on tt.toma_tiempo_evento_oid = tte.' +
+        'oid '
+      ' join piloto p on tt.piloto_oid = p.oid '
+      
+        ' join inscripcion_piloto_evento ipe on (ipe.evento_oid = tte.eve' +
+        'nto_oid and ipe.piloto_oid = tt.piloto_oid) '
+      ' where tte.oid = :toma_tiempo_evento_oid'
+      
+        '        and (:categoria_oid is null or :categoria_oid = 0 or :ca' +
+        'tegoria_oid = sel_categoria_oid_by_evento_and_tipo_categoria(ipe' +
+        '.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid)) '
+      ' group by p.oid '
+      
+        ' order by sel_can_vueltas(tt.toma_tiempo_evento_oid, tt.piloto_o' +
+        'id) desc,  '
+      
+        '       sel_total_time(tt.toma_tiempo_evento_oid, tt.piloto_oid) ' +
+        'asc, tt.oid asc'
+      ''
+      '')
+    Params = <
+      item
+        DataType = ftInteger
+        Name = 'toma_tiempo_evento_oid'
+        ParamType = ptInput
+      end
+      item
+        DataType = ftUnknown
+        Name = 'categoria_oid'
+        ParamType = ptUnknown
+      end>
+    Left = 704
+    Top = 384
+    ParamData = <
+      item
+        DataType = ftInteger
+        Name = 'toma_tiempo_evento_oid'
+        ParamType = ptInput
+      end
+      item
+        DataType = ftUnknown
+        Name = 'categoria_oid'
+        ParamType = ptUnknown
+      end>
+  end
+  object DSPosiciones5: TDataSource
+    DataSet = ZROQPosiciones5
+    Left = 776
+    Top = 384
+  end
+  object ZROQPosiciones6: TZReadOnlyQuery
+    Connection = ConnectionModule.ZConnectionQueries
+    SQL.Strings = (
+      ''
+      
+        'SELECT sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_catego' +
+        'ria_oid, tte.evento_oid, ipe.piloto_oid) nro_moto, '
+      
+        ' sel_nombre_categoria_by_evento_and_tipo_categoria(ipe.tipo_cate' +
+        'goria_oid, tte.evento_oid, ipe.piloto_oid) categoria,'
+      
+        ' sel_formatted_total_time(sel_total_time(tt.toma_tiempo_evento_o' +
+        'id, tt.piloto_oid)) formated_tiempo_sec'
+      ' from toma_tiempos tt'
+      
+        ' join toma_tiempo_evento tte on tt.toma_tiempo_evento_oid = tte.' +
+        'oid '
+      ' join piloto p on tt.piloto_oid = p.oid '
+      
+        ' join inscripcion_piloto_evento ipe on (ipe.evento_oid = tte.eve' +
+        'nto_oid and ipe.piloto_oid = tt.piloto_oid) '
+      ' where tte.oid = :toma_tiempo_evento_oid'
+      
+        '        and (:categoria_oid is null or :categoria_oid = 0 or :ca' +
+        'tegoria_oid = sel_categoria_oid_by_evento_and_tipo_categoria(ipe' +
+        '.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid)) '
+      ' group by p.oid '
+      
+        ' order by sel_can_vueltas(tt.toma_tiempo_evento_oid, tt.piloto_o' +
+        'id) desc,  '
+      
+        '       sel_total_time(tt.toma_tiempo_evento_oid, tt.piloto_oid) ' +
+        'asc, tt.oid asc'
+      ''
+      '')
+    Params = <
+      item
+        DataType = ftInteger
+        Name = 'toma_tiempo_evento_oid'
+        ParamType = ptInput
+      end
+      item
+        DataType = ftUnknown
+        Name = 'categoria_oid'
+        ParamType = ptUnknown
+      end>
+    Left = 872
+    Top = 384
+    ParamData = <
+      item
+        DataType = ftInteger
+        Name = 'toma_tiempo_evento_oid'
+        ParamType = ptInput
+      end
+      item
+        DataType = ftUnknown
+        Name = 'categoria_oid'
+        ParamType = ptUnknown
+      end>
+  end
+  object DSPosiciones6: TDataSource
+    DataSet = ZROQPosiciones6
+    Left = 944
+    Top = 384
+  end
+  object ZROQPosiciones7: TZReadOnlyQuery
+    Connection = ConnectionModule.ZConnectionQueries
+    SQL.Strings = (
+      ''
+      
+        'SELECT sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_catego' +
+        'ria_oid, tte.evento_oid, ipe.piloto_oid) nro_moto, '
+      
+        ' sel_nombre_categoria_by_evento_and_tipo_categoria(ipe.tipo_cate' +
+        'goria_oid, tte.evento_oid, ipe.piloto_oid) categoria,'
+      
+        ' sel_formatted_total_time(sel_total_time(tt.toma_tiempo_evento_o' +
+        'id, tt.piloto_oid)) formated_tiempo_sec'
+      ' from toma_tiempos tt'
+      
+        ' join toma_tiempo_evento tte on tt.toma_tiempo_evento_oid = tte.' +
+        'oid '
+      ' join piloto p on tt.piloto_oid = p.oid '
+      
+        ' join inscripcion_piloto_evento ipe on (ipe.evento_oid = tte.eve' +
+        'nto_oid and ipe.piloto_oid = tt.piloto_oid) '
+      ' where tte.oid = :toma_tiempo_evento_oid'
+      
+        '        and (:categoria_oid is null or :categoria_oid = 0 or :ca' +
+        'tegoria_oid = sel_categoria_oid_by_evento_and_tipo_categoria(ipe' +
+        '.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid)) '
+      ' group by p.oid '
+      
+        ' order by sel_can_vueltas(tt.toma_tiempo_evento_oid, tt.piloto_o' +
+        'id) desc,  '
+      
+        '       sel_total_time(tt.toma_tiempo_evento_oid, tt.piloto_oid) ' +
+        'asc, tt.oid asc'
+      ''
+      '')
+    Params = <
+      item
+        DataType = ftInteger
+        Name = 'toma_tiempo_evento_oid'
+        ParamType = ptInput
+      end
+      item
+        DataType = ftUnknown
+        Name = 'categoria_oid'
+        ParamType = ptUnknown
+      end>
+    Left = 1016
+    Top = 384
+    ParamData = <
+      item
+        DataType = ftInteger
+        Name = 'toma_tiempo_evento_oid'
+        ParamType = ptInput
+      end
+      item
+        DataType = ftUnknown
+        Name = 'categoria_oid'
+        ParamType = ptUnknown
+      end>
+  end
+  object DSPosiciones7: TDataSource
+    DataSet = ZROQPosiciones7
+    Left = 1088
+    Top = 384
+  end
+  object QueryCategorias: TZQuery
+    Connection = ConnectionModule.ZConnection
+    SQL.Strings = (
+      ' select distinct cat.oid, cat.nombre '
+      ' from inscripcion_piloto_evento ipe '
+      '  join piloto p on ipe.piloto_oid = p.oid, categorias cat '
+      
+        ' where sel_categoria_oid_by_evento_and_tipo_categoria((select mi' +
+        'n(ipe.tipo_categoria_oid) '
+      '                          from inscripcion_piloto_evento ipe '
+      '                          where ipe.evento_oid = ipe.evento_oid '
+      
+        '                          and ipe.piloto_oid = p.oid), ipe.event' +
+        'o_oid, p.oid) = cat.oid '
+      ' and ipe.evento_oid = '
+      ' (select distinct tte.evento_oid '
+      'from toma_tiempo_agrupacion tta'
+      
+        '     inner join toma_tiempo_agrupacion_tt ttat on ttat.toma_tiem' +
+        'po_agrupacion_oid = tta.oid '
+      
+        '     inner join toma_tiempo_evento tte on ttat.toma_tiempo_oid =' +
+        ' tte.oid'
+      'where tta.oid = :toma_tiempo_agrupacion_oid)'
+      'order by  cat.orden is null, cat.orden asc;')
+    Params = <
+      item
+        DataType = ftUnknown
+        Name = 'toma_tiempo_agrupacion_oid'
+        ParamType = ptUnknown
+      end>
+    Left = 792
+    Top = 192
+    ParamData = <
+      item
+        DataType = ftUnknown
+        Name = 'toma_tiempo_agrupacion_oid'
+        ParamType = ptUnknown
+      end>
+  end
+  object DSCategorias: TDataSource
+    AutoEdit = False
+    DataSet = QueryCategorias
+    Left = 792
+    Top = 240
+  end
+  object JvTimer: TJvTimer
+    Enabled = False
+    OnTimer = JvTimerTimer
+    Left = 248
+    Top = 176
+  end
+  object scExcelExport: TscExcelExport
+    DataPipe = dpDataSet
+    StyleColumnWidth = cwDefault
+    ColumnWidth = 0
+    FontHeader.Charset = DEFAULT_CHARSET
+    FontHeader.Color = clWindowText
+    FontHeader.Height = 1
+    FontHeader.Name = 'Tahoma'
+    FontHeader.Orientation = 0
+    FontHeader.Style = []
+    FontHeader.Alignment = haGeneral
+    FontHeader.WrapText = False
+    BorderHeader.BackAlternateColor = clBlack
+    MergeHeaderCells = True
+    FontTitles.Charset = DEFAULT_CHARSET
+    FontTitles.Color = clWindowText
+    FontTitles.Height = 1
+    FontTitles.Name = 'Tahoma'
+    FontTitles.Orientation = 0
+    FontTitles.Style = []
+    FontTitles.Alignment = haGeneral
+    FontTitles.WrapText = False
+    BorderTitles.BackAlternateColor = clBlack
+    AutoFilter = False
+    FontData.Charset = DEFAULT_CHARSET
+    FontData.Color = clWindowText
+    FontData.Height = 1
+    FontData.Name = 'Tahoma'
+    FontData.Orientation = 0
+    FontData.Style = []
+    FontData.Alignment = haGeneral
+    FontData.WrapText = False
+    FontSummary.Charset = DEFAULT_CHARSET
+    FontSummary.Color = clWindowText
+    FontSummary.Height = 1
+    FontSummary.Name = 'Tahoma'
+    FontSummary.Orientation = 0
+    FontSummary.Style = []
+    FontSummary.Alignment = haGeneral
+    FontSummary.WrapText = False
+    BorderSummary.BackAlternateColor = clBlack
+    SummarySelection = ssNone
+    SummaryCalculation = scSUM
+    FontFooter.Charset = DEFAULT_CHARSET
+    FontFooter.Color = clWindowText
+    FontFooter.Height = 1
+    FontFooter.Name = 'Tahoma'
+    FontFooter.Orientation = 0
+    FontFooter.Style = []
+    FontFooter.Alignment = haGeneral
+    FontFooter.WrapText = False
+    BorderFooter.BackAlternateColor = clBlack
+    MergeFooterCells = True
+    FontGroup.Charset = DEFAULT_CHARSET
+    FontGroup.Color = clWindowText
+    FontGroup.Height = 1
+    FontGroup.Name = 'Tahoma'
+    FontGroup.Orientation = 0
+    FontGroup.Style = []
+    FontGroup.Alignment = haGeneral
+    FontGroup.WrapText = False
+    BorderGroup.BackAlternateColor = clBlack
+    GroupOptions.ClearContents = True
+    GroupOptions.BorderRange = bsRow
+    GroupOptions.IntervalFontSize = 2
+    Left = 448
+    Top = 240
+  end
+end

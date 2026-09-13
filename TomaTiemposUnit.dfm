@@ -1,0 +1,2864 @@
+object TomaTiempos: TTomaTiempos
+  Left = 0
+  Top = 0
+  Hint = 'Exportar Toma de Tiempos'
+  Caption = 'Administraci'#243'n de Toma de Tiempos'
+  ClientHeight = 621
+  ClientWidth = 953
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  KeyPreview = True
+  Menu = AdvMainMenu
+  OldCreateOrder = False
+  WindowState = wsMaximized
+  OnClose = FormClose
+  OnCreate = FormCreate
+  OnKeyPress = FormKeyPress
+  OnMouseWheelDown = FormMouseWheelDown
+  OnMouseWheelUp = FormMouseWheelUp
+  PixelsPerInch = 96
+  TextHeight = 13
+  object Splitter: TSplitter
+    Left = 551
+    Top = 0
+    Height = 621
+    Align = alRight
+    ExplicitLeft = 432
+    ExplicitTop = 336
+    ExplicitHeight = 100
+  end
+  object panelContainer: TPanel
+    Left = 0
+    Top = 0
+    Width = 551
+    Height = 621
+    Align = alClient
+    TabOrder = 0
+    object topSplitter: TJvNetscapeSplitter
+      Left = 1
+      Top = 270
+      Width = 549
+      Height = 10
+      Cursor = crVSplit
+      Align = alTop
+      MinSize = 1
+      Maximized = False
+      Minimized = False
+      ButtonCursor = crDefault
+      ExplicitTop = 242
+      ExplicitWidth = 623
+    end
+    object topPanel: TPanel
+      Left = 1
+      Top = 1
+      Width = 549
+      Height = 269
+      Align = alTop
+      TabOrder = 0
+      object cxGridTomaTiempo: TcxGrid
+        Left = 1
+        Top = 1
+        Width = 547
+        Height = 191
+        Align = alClient
+        TabOrder = 0
+        object cxGridTomaTiempoDBTableView: TcxGridDBTableView
+          OnEditValueChanged = cxGridTomaTiempoDBTableViewEditValueChanged
+          DataController.DataSource = DSTomaTiempos
+          DataController.Summary.DefaultGroupSummaryItems = <>
+          DataController.Summary.FooterSummaryItems = <>
+          DataController.Summary.SummaryGroups = <>
+          OptionsCustomize.ColumnGrouping = False
+          OptionsCustomize.ColumnMoving = False
+          OptionsCustomize.ColumnSorting = False
+          OptionsData.CancelOnExit = False
+          OptionsData.Deleting = False
+          OptionsData.DeletingConfirmation = False
+          OptionsData.Inserting = False
+          OptionsSelection.CellSelect = False
+          OptionsSelection.MultiSelect = True
+          OptionsView.NoDataToDisplayInfoText = '<No hay datos para mostrar>'
+          OptionsView.CellAutoHeight = True
+          OptionsView.ColumnAutoWidth = True
+          OptionsView.GroupByBox = False
+          object cxGridTomaTiempoDBTableViewnro_moto: TcxGridDBColumn
+            Caption = 'Nro. Moto'
+            DataBinding.FieldName = 'nro_moto'
+            MinWidth = 63
+            Options.Editing = False
+            Options.HorzSizing = False
+            Options.Sorting = False
+            Width = 63
+          end
+          object cxGridTomaTiempoDBTableViewnombre_piloto: TcxGridDBColumn
+            Caption = 'Piloto'
+            DataBinding.FieldName = 'nombre_piloto'
+            Options.Editing = False
+            Options.Focusing = False
+            Options.Moving = False
+            Options.Sorting = False
+            Width = 85
+          end
+          object cxGridTomaTiempoDBTableViewtiempo: TcxGridDBColumn
+            Caption = 'Tiempo de Vuelta'
+            DataBinding.FieldName = 'tiempo'
+            MinWidth = 93
+            Options.Editing = False
+            Options.HorzSizing = False
+            Options.Sorting = False
+            Width = 93
+          end
+          object cxGridTomaTiempoDBTableViewnro_vuelta: TcxGridDBColumn
+            Caption = 'Vuelta #'
+            DataBinding.FieldName = 'nro_vuelta'
+            Options.Editing = False
+            Width = 49
+          end
+          object cxGridTomaTiempoDBTableViewColumn1: TcxGridDBColumn
+            Caption = 'Tiempo Pasada'
+            DataBinding.FieldName = 'tiempo_pasada'
+            MinWidth = 95
+            Options.Editing = False
+            Options.HorzSizing = False
+            Options.Sorting = False
+            Width = 95
+          end
+          object cxGridTomaTiempoDBTableViewcategoria: TcxGridDBColumn
+            Caption = 'Categor'#237'a'
+            DataBinding.FieldName = 'categoria'
+            Options.Editing = False
+            Options.Sorting = False
+            Width = 56
+          end
+          object cxGridTomaTiempoDBTableViewis_deleted: TcxGridDBColumn
+            Caption = 'Estado'
+            DataBinding.FieldName = 'is_deleted'
+            MinWidth = 104
+            Options.Editing = False
+            Options.HorzSizing = False
+            Options.Sorting = False
+            Width = 104
+          end
+          object cxGridTomaTiempoDBTableViewoid: TcxGridDBColumn
+            DataBinding.FieldName = 'oid'
+            Visible = False
+          end
+        end
+        object cxGridTomaTiempoLevel: TcxGridLevel
+          GridView = cxGridTomaTiempoDBTableView
+        end
+      end
+      object validationPanel: TPanel
+        Left = 1
+        Top = 227
+        Width = 547
+        Height = 41
+        Align = alBottom
+        BevelOuter = bvNone
+        TabOrder = 1
+        Visible = False
+        object errorListView: TcxListView
+          Left = 0
+          Top = 0
+          Width = 547
+          Height = 41
+          TabStop = False
+          Align = alClient
+          Columns = <
+            item
+              Caption = 'message'
+              Width = 800
+            end>
+          HoverTime = 0
+          ShowColumnHeaders = False
+          StateImages = cxErrorImageList
+          TabOrder = 0
+          ViewStyle = vsReport
+        end
+      end
+      object pTotales: TPanel
+        Left = 1
+        Top = 192
+        Width = 547
+        Height = 35
+        Align = alBottom
+        TabOrder = 2
+        object lblCantidadPilotos: TLabel
+          Left = 21
+          Top = 10
+          Width = 115
+          Height = 13
+          Caption = 'Cant. Pilotos Largados: '
+        end
+        object lblCantPilotosValue: TLabel
+          Left = 138
+          Top = 11
+          Width = 3
+          Height = 13
+        end
+        object lblCantPilotosCorriendoValue: TLabel
+          Left = 322
+          Top = 11
+          Width = 3
+          Height = 13
+        end
+        object lblCantidadCorriendo: TLabel
+          Left = 201
+          Top = 10
+          Width = 118
+          Height = 13
+          Caption = 'Cant. Pilotos Corriendo: '
+        end
+      end
+    end
+    object buttomPanel: TPanel
+      Left = 1
+      Top = 280
+      Width = 549
+      Height = 340
+      Align = alClient
+      TabOrder = 1
+      object cxGridPosiciones: TcxGrid
+        Left = 1
+        Top = 1
+        Width = 547
+        Height = 338
+        Align = alClient
+        TabOrder = 0
+        object cxGridPosicionesDBTableView: TcxGridDBTableView
+          DataController.DataSource = DSPosiciones
+          DataController.Summary.DefaultGroupSummaryItems = <>
+          DataController.Summary.FooterSummaryItems = <>
+          DataController.Summary.SummaryGroups = <>
+          OptionsData.CancelOnExit = False
+          OptionsData.Deleting = False
+          OptionsData.DeletingConfirmation = False
+          OptionsData.Editing = False
+          OptionsData.Inserting = False
+          OptionsView.NoDataToDisplayInfoText = '<No hay datos para mostrar>'
+          OptionsView.ColumnAutoWidth = True
+          object cxGridPosicionesDBTableViewColumn1: TcxGridDBColumn
+            DataBinding.FieldName = 'Pos'
+          end
+          object cxGridPosicionesDBTableViewnro_moto: TcxGridDBColumn
+            Caption = 'Nro. Moto'
+            DataBinding.FieldName = 'nro_moto'
+            Options.Sorting = False
+            Width = 66
+          end
+          object cxGridPosicionesDBTableViewnombre_piloto: TcxGridDBColumn
+            Caption = 'Piloto / Navegante'
+            DataBinding.FieldName = 'nombre_piloto'
+            Options.Sorting = False
+            Width = 462
+          end
+          object cxGridPosicionesDBTableViewcategoria: TcxGridDBColumn
+            Caption = 'Categor'#237'a'
+            DataBinding.FieldName = 'categoria'
+            Visible = False
+            GroupIndex = 0
+            Options.Sorting = False
+            Width = 280
+          end
+        end
+        object cxGridPosicionesLevel: TcxGridLevel
+          GridView = cxGridPosicionesDBTableView
+        end
+      end
+    end
+  end
+  object rightPanel: TPanel
+    Left = 554
+    Top = 0
+    Width = 399
+    Height = 621
+    Align = alRight
+    TabOrder = 1
+    DesignSize = (
+      399
+      621)
+    object JvNetscapeSplitter: TJvNetscapeSplitter
+      Left = 528
+      Top = 272
+      Height = 100
+      Align = alNone
+      Maximized = False
+      Minimized = False
+      ButtonCursor = crDefault
+    end
+    object lblCampeonato: TcxLabel
+      Left = 16
+      Top = 23
+      Caption = 'Campeonato:'
+      ParentFont = False
+      Style.Font.Charset = DEFAULT_CHARSET
+      Style.Font.Color = clWindowText
+      Style.Font.Height = -11
+      Style.Font.Name = 'Tahoma'
+      Style.Font.Style = []
+      Style.TextColor = clInfoText
+      Style.IsFontAssigned = True
+    end
+    object cmbCampeonato: TDBLookupComboBox
+      Left = 91
+      Top = 19
+      Width = 300
+      Height = 21
+      Anchors = [akLeft, akTop, akRight]
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      KeyField = 'oid'
+      ListField = 'nombre'
+      ListSource = DSCampeonato
+      ParentFont = False
+      TabOrder = 0
+    end
+    object lblEvento: TcxLabel
+      Left = 43
+      Top = 46
+      Caption = 'Evento:'
+      ParentFont = False
+      Style.Font.Charset = DEFAULT_CHARSET
+      Style.Font.Color = clWindowText
+      Style.Font.Height = -11
+      Style.Font.Name = 'Tahoma'
+      Style.Font.Style = []
+      Style.IsFontAssigned = True
+    end
+    object cmbEvento: TDBLookupComboBox
+      Left = 91
+      Top = 46
+      Width = 300
+      Height = 21
+      Anchors = [akLeft, akTop, akRight]
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      KeyField = 'oid'
+      ListField = 'nombre'
+      ListSource = DSEvento
+      ParentFont = False
+      TabOrder = 1
+    end
+    object btnStart: TAeroButton
+      AlignWithMargins = True
+      Left = 17
+      Top = 169
+      Width = 121
+      Height = 32
+      ImageIndex = 0
+      Images = cxImageList
+      Spacing = 10
+      Version = '1.0.0.1'
+      Anchors = [akLeft, akTop, akRight]
+      Caption = 'Comenzar TT'
+      TabOrder = 4
+      OnClick = btnStartClick
+    end
+    object btnStop: TAeroButton
+      AlignWithMargins = True
+      Left = 140
+      Top = 169
+      Width = 121
+      Height = 32
+      ImageIndex = 1
+      Images = cxImageList
+      Spacing = 10
+      Version = '1.0.0.1'
+      Anchors = [akLeft, akTop, akRight]
+      Caption = 'Detener TT'
+      Enabled = False
+      TabOrder = 5
+      OnClick = btnStopClick
+    end
+    object btnEliminarPasada: TAeroButton
+      AlignWithMargins = True
+      Left = 167
+      Top = 238
+      Width = 121
+      Height = 32
+      ImageIndex = 2
+      Images = cxImageList
+      Spacing = 10
+      Version = '1.0.0.1'
+      Anchors = [akLeft, akTop, akRight]
+      Caption = 'Eliminar Pasada'
+      Enabled = False
+      TabOrder = 8
+      OnClick = btnEliminarPasadaClick
+    end
+    object btnDeseliminarPasada: TAeroButton
+      AlignWithMargins = True
+      Left = 200
+      Top = 207
+      Width = 193
+      Height = 32
+      ImageIndex = 4
+      Images = cxImageList
+      Spacing = 10
+      Version = '1.0.0.1'
+      Anchors = [akLeft, akTop, akRight]
+      Caption = 'Restablecer Pasada'
+      Enabled = False
+      TabOrder = 9
+      OnClick = btnDeseliminarPasadaClick
+    end
+    object lblNombre: TcxLabel
+      Left = 37
+      Top = 87
+      Caption = 'Nombre:'
+      ParentFont = False
+      Style.Font.Charset = DEFAULT_CHARSET
+      Style.Font.Color = clWindowText
+      Style.Font.Height = -11
+      Style.Font.Name = 'Tahoma'
+      Style.Font.Style = []
+      Style.IsFontAssigned = True
+    end
+    object txtNombre: TcxTextEdit
+      Left = 88
+      Top = 86
+      Anchors = [akLeft, akTop, akRight]
+      ParentFont = False
+      Style.Font.Charset = DEFAULT_CHARSET
+      Style.Font.Color = clWindowText
+      Style.Font.Height = -11
+      Style.Font.Name = 'Tahoma'
+      Style.Font.Style = []
+      Style.IsFontAssigned = True
+      TabOrder = 2
+      Width = 303
+    end
+    object btnGenerarGrillaPartida: TAeroButton
+      AlignWithMargins = True
+      Left = 16
+      Top = 238
+      Width = 153
+      Height = 32
+      ImageIndex = 5
+      Images = cxImageList
+      Spacing = 10
+      Version = '1.0.0.1'
+      Anchors = [akLeft, akTop, akRight]
+      Caption = 'Conf. Grilla de Partida'
+      TabOrder = 10
+      OnClick = btnGenerarGrillaPartidaClick
+    end
+    object lblNroLargada: TcxLabel
+      Left = 11
+      Top = 113
+      Caption = 'Nro. Largada:'
+      ParentFont = False
+      Style.Font.Charset = DEFAULT_CHARSET
+      Style.Font.Color = clWindowText
+      Style.Font.Height = -11
+      Style.Font.Name = 'Tahoma'
+      Style.Font.Style = []
+      Style.IsFontAssigned = True
+    end
+    object cmbNroLargada: TDBLookupComboBox
+      Left = 88
+      Top = 113
+      Width = 303
+      Height = 21
+      Anchors = [akLeft, akTop, akRight]
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      KeyField = 'nro_largada'
+      ListField = 'nombre_largada'
+      ListSource = DSNroDeLargadaByEvento
+      ParentFont = False
+      TabOrder = 3
+    end
+    object lblTomaTiempoEvento: TcxLabel
+      Left = 11
+      Top = 435
+      Caption = 'Toma Tiempo:'
+      ParentFont = False
+      Style.Font.Charset = DEFAULT_CHARSET
+      Style.Font.Color = clWindowText
+      Style.Font.Height = -11
+      Style.Font.Name = 'Tahoma'
+      Style.Font.Style = []
+      Style.IsFontAssigned = True
+    end
+    object cmbTomaTiempoEvento: TDBLookupComboBox
+      Left = 88
+      Top = 431
+      Width = 303
+      Height = 21
+      Anchors = [akLeft, akTop, akRight]
+      DropDownRows = 12
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      KeyField = 'oid'
+      ListField = 'nombre'
+      ListSource = DSTomaTiempoEvento
+      ParentFont = False
+      TabOrder = 11
+      OnCloseUp = cmbTomaTiempoEventoCloseUp
+    end
+    object btnExportarExcelPosiciones: TAeroButton
+      AlignWithMargins = True
+      Left = 142
+      Top = 513
+      Width = 122
+      Height = 32
+      ImageIndex = 4
+      Images = cxButtonImageList
+      Spacing = 10
+      Version = '1.0.0.1'
+      Anchors = [akTop, akRight]
+      Caption = 'Exp. Posiciones'
+      TabOrder = 12
+      OnClick = btnExportarExcelPosicionesClick
+    end
+    object btnAgregarPasadaConNumeroyTiempo: TAeroButton
+      AlignWithMargins = True
+      Left = 16
+      Top = 207
+      Width = 153
+      Height = 32
+      ImageIndex = 3
+      Images = cxImageList
+      Spacing = 10
+      Version = '1.0.0.1'
+      Anchors = [akLeft, akTop, akRight]
+      Caption = 'AP Nro. Piloto y Tiempo'
+      Enabled = False
+      TabOrder = 6
+      OnClick = btnAgregarPasadaConNumeroyTiempoClick
+    end
+    object btnExpXLSTT: TAeroButton
+      AlignWithMargins = True
+      Left = 6
+      Top = 512
+      Width = 137
+      Height = 32
+      ImageIndex = 4
+      Images = cxButtonImageList
+      Spacing = 10
+      Version = '1.0.0.1'
+      Anchors = [akLeft, akTop, akRight]
+      Caption = 'Exp. Toma Tiempos'
+      TabOrder = 18
+      OnClick = btnExpXLSTTClick
+    end
+    object btnRefrescarGrillaPosiciones: TAeroButton
+      AlignWithMargins = True
+      Left = 208
+      Top = 386
+      Width = 185
+      Height = 32
+      ImageIndex = 4
+      Images = cxImageList
+      Spacing = 10
+      Version = '1.0.0.1'
+      Anchors = [akLeft, akTop, akRight]
+      Caption = 'Refrescar Posiciones'
+      TabOrder = 19
+      OnClick = btnRefrescarGrillaPosicionesClick
+    end
+    object gbLecturas: TcxGroupBox
+      Left = 16
+      Top = 276
+      Caption = ' Lecturas de la Antena '
+      TabOrder = 20
+      Height = 105
+      Width = 377
+      object MemoLectuas: TMemo
+        Left = 2
+        Top = 18
+        Width = 373
+        Height = 85
+        Align = alClient
+        ReadOnly = True
+        ScrollBars = ssVertical
+        TabOrder = 0
+      end
+    end
+    object cxLabel2: TcxLabel
+      Left = 27
+      Top = 458
+      Caption = 'Categor'#237'a:'
+      ParentFont = False
+      Style.Font.Charset = DEFAULT_CHARSET
+      Style.Font.Color = clWindowText
+      Style.Font.Height = -11
+      Style.Font.Name = 'Tahoma'
+      Style.Font.Style = []
+      Style.TextColor = clNone
+      Style.IsFontAssigned = True
+    end
+    object cmbCategoria: TDBLookupComboBox
+      Left = 88
+      Top = 458
+      Width = 305
+      Height = 21
+      Anchors = [akLeft, akTop, akRight]
+      DropDownRows = 10
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      KeyField = 'oid'
+      ListField = 'nombre'
+      ListSource = DSCategorias
+      ParentFont = False
+      TabOrder = 22
+      OnKeyPress = cmbCategoriaKeyPress
+    end
+    object btnContinuarTomaTiempo: TAeroButton
+      AlignWithMargins = True
+      Left = 267
+      Top = 169
+      Width = 130
+      Height = 32
+      ImageIndex = 0
+      Images = cxImageList
+      Spacing = 10
+      Version = '1.0.0.1'
+      Anchors = [akLeft, akTop, akRight]
+      Caption = 'Continuar TT'
+      TabOrder = 23
+      OnClick = btnContinuarTomaTiempoClick
+    end
+    object lblTomaTiempoEventoCont: TcxLabel
+      Left = 11
+      Top = 146
+      Caption = 'Toma Tiempo:'
+      ParentFont = False
+      Style.Font.Charset = DEFAULT_CHARSET
+      Style.Font.Color = clWindowText
+      Style.Font.Height = -11
+      Style.Font.Name = 'Tahoma'
+      Style.Font.Style = []
+      Style.IsFontAssigned = True
+    end
+    object cmbTomaTiempoEventoCont: TDBLookupComboBox
+      Left = 88
+      Top = 142
+      Width = 303
+      Height = 21
+      Anchors = [akLeft, akTop, akRight]
+      DropDownRows = 12
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      KeyField = 'oid'
+      ListField = 'nombre'
+      ListSource = DSTomaTiempoEventoCont
+      ParentFont = False
+      TabOrder = 25
+    end
+    object btnExportarTelefonico: TAeroButton
+      AlignWithMargins = True
+      Left = 263
+      Top = 513
+      Width = 130
+      Height = 32
+      ImageIndex = 4
+      Images = cxButtonImageList
+      Spacing = 10
+      Version = '1.0.0.1'
+      Anchors = [akTop, akRight]
+      Caption = 'Exp. Telef'#243'nico'
+      TabOrder = 26
+      OnClick = btnExportarTelefonicoClick
+    end
+    object btnRefrescarGrillaPasadas: TAeroButton
+      AlignWithMargins = True
+      Left = 17
+      Top = 386
+      Width = 185
+      Height = 32
+      ImageIndex = 4
+      Images = cxImageList
+      Spacing = 10
+      Version = '1.0.0.1'
+      Anchors = [akLeft, akTop, akRight]
+      Caption = 'Refrescar Pasadas'
+      TabOrder = 27
+      OnClick = btnRefrescarGrillaPasadasClick
+    end
+    object btnExportarExcelPosicionesSC: TAeroButton
+      AlignWithMargins = True
+      Left = 192
+      Top = 546
+      Width = 201
+      Height = 32
+      ImageIndex = 4
+      Images = cxButtonImageList
+      Spacing = 10
+      Version = '1.0.0.1'
+      Anchors = [akTop, akRight]
+      Caption = 'Exp. Posiciones Sin Categoria'
+      TabOrder = 28
+      OnClick = btnExportarExcelPosicionesSCClick
+    end
+    object btnAgregarPasadaConNumero: TAeroButton
+      AlignWithMargins = True
+      Left = 175
+      Top = 207
+      Width = 122
+      Height = 32
+      ImageIndex = 3
+      Images = cxImageList
+      Spacing = 10
+      Version = '1.0.0.1'
+      Anchors = [akLeft, akTop, akRight]
+      Caption = 'AP Nro. Piloto'
+      Enabled = False
+      TabOrder = 7
+      OnClick = btnAgregarPasadaConNumeroClick
+    end
+    object lblFilterCampeonato: TcxLabel
+      Left = 48
+      Top = 485
+      Caption = 'Piloto:'
+      ParentFont = False
+      Style.Font.Charset = DEFAULT_CHARSET
+      Style.Font.Color = clWindowText
+      Style.Font.Height = -11
+      Style.Font.Name = 'Tahoma'
+      Style.Font.Style = []
+      Style.TextColor = clNone
+      Style.IsFontAssigned = True
+    end
+    object cmbFilterPiloto: TDBLookupComboBox
+      Left = 88
+      Top = 485
+      Width = 305
+      Height = 21
+      Anchors = [akLeft, akTop, akRight]
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      KeyField = 'oid'
+      ListField = 'nombre'
+      ListSource = DSFilterPiloto
+      ParentFont = False
+      TabOrder = 30
+      OnKeyPress = cmbCategoriaKeyPress
+    end
+    object btnMinDiferencia: TAeroButton
+      AlignWithMargins = True
+      Left = 6
+      Top = 546
+      Width = 180
+      Height = 32
+      ImageIndex = 4
+      Images = cxButtonImageList
+      Spacing = 10
+      Version = '1.0.0.1'
+      Anchors = [akTop, akRight]
+      Caption = 'Exp. Diferencia Tiempos'
+      TabOrder = 31
+      OnClick = btnMinDiferenciaClick
+    end
+    object btnExportarExcelPosicionesSinCat: TAeroButton
+      AlignWithMargins = True
+      Left = 110
+      Top = 584
+      Width = 179
+      Height = 32
+      ImageIndex = 4
+      Images = cxButtonImageList
+      Spacing = 10
+      Version = '1.0.0.1'
+      Anchors = [akTop, akRight]
+      Caption = 'Exp. Posiciones Generales'
+      TabOrder = 32
+      OnClick = btnExportarExcelPosicionesSinCatClick
+    end
+    object btnAgregarTiempoSinPiloto: TAeroButton
+      AlignWithMargins = True
+      Left = 288
+      Top = 207
+      Width = 105
+      Height = 63
+      ImageIndex = 3
+      Images = cxImageList
+      Spacing = 10
+      Version = '1.0.0.1'
+      Anchors = [akLeft, akTop, akRight]
+      Caption = 'AP Nro. Piloto'
+      Enabled = False
+      TabOrder = 33
+      OnClick = btnAgregarTiempoSinPilotoClick
+    end
+  end
+  object ZCampeonato: TZTable
+    Connection = ConnectionModule.ZConnection
+    SortedFields = 'anio'
+    SortType = stDescending
+    CachedUpdates = True
+    TableName = 'campeonato'
+    IndexFieldNames = 'anio Desc'
+    Left = 48
+    Top = 408
+  end
+  object ZEvento: TZReadOnlyQuery
+    Connection = ConnectionModule.ZConnection
+    SQL.Strings = (
+      
+        'select e.oid, CONCAT(e.nro_fecha, '#39' - '#39', DATE_FORMAT(e.fecha,  '#39 +
+        '%d/%m/%Y'#39'), '#39' - '#39', e.nombre) as nombre, e.campeonato_oid '
+      'from evento e'
+      'order by e.nro_fecha desc')
+    Params = <>
+    MasterFields = 'oid'
+    MasterSource = DSCampeonato
+    LinkedFields = 'campeonato_oid'
+    Left = 96
+    Top = 408
+  end
+  object DSCampeonato: TDataSource
+    DataSet = ZCampeonato
+    Left = 48
+    Top = 464
+  end
+  object DSEvento: TDataSource
+    DataSet = ZEvento
+    Left = 96
+    Top = 464
+  end
+  object cxImageList: TcxImageList
+    Height = 24
+    Width = 24
+    FormatVersion = 1
+    DesignInfo = 15728968
+    ImageInfo = <
+      item
+        Image.Data = {
+          36090000424D3609000000000000360000002800000018000000180000000100
+          2000000000000009000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000050101
+          0122060606460D0D0D5F0E0E0E600707074B0101012800000008000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000000000000000011191919766A6A6ACCAFAF
+          AFF2C9C9C9FFC7C7C7FFC1C1C1FFBBBBBBFF9F9F9FF5656565D41E1E1E840000
+          001A000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000909094E7E7E7ED6E8E8E8FFCACACAFF8B8B
+          8BFF595959FF414141FF3E3E3EFF4C4C4CFF727272FFA0A0A0FFB9B9B9FF7B7B
+          7BE60E0E0E610000000100000000000000000000000000000000000000000000
+          000000000000000000001C1C1C7AE8E8E8FFE3E3E3FF5B5B5BFF212121FF1717
+          17FF181818FF181818FF151515FF111111FF0B0B0BFF0F0F0FFF383838FFA4A4
+          A4FFBABABAFF2828289800000006000000000000000000000000000000000000
+          0000000000001D1D1D77ECECECFFBEBEBEFF333333FF202020FF282828FF2525
+          25FF232323FF212121FF1E1E1EFF1C1C1CFF191919FF161616FF0C0C0CFF0F0F
+          0FFF7E7E7EFFC1C1C1FF25252590000000000000000000000000000000000000
+          000006060642DFDFDFFCC0C0C0FF292929FF2C2C2CFF2E2E2EFF2B2B2BFF2929
+          29FF1E1E1EFF222222FF212121FF1E1E1EFF1C1C1CFF191919FF171717FF1111
+          11FF070707FF7D7D7DFFB8B8B8FF0D0D0D620000000000000000000000000000
+          000D7A7A7ACBDEDEDEFF404040FF313131FF333333FF303030FF242424FF8181
+          81FF888888FF212121FF1E1E1EFF212121FF1E1E1EFF1B1B1BFF191919FF1616
+          16FF111111FF0F0F0FFF9B9B9BFF7E7E7EE60101012100000000000000001313
+          1361F1F1F1FF787878FF313131FF383838FF363636FF333333FF252525FF8F8F
+          8FFFEDEDEDFFA8A8A8FF343434FF191919FF212121FF1E1E1EFF1B1B1BFF1919
+          19FF171717FF0A0A0AFF404040FFC1C1C1FF1B1B1B7D00000000000000016666
+          66BADFDFDFFF4B4B4BFF3B3B3BFF3B3B3BFF383838FF363636FF292929FF8C8C
+          8CFFDBDBDBFFDEDEDEFFC7C7C7FF5B5B5BFF191919FF1F1F1FFF1E1E1EFF1C1C
+          1CFF191919FF161616FF101010FFA0A0A0FF5B5B5BC60000000700000015B0B0
+          B0E4B2B2B2FF3F3F3FFF3F3F3FFF3D3D3DFF3B3B3BFF383838FF2B2B2BFF8D8D
+          8DFFD7D7D7FFCECECEFFD6D6D6FFDEDEDEFF878787FF1F1F1FFF1A1A1AFF1F1F
+          1FFF1C1C1CFF191919FF0B0B0BFF6A6A6AFF9E9E9EF60101012B04040430CECE
+          CEF9AEAEAEFF5F5F5FFF3C3C3CFF404040FF3D3D3DFF3B3B3BFF2D2D2DFF9292
+          92FFE0E0E0FFCFCFCFFFCDCDCDFFD0D0D0FFDCDCDCFFB4B4B4FF434343FF1616
+          16FF1F1F1FFF1B1B1BFF111111FF454545FFB8B8B8FF0909095208080842D6D6
+          D6FFB4B4B4FFA1A1A1FF595959FF3C3C3CFF404040FF3E3E3EFF303030FF9696
+          96FFECECECFFDADADAFFD3D3D3FFCECECEFFCDCDCDFFD8D8D8FFD4D4D4FF6262
+          62FF1B1B1BFF1E1E1EFF161616FF383838FFBFBFBFFF0F0F0F6408080841D2D2
+          D2FFB8B8B8FFB1B1B1FFA4A4A4FF666666FF3E3E3EFF3D3D3DFF323232FF9B9B
+          9BFFF8F8F8FFE6E6E6FFE0E0E0FFD9D9D9FFD3D3D3FFD9D9D9FFC6C6C6FF5858
+          58FF1F1F1FFF202020FF181818FF3B3B3BFFC5C5C5FF0F0F0F630303032DC4C4
+          C4F8BABABAFFB8B8B8FFAEAEAEFFAAAAAAFF818181FF4F4F4FFF303030FF9C9C
+          9CFFFFFFFFFFF2F2F2FFEBEBEBFFE8E8E8FFE8E8E8FFA8A8A8FF3B3B3BFF1E1E
+          1EFF242424FF232323FF1E1E1EFF545454FFC5C5C5FF0808084E00000013A4A4
+          A4E0BFBFBFFFBDBDBDFFB4B4B4FFAFAFAFFFACACACFFA0A0A0FF757575FFB0B0
+          B0FFFFFFFFFFFDFDFDFFFEFEFEFFECECECFF7C7C7CFF242424FF292929FF3131
+          31FF393939FF3F3F3FFF2F2F2FFF878787FFADADADF201010126000000005E5E
+          5EB2D3D3D3FFC6C6C6FFBEBEBEFFB6B6B6FFB0B0B0FFAAAAAAFFA1A1A1FFD1D1
+          D1FFFFFFFFFFFFFFFFFFE9E9E9FF868686FF525252FF5B5B5BFF5E5E5EFF5D5D
+          5DFF585858FF4E4E4EFF3E3E3EFFCACACAFF616161BF00000004000000001010
+          1055D9D9D9FFBBBBBBFFCFCFCFFFBDBDBDFFB8B8B8FFB2B2B2FFA5A5A5FFD3D3
+          D3FFFFFFFFFFD3D3D3FF8F8F8FFF848484FF848484FF7B7B7BFF727272FF6969
+          69FF606060FF4F4F4FFF777777FFEFEFEFFF1919197300000000000000000000
+          0008696969BDCBCBCBFFC4C4C4FFCCCCCCFFBFBFBFFFB9B9B9FFAFAFAFFFCBCB
+          CBFFC8C8C8FF999999FF969696FF919191FF898989FF828282FF7A7A7AFF7272
+          72FF696969FF585858FFD6D6D6FF898989DB0000001800000000000000000000
+          000004040433C5C5C5F6BEBEBEFFCECECEFFCECECEFFC0C0C0FFBBBBBBFFB3B3
+          B3FFAAAAAAFFA7A7A7FFA0A0A0FF999999FF929292FF8B8B8BFF838383FF7B7B
+          7BFF676767FFBEBEBEFFDFDFDFFF090909510000000000000000000000000000
+          00000000000016161663D1D1D1FDBFBFBFFFC4C4C4FFD4D4D4FFC5C5C5FFBBBB
+          BBFFB6B6B6FFAFAFAFFFA9A9A9FFA2A2A2FF9B9B9BFF949494FF8B8B8BFF7D7D
+          7DFFC4C4C4FFF0F0F0FF2020207C000000000000000000000000000000000000
+          0000000000000000000015151561CBCBCBFACCCCCCFFBBBBBBFFCCCCCCFFCACA
+          CAFFC2C2C2FFBCBCBCFFB5B5B5FFACACACFFA3A3A3FF9B9B9BFF9F9F9FFFE1E1
+          E1FFE2E2E2FF2020207E00000000000000000000000000000000000000000000
+          000000000000000000000000000006060639686868BFD7D7D7FFD1D1D1FFC6C6
+          C6FFBABABAFFBDBDBDFFBBBBBBFFB4B4B4FFC3C3C3FFDFDFDFFFE8E8E8FF8080
+          80D2090909490000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000711111159606060B6A6A6
+          A6E4C6C6C6F9D2D2D2FFD4D4D4FFCFCFCFFBB1B1B1E86C6C6CC0161616670000
+          000C000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000010000
+          00140404042F0808084509090946040404330000001800000002000000000000
+          0000000000000000000000000000000000000000000000000000}
+      end
+      item
+        Image.Data = {
+          36090000424D3609000000000000360000002800000018000000180000000100
+          2000000000000009000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000050101
+          0122060606460D0D0D5F0E0E0E600707074B0101012800000008000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000000000000000011191919766A6A6ACCAFAF
+          AFF2C9C9C9FFC7C7C7FFC1C1C1FFBBBBBBFF9F9F9FF5656565D41E1E1E840000
+          001A000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000909094E7E7E7ED6E8E8E8FFCACACAFF8B8B
+          8BFF595959FF414141FF3E3E3EFF4C4C4CFF727272FFA0A0A0FFB9B9B9FF7B7B
+          7BE60E0E0E610000000100000000000000000000000000000000000000000000
+          000000000000000000001C1C1C7AE8E8E8FFE3E3E3FF5B5B5BFF212121FF1717
+          17FF181818FF181818FF151515FF111111FF0B0B0BFF0F0F0FFF383838FFA4A4
+          A4FFBABABAFF2828289800000006000000000000000000000000000000000000
+          0000000000001D1D1D77ECECECFFBEBEBEFF333333FF202020FF282828FF2626
+          26FF232323FF212121FF1E1E1EFF1C1C1CFF191919FF161616FF0C0C0CFF0F0F
+          0FFF7E7E7EFFC1C1C1FF25252590000000000000000000000000000000000000
+          000006060642DFDFDFFCC0C0C0FF292929FF2C2C2CFF2E2E2EFF2B2B2BFF2929
+          29FF262626FF232323FF212121FF1E1E1EFF1C1C1CFF191919FF171717FF1111
+          11FF070707FF7D7D7DFFB8B8B8FF0D0D0D620000000000000000000000000000
+          000D7A7A7ACBDEDEDEFF404040FF313131FF343434FF2E2E2EFF242424FF2121
+          21FF1E1E1EFF1B1B1BFF181818FF151515FF131313FF0F0F0FFF141414FF1717
+          17FF111111FF0F0F0FFF9B9B9BFF7E7E7EE60101012100000000000000001313
+          1361F1F1F1FF787878FF313131FF383838FF333333FF414141FF797979FF7979
+          79FF787878FF777777FF767676FF767676FF757575FF787878FF393939FF1515
+          15FF171717FF0A0A0AFF404040FFC1C1C1FF1B1B1B7D00000000000000016666
+          66BADFDFDFFF4B4B4BFF3B3B3BFF3B3B3BFF2F2F2FFF707070FFE2E2E2FFDCDC
+          DCFFE0E0E0FFE3E3E3FFE7E7E7FFEAEAEAFFEEEEEEFFFEFEFEFF8C8C8CFF0E0E
+          0EFF191919FF161616FF101010FFA0A0A0FF5B5B5BC60000000700000015B0B0
+          B0E4B2B2B2FF3F3F3FFF3F3F3FFF3D3D3DFF323232FF747474FFDDDDDDFFCDCD
+          CDFFCFCFCFFFD3D3D3FFD6D6D6FFDADADAFFDDDDDDFFECECECFF8A8A8AFF1212
+          12FF1C1C1CFF191919FF0B0B0BFF6A6A6AFF9E9E9EF60101012B04040430CECE
+          CEF9AEAEAEFF5F5F5FFF3C3C3CFF404040FF343434FF777777FFEBEBEBFFD7D7
+          D7FFCFCFCFFFCECECEFFD2D2D2FFD5D5D5FFD8D8D8FFE7E7E7FF8A8A8AFF1515
+          15FF1E1E1EFF1B1B1BFF111111FF454545FFB8B8B8FF0909095208080842D6D6
+          D6FFB4B4B4FFA1A1A1FF595959FF3C3C3CFF363636FF7C7C7CFFF7F7F7FFE4E4
+          E4FFD9D9D9FFCFCFCFFFCDCDCDFFD1D1D1FFD4D4D4FFE3E3E3FF8A8A8AFF1818
+          18FF212121FF1E1E1EFF161616FF383838FFBFBFBFFF0F0F0F6408080841D2D2
+          D2FFB8B8B8FFB1B1B1FFA4A4A4FF666666FF343434FF7C7C7CFFFFFFFFFFF1F1
+          F1FFE6E6E6FFDCDCDCFFD3D3D3FFCDCDCDFFD0D0D0FFDEDEDEFF8A8A8AFF1B1B
+          1BFF232323FF202020FF181818FF3B3B3BFFC5C5C5FF0F0F0F630303032DC4C4
+          C4F8BABABAFFB8B8B8FFAEAEAEFFAAAAAAFF787878FF8B8B8BFFFFFFFFFFFCFC
+          FCFFF3F3F3FFE9E9E9FFDFDFDFFFD5D5D5FFCECECEFFD9D9D9FF898989FF1D1D
+          1DFF242424FF232323FF1E1E1EFF545454FFC5C5C5FF0808084E00000013A4A4
+          A4E0BFBFBFFFBDBDBDFFB4B4B4FFAFAFAFFFA7A7A7FFC1C1C1FFFFFFFFFFFFFF
+          FFFFFEFEFEFFF7F7F7FFEDEDEDFFE2E2E2FFD8D8D8FFD9D9D9FF8A8A8AFF2626
+          26FF393939FF3F3F3FFF2F2F2FFF878787FFADADADF201010126000000005E5E
+          5EB2D3D3D3FFC6C6C6FFBEBEBEFFB6B6B6FFACACACFFC3C3C3FFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFEFEFEFFF8F8F8FFF1F1F1FFF1F1F1FFA5A5A5FF5555
+          55FF585858FF4E4E4EFF3E3E3EFFCACACAFF616161BF00000004000000001010
+          1055D9D9D9FFBBBBBBFFCFCFCFFFBDBDBDFFB8B8B8FFB5B5B5FFC4C4C4FFC3C3
+          C3FFBFBFBFFFBABABAFFB6B6B6FFB1B1B1FFABABABFFA5A5A5FF7D7D7DFF6767
+          67FF606060FF4F4F4FFF777777FFEFEFEFFF1919197300000000000000000000
+          0008696969BDCBCBCBFFC4C4C4FFCCCCCCFFBFBFBFFFB9B9B9FFAFAFAFFFA7A7
+          A7FFA0A0A0FF999999FF929292FF8A8A8AFF838383FF7B7B7BFF787878FF7272
+          72FF696969FF585858FFD6D6D6FF898989DB0000001800000000000000000000
+          000004040433C5C5C5F6BEBEBEFFCECECEFFCECECEFFC0C0C0FFBBBBBBFFB4B4
+          B4FFAEAEAEFFA7A7A7FFA0A0A0FF999999FF929292FF8B8B8BFF838383FF7B7B
+          7BFF676767FFBEBEBEFFDFDFDFFF090909510000000000000000000000000000
+          00000000000016161663D1D1D1FDBFBFBFFFC4C4C4FFD4D4D4FFC5C5C5FFBBBB
+          BBFFB6B6B6FFAFAFAFFFA9A9A9FFA2A2A2FF9B9B9BFF949494FF8B8B8BFF7D7D
+          7DFFC4C4C4FFF0F0F0FF2020207C000000000000000000000000000000000000
+          0000000000000000000015151561CBCBCBFACCCCCCFFBBBBBBFFCCCCCCFFCACA
+          CAFFC2C2C2FFBCBCBCFFB5B5B5FFACACACFFA3A3A3FF9B9B9BFF9F9F9FFFE1E1
+          E1FFE2E2E2FF2020207E00000000000000000000000000000000000000000000
+          000000000000000000000000000006060639686868BFD7D7D7FFD1D1D1FFC6C6
+          C6FFBABABAFFBDBDBDFFBBBBBBFFB4B4B4FFC3C3C3FFDFDFDFFFE8E8E8FF8080
+          80D2090909490000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000711111159606060B6A6A6
+          A6E4C6C6C6F9D2D2D2FFD4D4D4FFCFCFCFFBB1B1B1E86C6C6CC0161616670000
+          000C000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000010000
+          00140404042F0808084509090946040404330000001800000002000000000000
+          0000000000000000000000000000000000000000000000000000}
+      end
+      item
+        Image.Data = {
+          36090000424D3609000000000000360000002800000018000000180000000100
+          2000000000000009000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000003020202301616
+          16703434349F4A4A49B84A4A49BA393939A81C1C1C7F050505400000000C0000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000000000006060644515150B7BFBFB8F9DDDD
+          CFFFD1D1C8FFBEBEC2FFB7B7BDFFBCBCB7FFC2C2B4FFAFAFA4FF5E5E5DCF0E0E
+          0F63000000080000000000000000000000000000000000000000000000000000
+          000000000000000000000000000A2D2D2D90DADAD3FFEBEBE3FF9494BDFF4040
+          B9FF1616C8FF0505D8FF0303DCFF0F0FD3FF2C2CC2FF6868ACFFAEAEAEFFBDBD
+          AFFF464645B90101012400000000000000000000000000000000000000000000
+          0000000000000101011F666666C2F8F8EFFF9C9CC7FF2121BCFF0000D8FF0000
+          ECFF0000F1FF0000F4FF0000F7FF0000FCFF0000FFFF0000F9FF0C0CD8FF5B5B
+          B3FFBCBCB2FF7E7E7BE506060643000000000000000000000000000000000000
+          00000000000E636363C1FFFFFDFF6B6BB4FF0000C5FF0000DFFF0000E1FF0000
+          E6FF0000ECFF0000F0FF0000F4FF0000F8FF0000FAFF0000FDFF0000FFFF0000
+          FCFF2E2EBBFFBDBDB4FF82827FE9020202300000000000000000000000000000
+          00002D2D2D8FFCFCF1FF7070AFFF0000C1FF0000D4FF0000D8FF0000DFFF0000
+          E5FF0000EAFF0000EFFF0000F4FF0000F8FF0000FBFF0000FEFF0000FFFF0000
+          FEFF0000FFFF2A2AB9FFBEBEB4FF565655CC0000000D00000000000000000303
+          032FD4D4CEF9B3B3C9FF0000B5FF0000CCFF0000CFFF0000D6FF0000DDFF0000
+          E3FF0000E9FF0000EEFF0000F3FF0000F7FF0000FBFF0000FEFF0000FEFF0000
+          FCFF0000FCFF0000FAFF5F5FB0FFBEBEB0FF0E0E0E6100000000000000003434
+          348FF3F3E8FF4040ABFF0000C4FF0000C5FF0000CCFF0000D3FF0000DAFF0000
+          E1FF0000E7FF0000ECFF0000F1FF0000F5FF0000F8FF0000FBFF0000FBFF0000
+          FAFF0000F9FF0000FEFF0909D4FFA7A7ACFF5C5C5ACE0000000D00000017A5A5
+          A3E4B7B7C5FF0505B3FF0000C1FF0000C0FF0000C6FF0000CFFF0000D6FF0000
+          DDFF0000E3FF0000E9FF0000EEFF0000F2FF0000F5FF0000F7FF0000F8FF0000
+          F8FF0000F7FF0000F6FF0000F8FF5656AFFFAFAFA2FF0606064808080845E2E2
+          D9FF7E7EB2FF0000BAFF0505BEFF2F2FCAFF3333CDFF3232D3FF3232D8FF3131
+          DEFF3131E2FF3030E5FF3131EAFF3131EDFF3131F0FF3131F2FF3232F3FF3232
+          F3FF3333F3FF1010F3FF0000FAFF1F1FC4FFB8B8ADFF202020861C1C1C6CE2E2
+          DCFF8F8FBEFF1212C1FF3D3DC9FFFBFBF1FFF1F1EAFFEBEBE6FFE6E6E1FFE2E2
+          DCFFDDDDD7FFD8D8D2FFD5D5CFFFD6D6D0FFD9D9D2FFDBDBD4FFDDDDD6FFDEDE
+          D8FFEDEDD9FF7D7DEBFF0000F5FF0A0AD8FFB0B0B6FF40403FB02C2C2C82DFDF
+          DBFF9F9FCBFF6565D8FF6565D3FFFEFEF7FFF1F1F0FFECECEBFFE7E7E6FFE2E2
+          E1FFDDDDDDFFD8D8D8FFD3D3D3FFCECECEFFCDCDCCFFCECECEFFD0D0D0FFD3D3
+          D2FFE2E2D3FF8383E6FF0000F0FF0505E1FFAFAFC1FF51514EC02A2A2A7FDCDC
+          D9FFA4A4CAFF8484DFFFABABE7FFFFFFFFFFFCFCFAFFF7F7F5FFF3F3F1FFEFEF
+          ECFFEAEAE7FFE5E5E2FFE0E0DDFFDBDBD8FFD6D6D3FFD1D1CEFFCFCFCCFFD0D0
+          CDFFE0E0CFFF8585E2FF0000EBFF0505DBFFB5B5C5FF51514EBE18181864D9D9
+          D6FFAFAFC3FF9090E2FFA4A4E4FFF4F4FCFFF7F7FDFFF1F1FAFFE1E1F3FFDFDF
+          F0FFDFDFEEFFDDDDEBFFD9D9E7FFD5D5E3FFD1D1E0FFCDCDDCFFC9C9D8FFC5C5
+          D5FFCFCFD5FF6666E1FF0101E8FF1515C9FFC3C3C4FF3D3D3CA80505053ACDCD
+          CBFCBABABFFFA5A5E4FF9090DDFF9292DFFF8E8EDFFF8585DEFF6161D5FF3333
+          CAFF1919C6FF1010CAFF0D0DCEFF0E0ED3FF0E0ED6FF0F0FD9FF1212DCFF1818
+          DFFF2222E1FF1B1BE1FF1313E5FF3B3BB8FFD3D3C8FF1A1A1A780000000F8B8B
+          8AD7C7C7C4FFB4B4DBFF9B9BE2FF9494DEFF8C8CDDFF8585DCFF8181DDFF7878
+          DCFF6565D8FF4E4ED4FF3C3CD2FF3030D3FF2D2DD5FF2E2ED8FF3333DAFF3535
+          DCFF3232DDFF2D2DDEFF1717D9FF8383B8FFC3C3BBFD03030339000000002525
+          2579D8D8D6FFB8B8C3FFAFAFE9FF9E9EE0FF9898E0FF9191DEFF8989DEFF8282
+          DDFF7C7CDDFF7676DCFF7070DCFF6969DBFF6161DBFF5858DBFF4F4FDBFF4646
+          DBFF3E3EDCFF3232E2FF3A3ABBFFE1E1DEFF545453B900000006000000000101
+          011EAEAEAEECC6C6C3FFC1C1D9FFACACE9FFA1A1E1FF9B9BE1FF9393DFFF8B8B
+          DEFF8484DDFF7D7DDDFF7575DCFF6E6EDCFF6666DBFF5F5FDBFF5757DBFF5050
+          DBFF4848DFFF3131CFFFA9A9CAFFE4E4DCFF0707074800000000000000000000
+          00001919196AD8D8D8FFB6B6B4FFC3C3E0FFADADE8FFA3A3E2FF9C9CE1FF9595
+          E0FF8E8EDFFF8686DEFF7E7EDDFF7777DCFF7070DCFF6868DCFF6060DBFF5959
+          DFFF4545D5FF7D7DB4FFFCFCF5FF414141AA0000000400000000000000000000
+          0000000000013F3F3F9AE1E1E0FFB7B7B7FFC4C4DCFFB5B5ECFFA4A4E5FF9C9C
+          E1FF9696E0FF8F8FDFFF8888DFFF8080DEFF7878DDFF7070DEFF6767E1FF5A5A
+          D0FF8C8CB7FFFFFFF9FF727272CC000000160000000000000000000000000000
+          0000000000000000000B4343439CD5D5D4FFC1C1BFFFBDBDC8FFB8B8DBFFB2B2
+          E8FFA5A5E8FF9A9AE5FF9191E3FF8B8BE3FF8585E1FF7A7AD2FF8181C2FFB8B8
+          C5FFF5F5EEFF6E6E6EC601010125000000000000000000000000000000000000
+          00000000000000000000000000001313135DA5A5A5E4DBDBDAFFC6C6C4FFBABA
+          BDFFB7B7C4FFB5B5CCFFAFAFCDFFA7A7C3FFACACBEFFC7C7C9FFEEEEE8FFD0D0
+          CDF8292929860000000A00000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000001C2B2B2B81919191D7D4D4
+          D3FFDCDCDAFFDEDEDBFFE1E1DEFFE4E4E0FFE2E2DFFFABABAAE64141419D0303
+          0333000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000000000000000000000000000000000E0606
+          063C181818662A2A2A812C2C2C841D1D1D6F0A0A0A4800000018000000000000
+          0000000000000000000000000000000000000000000000000000}
+      end
+      item
+        Image.Data = {
+          36090000424D3609000000000000360000002800000018000000180000000100
+          2000000000000009000000000000000000000000000000000000000000000000
+          00000000000000000000000000000000000000000000000000000A0A0A252424
+          24633E3E3E894E4E4E964D4C4D963C3C3C89212121680A0A0A28000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000F0F0F36626262B6CAC4CAFCD8CE
+          D8FFC7C4C7FFB6BBB6FFB0B6B0FFB6B4B6FFBCB3BBFFA8A1A7FC565555B61010
+          103A000000000000000000000000000000000000000000000000000000000000
+          000000000000000000000202020745454592E3DCE4FEE2DEE2FF84AC82FF419E
+          41FF25A42AFF1DAD26FF1EB02DFF29AC39FF41A44FFF73A07AFFB2AEB1FFB2AB
+          B1FF3E3E3E990202020900000000000000000000000000000000000000000000
+          000000000000020202117B7B7BBFFCF5FCFF97B993FF25941DFF0BA906FF14B8
+          16FF18BC20FF15BF24FF18C22CFF1FC737FF22CC3EFF1DC53AFF2EAA44FF77A3
+          7EFFBDB5BCFF605F60BD03030310000000000000000000000000000000000000
+          000000000004737373BAF8F3F8FF54944BFF059500FF13AA0AFF1AAF18FF1AB4
+          1DFF31BE38FF5ECC68FF61CF6FFF3BCA52FF27C746FF2DCA4EFF2BCF4DFF1DC5
+          3CFF479C56FFBCB6BBFF5F5F5FC4000000070000000000000000000000000000
+          00003B3B3B85FEF7FFFF5B9452FF079100FF18A006FF19A60FFF1BAD18FF15B2
+          19FF9ACF9DFFE2D3E1FFE6D7E3FFA9DAB2FF25C847FF30CA55FF30CA55FF2CCB
+          4DFF1BCA3AFF529E5DFFC5B9C3FF3435348E0000000000000000000000000909
+          092FE0DDE1F9A7B7A3FF0F8600FF179500FF189B07FF1AA30FFF1CAA18FF17B1
+          1AFFA1CCA3FFCFC8CFFFD3CDD2FFB0D6B8FF28C849FF2FCA54FF2FCA54FF2CC9
+          4CFF28CB44FF18BD2FFF809F83FFABA5ABFB0C0C0C3100000000000000006060
+          60A6E8E3E9FF378427FF148E00FF199100FF199705FF1B9F0EFF1DA716FF18AE
+          19FF9CC79EFFC8C1C8FFCDC6CCFFABD2B1FF26C643FF2BC74BFF2CC84BFF29C7
+          47FF26C640FF1FCC36FF25A832FFB2AEB2FF4E4E4EAE0000000005050515C9C7
+          CAEEA5B3A1FF198200FF1A8A00FF1A8D00FF199303FF1A9B0BFF1CA314FF17AA
+          16FF9AC49AFFC2BCC2FFC7C0C6FFA7CEADFF23C33CFF27C341FF28C442FF26C4
+          3FFF24C43AFF21C534FF11BF20FF789E7BFF9C979CF30909092C1919194BEBE6
+          EDFF73996AFF158100FF1A8600FF148700FF188E00FF189606FF1B9F0FFF16A8
+          11FF97C096FFBCB6BCFFC1BAC0FFA4CBA8FF21C234FF24C239FF24C339FF23C3
+          37FF1DC22FFF1CC02BFF14C520FF45A04AFFBBB0BAFF212121633D3D3D7ADFDC
+          E1FF8EAD83FF2E8C12FF288A10FFB0D0A8FFBDD4B8FFB4CEB0FFAFCAACFFA9C7
+          A7FFB7C0B7FFB4B2B4FFB5B4B5FFB8C0B9FFA5C7A8FFA8C9ABFFABCCAEFFAFCF
+          B3FFA5D2AAFF2FC339FF12C21AFF27A52BFFBBB4BAFF3B3B3B855454548DD6D5
+          D7FFA5BE9BFF7DB56AFF5AA245FFFCF8FDFFF2EDF3FFE8E3E9FFDDD9DEFFD5CF
+          D5FFC7C6C7FFBCBDBCFFB4B4B4FFB4B2B4FFBCB7BCFFC1BBC0FFC5BFC5FFC9C3
+          C9FFD9CED8FF48C54CFF0EBC11FF1CA81CFFB9B8B9FF4D4B4D955151518CD4D3
+          D5FFAAC0A1FF95C184FFA1C893FFFFFFFFFFFDFBFEFFF7F2F8FFF0EAF2FFE7E1
+          E9FFD6D4D6FFC9C9C9FFBFBFBFFFB8B6B8FFBBB3BCFFBEB6BEFFC2BBC3FFC6BE
+          C6FFD5C9D5FF45C145FF0BB809FF1BA419FFBFBDBFFF4C4A4C9234343470D7D5
+          D8FFB1BEABFFA1C790FF9DC48DFFCCE1C4FFD3E6CDFFB2D3A9FF96C38AFF90C1
+          85FFCBD9C8FFDAD8DAFFCFCDCFFFBAC8B9FF81B97EFF80B87DFF82BB7FFF84BD
+          82FF79C177FF20B41AFF12B60BFF2F9D28FFCDC6CDFF393939801313133DD8D7
+          D8FFB7BBB5FFB0CFA2FFA0C491FF95BF84FF8FBD7EFF7FB76EFF54A23EFF228C
+          08FFB1D2AAFFEDE8EEFFE1DBE2FFA9CDA6FF089B00FF0EA102FF10A405FF15A9
+          0BFF1DAE13FF2CB320FF22B513FF5DA057FFD4CBD5FF1C1C1C580303030BAFAF
+          AFE2BEBDBEFFBED3B5FFA8CA9AFFA4C795FF9DC48EFF97C287FF94C284FF84BC
+          73FFD7E9D2FFFAF8FBFFF2EEF3FFC2DBBEFF42AA31FF47AF38FF4BB33CFF4AB5
+          3BFF46B537FF3DB62DFF26A716FFA5B9A3FFA8A4A8E90606061E000000004A4A
+          4A8ED3D2D4FFBCC2B8FFB8D3AAFFABCA9DFFA5C897FF9EC58FFF97C287FF8ABD
+          7AFFDDECD8FFFFFFFFFFFDFAFEFFD5E7D1FF6CB85AFF67B856FF5DB64DFF55B5
+          44FF4DB53DFF40B82FFF4D9B43FFEAE4EAFF4545459500000000000000000505
+          0519B8B8B8E7BDBCBDFFC7D4C0FFB5D1A7FFAECCA1FFA8CA99FFA0C792FF94C1
+          84FFE0EDDBFFFFFFFFFFFFFFFFFFDDEDD9FF71B860FF6EB95DFF66B856FF5FB7
+          4EFF57BA46FF44A235FFC5CDC4FFBAB7BAEC0606061C00000000000000000000
+          000023232360DCDCDCFFB7B7B7FFCCDCC4FFB7D3AAFFAFCDA2FFA9CB9BFF9DC5
+          8EFFD1E4CAFFFFFFFFFFFFFFFFFFCBE4C4FF7ABA69FF77BB67FF6FBA5FFF68BB
+          57FF53AD43FF99B494FFF7F3F8FF232323680000000000000000000000000000
+          0000000000004C4C4C90D6D6D6FFB5B5B5FFCBD7C5FFBFD9B2FFB0CFA3FFA9CB
+          9BFFA3C995FFA6CB99FFA0C992FF8EC17FFF86BF77FF80BE6FFF76BE65FF69AD
+          5AFF99AF95FFF9F5F9FF49494999000000000000000000000000000000000000
+          0000000000000000000151515190D6D6D7FFC1BFC1FFBCC0B9FFC4D4BCFFBDD7
+          B1FFB1D2A4FFA5CC97FF9DC98EFF99C889FF93C584FF89B87CFF8FAD88FFC8CD
+          C7FFF0ECF2FF4B4B4B9000000000000000000000000000000000000000000000
+          000000000000000000000000000025252558B2B2B2E6D6D5D6FFC1BFC1FFBBBD
+          BAFFBAC1B7FFBAC6B4FFB3C3ADFFABBAA6FFAFB9ACFFC9CAC9FFEEEAEFFFBAB9
+          BAE92424245F0000000000000000000000000000000000000000000000000000
+          000000000000000000000000000000000000040404103A3A3A78A3A3A3DBD3D3
+          D3FED8D7D9FFD9D7D9FFDCDADDFFE0DEE1FFDFDDDFFFA6A6A6DD3A3A3A790505
+          0512000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000010101051010
+          102D2727275A38383874383838762828285B0F0F0F3202020207000000000000
+          0000000000000000000000000000000000000000000000000000}
+      end
+      item
+        Image.Data = {
+          36090000424D3609000000000000360000002800000018000000180000000100
+          2000000000000009000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000050101
+          0122060606460D0D0D5F0E0E0E600707074B0101012800000008000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000000000000000011191919766B696BCCB0A9
+          B0F2CAC0CAFFC7BEC6FFC1B8C0FFBAB0B9FF9F979EF5656365D41E1E1E840000
+          001A000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000909094E7E7C7ED6E9E0E9FFC9D2C9FF88B1
+          88FF57A359FF42A748FF42A94BFF51A35BFF76A67DFFA2B0A4FFB8AFB6FF7B78
+          7BE60E0E0E610000000100000000000000000000000000000000000000000000
+          000000000000000000001C1C1C7AE9E5E9FFE3E4E3FF529A4DFF14A00FFF0EB0
+          0FFF12BA19FF10BF1DFF19C42BFF1DC734FF1CC436FF21BC3CFF44A154FFA5AB
+          A6FFB8B1B7FF2828289800000006000000000000000000000000000000000000
+          0000000000001D1D1D77EDE9EDFFBACBB8FF208B14FF0BA601FF19B014FF17B2
+          19FF1AB922FF78D07FFF55CD65FF20C33AFF2AC747FF2BCB4CFF24CE46FF22AF
+          3DFF82A287FFC0B8BFFF25252590000000000000000000000000000000000000
+          000006060642E0DCE0FCBDC8BAFF108602FF119F01FF19A50EFF0FA90BFF2BB8
+          2DFF9FCFA2FFEAD8E8FF61CE70FF15C132FF29C74AFF30CA55FF2FCA54FF2ACF
+          4BFF1BBA36FF809F85FFB7AFB6FF0D0E0D620000000000000000000000000000
+          000D7A797ACBDEDDDEFF29821AFF129400FF169903FF0E9F02FF54BB4FFFC5D5
+          C5FFD9D1D9FFD3CED2FF9AD2A2FF65CE77FF3CCC5AFF26C94DFF2FCA54FF2CC8
+          4CFF26CD42FF1DB131FF9CAA9DFF7E7B7DE60101012100000000000000001313
+          1361F3EDF4FF6B9762FF0E8900FF179000FF1D9909FF90CA8BFFE4E0E5FFDCD8
+          DCFFD4D4D4FFD0D0D0FFD5CED4FFDBD1D9FFCBD6CDFF72D487FF25C847FF28C7
+          47FF27C740FF1ACC30FF47A451FFC0B6BFFF1B1C1B7D00000000000000016766
+          67BAE0DEE0FF2F851AFF188A00FF178C00FF289913FFBFD9BDFFEFE6F0FFDEDD
+          DEFFD9D9D9FFD6D6D6FFD5D2D5FFCFCECFFFD0CDD0FFDDD3DBFF85D393FF1EC4
+          39FF24C43AFF20C733FF18B125FFA1AAA1FF5B595BC60000000700000015B1AF
+          B2E4AEB9ACFF1C7E03FF1B8600FF1C8A00FF168C00FF199709FF8AC783FFECE7
+          ECFFE5E0E5FFDBDBDBFFCEDACFFFDAD7DAFFD5D1D4FFCECDCEFFD8D2D7FF53CB
+          63FF1AC02CFF1FC22EFF10C11CFF6BA16EFF9E969EF60101012B04040430CFCD
+          D0F9A9B6A5FF3E9324FF167F00FF1D8600FF1C8900FF188F01FF119501FF53B5
+          4BFFCFDFCEFFF6E8F6FF66C86AFF4DC154FFCDD9CEFFD6D3D6FFD7CFD6FFA9D2
+          ACFF1ABE27FF1CBE26FF12C219FF44A247FFB8AEB7FF0909095208080842D6D4
+          D7FFAEBCA9FF8DBE7BFF378E1DFF167F00FF138100FF118600FF118D00FF0E94
+          00FF2CA824FFBCDBBAFF63C364FF05A90AFF70C874FFE3DBE3FFD6D4D6FFCFD6
+          CFFF30C036FF16BA1CFF12BF14FF35A535FFBFB6BFFF0F0F0F6408080841D3D2
+          D4FFB2BDAEFF9FC68FFF8EBD7EFF4D9A35FFA7CE9DFFBBDAB3FFBDDBB7FF46A7
+          39FF109401FF1DA114FF26A920FF16A713FF4BBB4BFFE4E0E4FFDBDADBFFD9DA
+          D9FF3CBF3DFF11B412FF0EBA0DFF35A333FFC5BCC5FF0F0F0F630303032DC5C4
+          C5F8B7BCB5FFA7C998FF9AC28AFF97C287FFEEF5ECFFFFFFFFFFFFFFFFFF8BC4
+          81FF088800FF1A980AFF1B9D0FFF0B9D02FF65C061FFEDE6EEFFE1DFE1FFD8DE
+          D8FF2CB627FF11B00CFF10B508FF4C9F47FFC6BDC7FF0808084E00000013A4A4
+          A4E0BFBFBFFFAFCAA3FFA3C693FF97C086FFD4E6CEFFFFFFFFFFFFFFFFFFF5F9
+          F5FF5BAB4AFF0F8A00FF0E9000FF44AD37FFD9E6D8FFECE9ECFFEDE7EDFFBADA
+          B8FF22AF18FF2DB421FF1DAF0EFF82AB7EFFAEA7AFF201010126000000005E5E
+          5EB2D4D3D5FFBECCB7FFADCC9EFFA2C693FFB0CFA4FFFDFEFDFFFFFFFFFFFFFF
+          FFFFF9FBF8FFC4E0BEFFBBDDB5FFF2F5F1FFF8F5F9FFF1F1F1FFF6F2F7FF7DC8
+          73FF3DB22DFF3BB72AFF2EA021FFCACEC9FF616061BF00000004000000001010
+          1055DAD9DAFFB9BBB8FFC2D9B6FFACCB9EFFA2C693FFCFE2C7FFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFDFDFDFFFCFBFCFFFFFDFFFFB8DDB1FF4CB2
+          3BFF4DB53DFF3BB52AFF6EA866FFF0E8F1FF1919197300000000000000000000
+          0008696969BDCBCACCFFBFC6BCFFBCD6B0FFAECCA1FFA5C896FFC7DEBEFFF7FA
+          F6FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF6F9F5FFB3D9AAFF65B855FF5DB6
+          4CFF55BA44FF489D3BFFD6DAD5FF898889DB0000001800000000000000000000
+          000004040433C5C5C5F6BEBDBFFFC7D1C3FFBFD8B3FFB0CDA2FFA5C897FFA9CC
+          9BFFC1DBB8FFD5E7CFFFD4E7CEFFB8D9AFFF8CC47DFF6FB75DFF6FB95EFF67BC
+          56FF55A547FFBBC6BAFFE0DDE0FF090909510000000000000000000000000000
+          00000000000016161663D1D1D1FDC0BEC0FFC0C6BDFFC7DCBCFFB5D2A8FFAACB
+          9CFFA0C691FF98C389FF91C081FF88BE78FF85BE75FF81C070FF77BD66FF6FA4
+          64FFC2CAC0FFF0EDF1FF2020207C000000000000000000000000000000000000
+          0000000000000000000015151561CBCACBFACDCCCDFFBABBB9FFC5D0C0FFBDD4
+          B2FFB3D1A6FFACD09EFFA4CC95FF9AC78CFF91C183FF8CB881FF99AF93FFE2E0
+          E2FFE3E0E3FF2020207E00000000000000000000000000000000000000000000
+          000000000000000000000000000006060639686868BFD8D7D8FFD2D1D3FFC5C6
+          C5FFB8BCB6FFBAC2B6FFB7C1B3FFB0BAACFFC0C6BFFFDFDEDFFFE9E6EAFF8080
+          80D2090909490000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000711111159606060B6A7A6
+          A7E4C6C5C7F9D2D1D3FFD5D3D6FFD0CED1FBB1B1B1E86C6C6CC0161616670000
+          000C000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000010000
+          00140404042F0808084509090946040404330000001800000002000000000000
+          0000000000000000000000000000000000000000000000000000}
+      end
+      item
+        Image.Data = {
+          36090000424D3609000000000000360000002800000018000000180000000100
+          2000000000000009000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000130A09064A0202012900000002000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000050302
+          012B1B171165584F40A8AB987FDEFFE7C1FF3F372A99000000210000000A0000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000010000140B090646322D2484847A68C9E3D3
+          BBFAFFF3DDFFFFFAE4FFFFF4DCFFFFF2D4FF98886FD40000003C000000360000
+          0014000000000000000000000000000000000000000000000000000000000000
+          000000000000030202276C6251BABFB29FE9F7EDDDFFFFFFF4FFFFFEF6FFFAF2
+          E6FFF3E3CEFFEFDABDFFE8CAA2FFF1D3ACFFD5BFA2F10201004A000000400000
+          003B000000180000000000000000000000000000000000000000000000000000
+          0000000000000302011CE0D6C6F2FEF5E8FFEFDEC8FFEDDDC6FFE9D3B6FFEDDD
+          C6FFEFDFCAFFF0E1CCFFF1DFC8FFFAECD9FFE1CEB5F804020146000000330101
+          004C0C0A07720303023F00000009000000000000000000000000000000000000
+          000000000000000000008177679DEEDAC0FFEAD4B8FFEDDDC6FFEFDFCAFFEEDF
+          C9FFEFDFCAFFECD9C0FFF0E1CEFFF9EEDFFFDBCCB7F728221898564E42BCAE9D
+          86F0DFCAAEFF2F2A20A30000000A000000010000000000000000000000000000
+          00000000000000000000544D416AEEDEC7FFE6CEADFFEAD6BAFFEEDEC8FFEFE1
+          CDFFF1E4D2FFF3E7D7FFEFDFCAFFEEDEC7FFF6EADAFFF6E9D9FFFFF8E4FFFFF0
+          D6FFFFEFCFFF857963DD00000002000000000000000000000000000000000000
+          00000000000000000000453C2B65F2E4CFFFEBD8BEFFE5CDABFFE9D3B6FFEDDC
+          C4FFF1E3D0FFF4E9DAFFF4EBDDFFF7F0E5FFFAF0E2FFF3E3CDFFECD4B5FFE7CA
+          A3FFFBE3C2FFADA08CF806050318000000000000000000000000000000000000
+          00000000000000000000463D2C66F1E1CCFFEDDCC5FFECD9C0FFE7D1B2FFE8D2
+          B3FFEAD7BCFFF1E3D1FFF6EDE0FFF9F2EBFFF9EEDFFFEFE0CCFFF0E1CDFFF0DF
+          C9FFFEEFDBFFB4ADA0FA0504021D000000000000000000000000000000000000
+          00000000000000000000463C2C66EEDBC2FFEBD8BDFFEBD8BFFFEBD9C0FFEBD9
+          C0FFEAD6BBFFEBD8BEFFF2E5D4FFF9F3EBFFF9EEE0FFEFE0CAFFEFE0CBFFF0E2
+          CFFFFAEBD8FFB5AFA4FA1413111C000000000000000000000000000000000000
+          00000000000000000000483F3066F2E2CEFFE7D0B1FFE5CDACFFECDAC1FFEDDC
+          C5FFEEDFC9FFEEDFCAFFEFE0CCFFF8F2E9FFF9EDDDFFEFDEC8FFF0E1CEFFF3E7
+          D8FFFCF1E3FFB4AEA4FA1716141C000000000000000000000000000000000000
+          0000000000000000000059544A67EEDEC7FFEDDCC4FFEBD7BCFFE6CFAFFFEAD7
+          BCFFEEDEC8FFEEDEC7FFF1E2CDFFF6ECDEFFF9EDDEFFECDAC1FFF0E1CEFFF1E5
+          D3FFFDF5E9FFB8B4ADFA1615131C000000000000000000000000000000000000
+          000000000000000000005A544B67EAD7BCFFECDBC2FFEEDEC8FFEFDFCAFFEDDC
+          C4FFEDDBC2FFEFDDC5FFEFDBC1FFF2E1CAFFF7E9D7FFECDAC1FFEDDDC7FFF2E6
+          D5FFFDF4E7FFBFBAB1FA1715131C000000000000000000000000000000000000
+          000000000000000000005B554C68EBD9C0FFE8D2B3FFECDBC3FFECDCC5FDE8D7
+          C0F8F1E1CBFEF2E1CAFFF2E0C8FFF4E3CBFFF2DFC4FFE9D5B9FFEBD9BFFFEEDE
+          C7FFFCF6EBFFC6C1B8FA1716141C000000000000000000000000000000000000
+          000000000000000000005B564D69EEDFC9FFEFE0CAFFEAD8BFFCE4CEB1F7E0CD
+          B4EFEFDEC5FDF3E0C8FFF4E2CAFFF5E3CBFFF4E1C8FFE9D3B7FFE5CDACFFE9D3
+          B6FFF9F0E2FFCDC8BFFA1716141C000000000000000000000000000000000000
+          000000000000000000005B554D69EDDCC3FFEADBC5F9E8D8C3F4E0D0BBEBD8C6
+          AFE4EDD8BDFCF3DFC4FFF4E0C5FFF4E0C4FFF4E0C7FFEDDCC5FFEBD9BFFFE6CE
+          AEFFEEDABFFFD3CDC3FA1716141C000000000000000000000000000000000000
+          0000000000000000000059534A67EEDBC1FFE3CEB2F3DDCBB3E9D3C3ACDDC9B8
+          A3D2EEDBC1FAF3DEC2FFF4DEC2FFF3DDC0FFF0D9BAFFECDAC2FFECDBC2FFECDA
+          C1FFF0DEC6FFD7CEC1FA1716141C000000000000000000000000000000000000
+          0000000000000000000056514765EFDDC3FEDDCBB4E7D2C0A7DDC6B399D0B9A7
+          91C2EAD5B9F8F3DDBFFFF3DCBEFFF3DEC0FFF0DABDFFE6CFB0FFEBD7BCFFEBD8
+          BDFFEFDDC3FFDAD0C2FA1716141C000000000000000000000000000000000000
+          00000000000000000000544E4463E3CFB5F0D1C1ACD6C3B5A2C5B2A594B2A498
+          86A6ECD8BEF6F4DDBDFFF2DABAFFF2DCBFFFF0DCC0FFEDDCC5FFE9D4B8FFE8D3
+          B6FFF0DFC7FFDAD0C1FA1716141C000000000000000000000000000000000000
+          00000000000000000000544E4564E7D8C1ECCFBEA7D4BAA88FC8A39278BA8978
+          5FA5DAC2A1F5EBD2B0FFEBD6BAFFE8D2B2FFEAD6BBFFEEDDC6FFEDDCC6FFEDDC
+          C4FFEEDBC1FFD9CFBFFA1716141C000000000000000000000000000000000000
+          00000000000000000000211D17284A3F2A6F31291C46221D1530110E0B180B0A
+          0711CCBCA3EBECD9BFFFEAD5BAFFEBD8BEFFE7D1B2FFE4CBA9FFE9D4B7FFEBD8
+          BEFFF1E1CAFFDBD2C3FA1716141C000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000807
+          050CCCB99CECEAD5B7FFF0E0CAFFF7EDDEFFFAF3E9FFFCF7EFFFFCF7F1FFF8F4
+          EEFFF5EFE8FFD2C7B7FA1716141C000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000807
+          050CD7CEC0EDFAF7F3FFEEE8DEFFE3DACDFDCFC5B5F1AFA493D38A8070AF6E64
+          5493514839702C261D3F03020203000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000101
+          0001594E3C804F4432762D271E431C1913270E0C0A1301010101000000000000
+          0000000000000000000000000000000000000000000000000000}
+      end>
+  end
+  object DSTomaTiempos: TDataSource
+    DataSet = ZROQTomaTiempos
+    Left = 232
+    Top = 88
+  end
+  object ZROQTomaTiempos: TZQuery
+    Connection = ConnectionModule.ZConnectionQueries
+    AfterScroll = ZROQTomaTiemposAfterScroll
+    SQL.Strings = (
+      'SELECT'
+      '    tt.oid oid,'
+      
+        '    CAST(GROUP_CONCAT(sel_nro_moto_by_evento_and_tipo_categoria(' +
+        'ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid)) as CHAR' +
+        '(255)) AS nro_moto,'
+      '        CASE '
+      '            WHEN c.utiliza_acompaniante = 1 '
+      
+        '            THEN CONCAT(UC_Words(CONCAT(p.apellido, '#39', '#39' , p.nom' +
+        'bre)), IFNULL(UC_Words(CONCAT('#39' / '#39', n.apellido, '#39', '#39' , n.nombre' +
+        ')), '#39#39')) '
+      '            ELSE UC_Words(CONCAT(p.apellido, '#39', '#39' , p.nombre)) '
+      '        END AS nombre_piloto,'
+      '        CASE tt.is_deleted '
+      '            WHEN 0 THEN '#39#39' '
+      '            WHEN 1 THEN '#39'#ELIMINADO'#39' '
+      '        END AS is_deleted,'
+      
+        '    CAST(GROUP_CONCAT(sel_nombre_categoria_by_evento_and_tipo_ca' +
+        'tegoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid))' +
+        ' AS CHAR(255)) AS categoria,'
+      
+        '    sel_lap_time(tte.oid, tt.piloto_oid, tt.nro_vuelta) AS tiemp' +
+        'o,'
+      
+        '    LEFT(TIME_FORMAT(CAST(tt.tiempo_pasada AS TIME), '#39'%H:%i:%s.%' +
+        'f'#39'), 12) AS tiempo_pasada,'
+      '    MIN(ipe.tipo_categoria_oid) AS tipo_categoria_oid,'
+      '    tte.evento_oid,'
+      '    tt.nro_vuelta,'
+      '    tt.is_deleted as deleted_val, '
+      '    tte.oid as toma_tiempo_evento_oid'
+      'FROM '
+      '    toma_tiempos tt'
+      
+        '    JOIN toma_tiempo_evento tte ON tt.toma_tiempo_evento_oid = t' +
+        'te.oid '
+      '    LEFT JOIN piloto p ON tt.piloto_oid = p.oid'
+      '    LEFT JOIN inscripcion_piloto_evento ipe ON '
+      
+        '        (ipe.evento_oid = tte.evento_oid AND ipe.piloto_oid = tt' +
+        '.piloto_oid)'
+      '    LEFT JOIN navegante n ON n.piloto_oid = p.oid, categorias c '
+      'WHERE '
+      '    tt.toma_tiempo_evento_oid = :toma_tiempo_evento_oid'
+      '    and ipe.tipo_categoria_oid = c.tipo_categoria_oid '
+      
+        '    and c.oid = sel_categoria_oid_by_evento_and_tipo_categoria(i' +
+        'pe.tipo_categoria_oid, ipe.evento_oid, ipe.piloto_oid)'
+      'GROUP BY '
+      '    tt.oid, '
+      '    nombre_piloto,'
+      '    is_deleted,'
+      '    tiempo,'
+      '    tiempo_pasada,'
+      '    evento_oid, '
+      '    nro_vuelta, '
+      '    deleted_val,'
+      '    toma_tiempo_evento_oid'
+      'ORDER BY tt.tiempo_pasada, tt.oid;')
+    Params = <
+      item
+        DataType = ftUnknown
+        Name = 'toma_tiempo_evento_oid'
+        ParamType = ptUnknown
+      end>
+    Left = 232
+    Top = 40
+    ParamData = <
+      item
+        DataType = ftUnknown
+        Name = 'toma_tiempo_evento_oid'
+        ParamType = ptUnknown
+      end>
+    object ZROQTomaTiemposoid: TLargeintField
+      FieldName = 'oid'
+      Required = True
+    end
+    object ZROQTomaTiemposnro_moto: TWideStringField
+      FieldName = 'nro_moto'
+      Size = 765
+    end
+    object ZROQTomaTiemposnombre_piloto: TWideStringField
+      FieldName = 'nombre_piloto'
+      ReadOnly = True
+      Size = 306
+    end
+    object ZROQTomaTiemposis_deleted: TWideStringField
+      FieldName = 'is_deleted'
+      ReadOnly = True
+      Size = 30
+    end
+    object ZROQTomaTiemposcategoria: TWideStringField
+      FieldName = 'categoria'
+      ReadOnly = True
+      Size = 765
+    end
+    object ZROQTomaTiempostiempo: TWideStringField
+      FieldName = 'tiempo'
+      ReadOnly = True
+      Size = 60
+    end
+    object ZROQTomaTiempostipo_categoria_oid: TLargeintField
+      FieldName = 'tipo_categoria_oid'
+      Required = True
+    end
+    object ZROQTomaTiemposevento_oid: TIntegerField
+      FieldName = 'evento_oid'
+      Required = True
+    end
+    object ZROQTomaTiemposnro_vuelta: TIntegerField
+      FieldName = 'nro_vuelta'
+    end
+    object ZROQTomaTiemposdeleted_val: TSmallintField
+      FieldName = 'deleted_val'
+      Required = True
+    end
+    object ZROQTomaTiempostoma_tiempo_evento_oid: TLargeintField
+      FieldName = 'toma_tiempo_evento_oid'
+      Required = True
+    end
+    object ZROQTomaTiempostiempo_pasada: TWideStringField
+      FieldName = 'tiempo_pasada'
+      ReadOnly = True
+      Size = 60
+    end
+  end
+  object cxErrorImageList: TcxImageList
+    FormatVersion = 1
+    DesignInfo = 22020240
+    ImageInfo = <
+      item
+        Image.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000000000000000000000000000000000000000000000000
+          0000000000000000000000000005010103450C0C178119192A9C1A1A2B9E0E0E
+          1988020204510000001000000000000000000000000000000000000000000000
+          000000000000020204471B1B4CCD5252AEFF7373CFFF8484DFFF8787E0FF7A7A
+          D2FF5B5BB2FF212155DA03030760000000000000000000000000000000000000
+          000004040D67242479FD75759AFF5858B1FF6060F0FF6D6DF1FF6E6EF1FF6868
+          F3FF5757B9FF7C7C9DFF31317CFF050514870000000000000000000000000202
+          0540191977FE8989A6FFFBFBF2FFC2C2BFFF5151BAFF5050FFFF5555FFFF4B4B
+          C6FFAAAAAFFFFCFCF3FFA6A6B6FF242476FF0303086300000000000000050404
+          4AD047478FFFFBFBEAFFFFFFFFFFFFFFFFFFC9C9C5FF4545BEFF3838C6FFB1B1
+          B5FFFFFFFFFFFFFFFFFFFFFFFAFF6B6B96FF050554E7000000150202043C0202
+          92FF0808B4FF9393A7FFFFFFFAFFFFFFFFFFFFFFFFFFBFBFC0FFABABAFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFB2B2B6FF1515ACFF020297FF0303075D0A0A1C7F0000
+          A8FF0000E6FF0808D0FF9797ADFFFFFFFBFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFB6B6BAFF1515C4FF0000E8FF0000ADFF05051F9A13133BB40000
+          B2FF0000E6FF0000FFFF0000DAFF8E8EA1FFFEFEFCFFFFFFFFFFFFFFFFFFFFFF
+          FFFFAFAFB2FF0B0BC6FF0000FFFF0000E8FF0000B8FF04042EAE232344B63232
+          C6FF1212E8FF0000FFFF0E0ECDFFA8A8B3FFFFFFFDFFFFFFFFFFFFFFFFFFFFFF
+          FFFFC2C2C3FF2F2FBDFF2626FFFF2727EEFF1B1BC1FF090930AE1C1C2B827171
+          D1FF6E6EF5FF5050C6FFB4B4BBFFFFFFFFFFFFFFFFFFFFFFFEFFFFFFFDFFFFFF
+          FFFFFFFFFFFFD2D2CAFF6666B6FF6F6FF2FF7474D7FF141427940C0C0F407979
+          C5FF7979C3FFB6B6B5FFFFFFFFFFFFFFFFFFFFFFFFFFA8A8AEFF94949EFFFCFC
+          F9FFFFFFFFFFFFFFFFFFC9C9C2FF7474AFFF7E7ECDFF05050953010101064C4C
+          75D49090ACFFE7E7E0FFFFFFFFFFFFFFFFFFB2B2B4FF8484C9FF8B8BDEFFA3A3
+          AFFFFAFAF7FFFFFFFFFFF6F6F2FF9A9AABFF4D4D78E00000000C000000000D0D
+          10448B8BB8FFA7A7B4FFDEDEDBFFABABADFF9898C8FFBEBEFFFFBFBFFFFFA3A3
+          DDFFA1A1A9FFE0E0DDFFADADB3FF8B8BB5FF06060A5100000000000000000000
+          00001919206A9C9CC0FEAFAFBAFFB8B8D2FFD9D9FFFFD4D4FCFFD3D3FBFFD9D9
+          FFFFC4C4E3FFADADB7FF9A9ABAFF12121B740000000000000000000000000000
+          0000000000000D0D104666667DCCCBCBE6FFE8E8FBFFF2F2FFFFF2F2FFFFE9E9
+          FCFFCCCCE5FF6C6C85D10C0C104D000000000000000000000000000000000000
+          00000000000000000000000000030C0C0E3E26262F7C484855B1494956B32828
+          307F0C0C0F400101010500000000000000000000000000000000}
+      end>
+  end
+  object cxLocalizer: TcxLocalizer
+    Left = 360
+    Top = 72
+  end
+  object AdvMainMenu: TAdvMainMenu
+    Version = '2.5.4.0'
+    Left = 136
+    Top = 32
+    object itemConfiguracion: TMenuItem
+      Caption = 'Configuraci'#243'n'
+      object itemConfigurarTiempoEPiloto: TMenuItem
+        Caption = 'Configurar Tiempo entre Pilotos'
+      end
+    end
+  end
+  object ZGrillaPartida: TZReadOnlyQuery
+    Connection = ConnectionModule.ZConnection
+    SQL.Strings = (
+      'select tt.oid'
+      'from toma_tiempos tt '
+      'where tt.evento_oid = :evento_oid')
+    Params = <
+      item
+        DataType = ftLargeint
+        Name = 'evento_oid'
+        ParamType = ptInput
+      end>
+    Left = 48
+    Top = 40
+    ParamData = <
+      item
+        DataType = ftLargeint
+        Name = 'evento_oid'
+        ParamType = ptInput
+      end>
+  end
+  object ZInsertTomaTiempos: TZQuery
+    Connection = ConnectionModule.ZConnection
+    SQL.Strings = (
+      
+        'INSERT INTO toma_tiempos (piloto_oid, tiempo_pasada, is_deleted,' +
+        ' toma_tiempo_evento_oid, nro_vuelta, categoria_oid)'
+      
+        'SELECT piloto_oid, tiempo_pasada, is_deleted, :toma_tiempo_event' +
+        'o_oid, nro_vuelta, categoria_oid'
+      'FROM toma_tiempos'
+      'WHERE evento_oid = :evento_oid'
+      '   AND piloto_oid IN (SELECT gp.piloto_oid'
+      
+        '                                 FROM grilla_de_partida_categori' +
+        'as gpc'
+      
+        '                                    JOIN grilla_de_partida gp on' +
+        ' gpc.oid = gp.grilla_de_partida_categoria_oid'
+      
+        '                                 WHERE gpc.evento_oid = :evento_' +
+        'oid AND gpc.orden_de_largada = :nro_largada '
+      
+        '                                                           AND g' +
+        'p.estado_piloto_partida = 1 AND gpc.tipo_de_largada_oid <> 3)'
+      
+        '   AND categoria_oid in (select categoria_oid from grilla_de_par' +
+        'tida_categorias where evento_oid = :evento_oid and orden_de_larg' +
+        'ada =  :nro_largada )')
+    Params = <
+      item
+        DataType = ftInteger
+        Name = 'toma_tiempo_evento_oid'
+        ParamType = ptInput
+      end
+      item
+        DataType = ftInteger
+        Name = 'evento_oid'
+        ParamType = ptInput
+      end
+      item
+        DataType = ftSmallint
+        Name = 'nro_largada'
+        ParamType = ptInput
+      end>
+    Left = 504
+    Top = 64
+    ParamData = <
+      item
+        DataType = ftInteger
+        Name = 'toma_tiempo_evento_oid'
+        ParamType = ptInput
+      end
+      item
+        DataType = ftInteger
+        Name = 'evento_oid'
+        ParamType = ptInput
+      end
+      item
+        DataType = ftSmallint
+        Name = 'nro_largada'
+        ParamType = ptInput
+      end>
+  end
+  object NroDeLargadaByEvento: TZReadOnlyQuery
+    Connection = ConnectionModule.ZConnection
+    SQL.Strings = (
+      'select distinct orden_de_largada as nro_largada, '
+      
+        ' concat('#39'Nro. de Largada #'#39', orden_de_largada) nombre_largada, e' +
+        'vento_oid'
+      'from grilla_de_partida_categorias'
+      'order by orden_de_largada')
+    Params = <>
+    MasterFields = 'oid'
+    MasterSource = DSEvento
+    LinkedFields = 'evento_oid'
+    Left = 360
+    Top = 128
+  end
+  object DSNroDeLargadaByEvento: TDataSource
+    DataSet = NroDeLargadaByEvento
+    Left = 136
+    Top = 96
+  end
+  object ZROQPosiciones: TZReadOnlyQuery
+    Connection = ConnectionModule.ZConnectionQueries
+    SQL.Strings = (
+      
+        '       select 1 as Pos, ipe.tipo_categoria_oid, sel_nro_moto_by_' +
+        'tipo_categoria(ipe.tipo_categoria_oid, ipe.piloto_oid) nro_moto,'
+      
+        '       CASE WHEN c.utiliza_acompaniante = 1 THEN CONCAT(UC_Words' +
+        '(CONCAT(p.apellido, '#39', '#39' , p.nombre)), '#39' / '#39', UC_Words(CONCAT(n.' +
+        'apellido, '#39', '#39' , n.nombre))) '
+      '            ELSE UC_Words(CONCAT(p.apellido, '#39', '#39' , p.nombre))'
+      '       end as nombre_piloto, tt.categoria_oid,'
+      
+        '       sel_nombre_categoria_by_tipo_categoria(ipe.tipo_categoria' +
+        '_oid, ipe.piloto_oid) categoria,'
+      
+        '       SUM(sel_lap_time_in_seconds(tte.oid, tt.piloto_oid, tt.nr' +
+        'o_vuelta)) tiempo_sec,'
+      '       MAX(nro_vuelta) max_nro_vuelta'
+      'from toma_tiempos tt'
+      
+        '     join toma_tiempo_evento tte on tt.toma_tiempo_evento_oid = ' +
+        'tte.oid'
+      '     join piloto p on tt.piloto_oid = p.oid'
+      
+        '     join inscripcion_piloto_evento ipe on (ipe.evento_oid = tte' +
+        '.evento_oid and ipe.piloto_oid = tt.piloto_oid)'
+      '     left join navegante n on n.piloto_oid = p.oid'
+      
+        '     join categorias c on c.oid = IFNULL(tt.categoria_oid, sel_c' +
+        'ategoria_oid_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid' +
+        ', ipe.evento_oid, ipe.piloto_oid))         '
+      'where tte.oid = :toma_tiempo_evento_oid '
+      'and tt.is_deleted = 0'
+      'and ipe.tipo_categoria_oid = c.tipo_categoria_oid    '
+      'group by p.oid, categoria'
+      'order by categoria, max_nro_vuelta desc, tiempo_sec')
+    Params = <
+      item
+        DataType = ftInteger
+        Name = 'toma_tiempo_evento_oid'
+        ParamType = ptInput
+      end>
+    Left = 320
+    Top = 344
+    ParamData = <
+      item
+        DataType = ftInteger
+        Name = 'toma_tiempo_evento_oid'
+        ParamType = ptInput
+      end>
+  end
+  object DSPosiciones: TDataSource
+    DataSet = ZROQPosiciones
+    Left = 392
+    Top = 344
+  end
+  object DSTomaTiempoEvento: TDataSource
+    DataSet = ZTomaTiempoEvento
+    Left = 824
+    Top = 384
+  end
+  object cxButtonImageList: TcxImageList
+    Height = 24
+    Width = 24
+    FormatVersion = 1
+    DesignInfo = 22151207
+    ImageInfo = <
+      item
+        Image.Data = {
+          36090000424D3609000000000000360000002800000018000000180000000100
+          2000000000000009000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000010101250D0D
+          0D63212121892D2D2D962D2C2D96202020890D0D0D6801010128000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000000000003030336454545B6C7C1C7FCD8CE
+          D8FFC7C4C7FFB6BBB6FFB0B6B0FFB6B4B6FFBCB3BBFFA69FA5FC3D3C3CB60303
+          033A000000000000000000000000000000000000000000000000000000000000
+          000000000000000000000000000727272792E2DBE3FEE2DEE2FF84AC82FF409E
+          40FF24A429FF1CAD25FF1DB02CFF28AC38FF40A44EFF72A079FFB2AEB1FFB2AB
+          B1FF252525990000000900000000000000000000000000000000000000000000
+          000000000000000000115B5B5BBFFCF5FCFF97B993FF24941CFF0AA905FF13B8
+          15FF17BC1FFF14BF23FF17C22BFF1EC736FF21CC3DFF1CC539FF2DAA43FF76A3
+          7DFFBDB5BCFF464646BD00000010000000000000000000000000000000000000
+          000000000004535353BAF8F3F8FF53944AFF049500FF12AA09FF19AF17FF19B4
+          1CFF30BE37FF5DCC67FF60CF6EFF3ACA51FF26C745FF2CCA4DFF2ACF4CFF1CC5
+          3BFF469C55FFBCB6BBFF484848C4000000070000000000000000000000000000
+          00001E1E1E85FEF7FFFF5A9451FF069100FF17A005FF18A60EFF1AAD17FF14B2
+          18FF9ACF9DFFE2D3E1FFE6D7E3FFA9DAB2FF24C846FF2FCA54FF2FCA54FF2BCB
+          4CFF1ACA39FF519E5CFFC5B9C3FF1C1D1C8E0000000000000000000000000101
+          012FDAD7DBF9A7B7A3FF0E8600FF169500FF179B06FF19A30EFF1BAA17FF16B1
+          19FFA1CCA3FFCFC8CFFFD3CDD2FFB0D6B8FF27C848FF2ECA53FF2ECA53FF2BC9
+          4BFF27CB43FF17BD2EFF809F83FFA8A2A8FB0202023100000000000000003E3E
+          3EA6E8E3E9FF368426FF138E00FF189100FF189704FF1A9F0DFF1CA715FF17AE
+          18FF9CC79EFFC8C1C8FFCDC6CCFFABD2B1FF25C642FF2AC74AFF2BC84AFF28C7
+          46FF25C63FFF1ECC35FF24A831FFB2AEB2FF353535AE0000000000000015BBB9
+          BCEEA5B3A1FF188200FF198A00FF198D00FF189302FF199B0AFF1BA313FF16AA
+          15FF9AC49AFFC2BCC2FFC7C0C6FFA7CEADFF22C33BFF26C340FF27C441FF25C4
+          3EFF23C439FF20C533FF10BF1FFF779E7AFF959095F30101012C0707074BEBE6
+          EDFF729969FF148100FF198600FF138700FF178E00FF179605FF1A9F0EFF15A8
+          10FF97C096FFBCB6BCFFC1BAC0FFA4CBA8FF20C233FF23C238FF23C338FF22C3
+          36FF1CC22EFF1BC02AFF13C51FFF44A049FFBBB0BAFF0C0C0C631D1D1D7ADFDC
+          E1FF8EAD83FF2D8C11FF278A0FFFB0D0A8FFBDD4B8FFB4CEB0FFAFCAACFFA9C7
+          A7FFB7C0B7FFB4B2B4FFB5B4B5FFB8C0B9FFA5C7A8FFA8C9ABFFABCCAEFFAFCF
+          B3FFA5D2AAFF2EC338FF11C219FF26A52AFFBBB4BAFF1E1E1E852E2E2E8DD6D5
+          D7FFA5BE9BFF7CB569FF59A244FFFCF8FDFFF2EDF3FFE8E3E9FFDDD9DEFFD5CF
+          D5FFC7C6C7FFBCBDBCFFB4B4B4FFB4B2B4FFBCB7BCFFC1BBC0FFC5BFC5FFC9C3
+          C9FFD9CED8FF47C54BFF0DBC10FF1BA81BFFB9B8B9FF2C2B2C952C2C2C8CD4D3
+          D5FFAAC0A1FF95C184FFA1C893FFFFFFFFFFFDFBFEFFF7F2F8FFF0EAF2FFE7E1
+          E9FFD6D4D6FFC9C9C9FFBFBFBFFFB8B6B8FFBBB3BCFFBEB6BEFFC2BBC3FFC6BE
+          C6FFD5C9D5FF44C144FF0AB808FF1AA418FFBFBDBFFF2B2A2B9216161670D7D5
+          D8FFB1BEABFFA1C790FF9DC48DFFCCE1C4FFD3E6CDFFB2D3A9FF96C38AFF90C1
+          85FFCBD9C8FFDAD8DAFFCFCDCFFFBAC8B9FF81B97DFF80B87CFF82BB7EFF84BD
+          82FF78C176FF1FB419FF11B60AFF2E9D27FFCDC6CDFF1C1C1C800404043DD8D7
+          D8FFB7BBB5FFB0CFA2FFA0C491FF95BF84FF8FBD7DFF7EB76DFF53A23DFF218C
+          07FFB1D2AAFFEDE8EEFFE1DBE2FFA9CDA6FF079B00FF0DA101FF0FA404FF14A9
+          0AFF1CAE12FF2BB31FFF21B512FF5CA056FFD4CBD5FF090909580000000B9B9B
+          9BE2BEBDBEFFBED3B5FFA8CA9AFFA4C795FF9DC48EFF97C287FF94C284FF84BC
+          72FFD7E9D2FFFAF8FBFFF2EEF3FFC2DBBEFF41AA30FF46AF37FF4AB33BFF49B5
+          3AFF45B536FF3CB62CFF25A715FFA5B9A3FF999699E90000001E000000002929
+          298ED3D2D4FFBCC2B8FFB8D3AAFFABCA9DFFA5C897FF9EC58FFF97C287FF8ABD
+          79FFDDECD8FFFFFFFFFFFDFAFEFFD5E7D1FF6BB859FF66B855FF5CB64CFF54B5
+          43FF4CB53CFF3FB82EFF4C9B42FFEAE4EAFF2828289500000000000000000000
+          0019A6A6A6E7BDBCBDFFC7D4C0FFB5D1A7FFAECCA1FFA8CA99FFA0C792FF94C1
+          84FFE0EDDBFFFFFFFFFFFFFFFFFFDDEDD9FF70B85FFF6DB95CFF65B855FF5EB7
+          4DFF56BA45FF43A234FFC5CDC4FFACA9ACEC0000001C00000000000000000000
+          00000D0D0D60DCDCDCFFB7B7B7FFCCDCC4FFB7D3AAFFAFCDA2FFA9CB9BFF9DC5
+          8EFFD1E4CAFFFFFFFFFFFFFFFFFFCBE4C4FF79BA68FF76BB66FF6EBA5EFF67BB
+          56FF52AD42FF99B494FFF7F3F8FF0E0E0E680000000000000000000000000000
+          0000000000002A2A2A90D6D6D6FFB5B5B5FFCBD7C5FFBFD9B2FFB0CFA3FFA9CB
+          9BFFA3C995FFA6CB99FFA0C992FF8EC17EFF86BF76FF80BE6EFF75BE64FF68AD
+          59FF99AF95FFF9F5F9FF2B2B2B99000000000000000000000000000000000000
+          000000000000000000012D2D2D90D6D6D7FFC1BFC1FFBCC0B9FFC4D4BCFFBDD7
+          B1FFB1D2A4FFA5CC97FF9DC98EFF99C889FF93C584FF89B87BFF8FAD88FFC8CD
+          C7FFF0ECF2FF2A2A2A9000000000000000000000000000000000000000000000
+          00000000000000000000000000000C0C0C58A0A0A0E6D6D5D6FFC1BFC1FFBBBD
+          BAFFBAC1B7FFBAC6B4FFB3C3ADFFABBAA6FFAFB9ACFFC9CAC9FFEEEAEFFFAAA9
+          AAE90D0D0D5F0000000000000000000000000000000000000000000000000000
+          000000000000000000000000000000000000000000101B1B1B788C8C8CDBD2D2
+          D2FED8D7D9FFD9D7D9FFDCDADDFFE0DEE1FFDFDDDFFF909090DD1B1B1B790000
+          0012000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000050202
+          022D0D0D0D5A19191974191919760E0E0E5B0202023200000007000000000000
+          0000000000000000000000000000000000000000000000000000}
+        Mask.Data = {
+          9E000000424D9E000000000000003E0000002800000018000000180000000100
+          010000000000600000000000000000000000020000000000000000000000FFFF
+          FF00000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000}
+      end
+      item
+        Image.Data = {
+          36090000424D3609000000000000360000002800000018000000180000000100
+          2000000000000009000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000003000000300909
+          09702020209F353534B8353535BA252525A80D0D0D7F010101400000000C0000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000000000001010144393939B7BABAB3F9DDDD
+          CFFFD1D1C8FFBEBEC2FFB7B7BDFFBCBCB7FFC2C2B4FFAFAFA4FF4C4C4BCF0505
+          0563000000080000000000000000000000000000000000000000000000000000
+          000000000000000000000000000A19191990DADAD3FFEBEBE3FF9494BDFF3F3F
+          B9FF1515C8FF0404D8FF0202DCFF0E0ED3FF2B2BC2FF6767ACFFAEAEAEFFBDBD
+          AFFF323231B90000002400000000000000000000000000000000000000000000
+          0000000000000000001F4D4D4DC2F8F8EFFF9C9CC7FF2020BCFF0000D8FF0000
+          ECFF0000F1FF0000F4FF0000F7FF0000FCFF0000FFFF0000F9FF0B0BD8FF5A5A
+          B3FFBCBCB2FF70706EE501010143000000000000000000000000000000000000
+          00000000000E4A4A4AC1FFFFFDFF6A6AB4FF0000C5FF0000DFFF0000E1FF0000
+          E6FF0000ECFF0000F0FF0000F4FF0000F8FF0000FAFF0000FDFF0000FFFF0000
+          FCFF2D2DBBFFBDBDB4FF777773E9000000300000000000000000000000000000
+          00001919198FFCFCF1FF6F6FAFFF0000C1FF0000D4FF0000D8FF0000DFFF0000
+          E5FF0000EAFF0000EFFF0000F4FF0000F8FF0000FBFF0000FEFF0000FFFF0000
+          FEFF0000FFFF2929B9FFBEBEB4FF444443CC0000000D00000000000000000000
+          002FCFCFC9F9B3B3C9FF0000B5FF0000CCFF0000CFFF0000D6FF0000DDFF0000
+          E3FF0000E9FF0000EEFF0000F3FF0000F7FF0000FBFF0000FEFF0000FEFF0000
+          FCFF0000FCFF0000FAFF5E5EB0FFBEBEB0FF0505056100000000000000001D1D
+          1D8FF3F3E8FF3F3FABFF0000C4FF0000C5FF0000CCFF0000D3FF0000DAFF0000
+          E1FF0000E7FF0000ECFF0000F1FF0000F5FF0000F8FF0000FBFF0000FBFF0000
+          FAFF0000F9FF0000FEFF0808D4FFA7A7ACFF4A4A48CE0000000D000000179393
+          92E4B7B7C5FF0404B3FF0000C1FF0000C0FF0000C6FF0000CFFF0000D6FF0000
+          DDFF0000E3FF0000E9FF0000EEFF0000F2FF0000F5FF0000F7FF0000F8FF0000
+          F8FF0000F7FF0000F6FF0000F8FF5555AFFFAFAFA2FF0101014802020245E2E2
+          D9FF7D7DB2FF0000BAFF0404BEFF2E2ECAFF3232CDFF3131D3FF3131D8FF3030
+          DEFF3030E2FF2F2FE5FF3030EAFF3030EDFF3030F0FF3030F2FF3131F3FF3131
+          F3FF3232F3FF0F0FF3FF0000FAFF1E1EC4FFB8B8ADFF101010860B0B0B6CE2E2
+          DCFF8F8FBEFF1111C1FF3C3CC9FFFBFBF1FFF1F1EAFFEBEBE6FFE6E6E1FFE2E2
+          DCFFDDDDD7FFD8D8D2FFD5D5CFFFD6D6D0FFD9D9D2FFDBDBD4FFDDDDD6FFDEDE
+          D8FFEDEDD9FF7C7CEBFF0000F5FF0909D8FFB0B0B6FF2C2C2BB016161682DFDF
+          DBFF9F9FCBFF6464D8FF6464D3FFFEFEF7FFF1F1F0FFECECEBFFE7E7E6FFE2E2
+          E1FFDDDDDDFFD8D8D8FFD3D3D3FFCECECEFFCDCDCCFFCECECEFFD0D0D0FFD3D3
+          D2FFE2E2D3FF8383E6FF0000F0FF0404E1FFAFAFC1FF3C3C3AC01414147FDCDC
+          D9FFA4A4CAFF8484DFFFABABE7FFFFFFFFFFFCFCFAFFF7F7F5FFF3F3F1FFEFEF
+          ECFFEAEAE7FFE5E5E2FFE0E0DDFFDBDBD8FFD6D6D3FFD1D1CEFFCFCFCCFFD0D0
+          CDFFE0E0CFFF8585E2FF0000EBFF0404DBFFB5B5C5FF3C3C39BE09090964D9D9
+          D6FFAFAFC3FF9090E2FFA4A4E4FFF4F4FCFFF7F7FDFFF1F1FAFFE1E1F3FFDFDF
+          F0FFDFDFEEFFDDDDEBFFD9D9E7FFD5D5E3FFD1D1E0FFCDCDDCFFC9C9D8FFC5C5
+          D5FFCFCFD5FF6565E1FF0000E8FF1414C9FFC3C3C4FF282827A80101013ACACA
+          C8FCBABABFFFA5A5E4FF9090DDFF9292DFFF8E8EDFFF8585DEFF6060D5FF3232
+          CAFF1818C6FF0F0FCAFF0C0CCEFF0D0DD3FF0D0DD6FF0E0ED9FF1111DCFF1717
+          DFFF2121E1FF1A1AE1FF1212E5FF3A3AB8FFD3D3C8FF0C0C0C780000000F7575
+          74D7C7C7C4FFB4B4DBFF9B9BE2FF9494DEFF8C8CDDFF8585DCFF8181DDFF7777
+          DCFF6464D8FF4D4DD4FF3B3BD2FF2F2FD3FF2C2CD5FF2D2DD8FF3232DAFF3434
+          DCFF3131DDFF2C2CDEFF1616D9FF8383B8FFC1C1B9FD00000039000000001111
+          1179D8D8D6FFB8B8C3FFAFAFE9FF9E9EE0FF9898E0FF9191DEFF8989DEFF8282
+          DDFF7B7BDDFF7575DCFF6F6FDCFF6868DBFF6060DBFF5757DBFF4E4EDBFF4545
+          DBFF3D3DDCFF3131E2FF3939BBFFE1E1DEFF3C3C3BB900000006000000000000
+          001EA1A1A1ECC6C6C3FFC1C1D9FFACACE9FFA1A1E1FF9B9BE1FF9393DFFF8B8B
+          DEFF8484DDFF7C7CDDFF7474DCFF6D6DDCFF6565DBFF5E5EDBFF5656DBFF4F4F
+          DBFF4747DFFF3030CFFFA9A9CAFFE4E4DCFF0101014800000000000000000000
+          00000A0A0A6AD8D8D8FFB6B6B4FFC3C3E0FFADADE8FFA3A3E2FF9C9CE1FF9595
+          E0FF8E8EDFFF8686DEFF7D7DDDFF7676DCFF6F6FDCFF6767DCFF5F5FDBFF5858
+          DFFF4444D5FF7C7CB4FFFCFCF5FF2B2B2BAA0000000400000000000000000000
+          0000000000012525259AE1E1E0FFB7B7B7FFC4C4DCFFB5B5ECFFA4A4E5FF9C9C
+          E1FF9696E0FF8F8FDFFF8888DFFF8080DEFF7777DDFF6F6FDEFF6666E1FF5959
+          D0FF8C8CB7FFFFFFF9FF5A5A5ACC000000160000000000000000000000000000
+          0000000000000000000B2828289CD5D5D4FFC1C1BFFFBDBDC8FFB8B8DBFFB2B2
+          E8FFA5A5E8FF9A9AE5FF9191E3FF8B8BE3FF8585E1FF7979D2FF8181C2FFB8B8
+          C5FFF5F5EEFF555555C600000025000000000000000000000000000000000000
+          00000000000000000000000000000606065D939393E4DBDBDAFFC6C6C4FFBABA
+          BDFFB7B7C4FFB5B5CCFFAFAFCDFFA7A7C3FFACACBEFFC7C7C9FFEEEEE8FFCACA
+          C7F8151515860000000A00000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000001C151515817A7A7AD7D4D4
+          D3FFDCDCDAFFDEDEDBFFE1E1DEFFE4E4E0FFE2E2DFFF9A9A99E62727279D0000
+          0033000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000000000000000000000000000000000E0101
+          013C0909096615151581161616840C0C0C6F0202024800000018000000000000
+          0000000000000000000000000000000000000000000000000000}
+        Mask.Data = {
+          9E000000424D9E000000000000003E0000002800000018000000180000000100
+          010000000000600000000000000000000000020000000000000000000000FFFF
+          FF00000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000}
+      end
+      item
+        Image.Data = {
+          36090000424D3609000000000000360000002800000018000000180000000100
+          2000000000000009000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          000000000000000000000000000001010205060F142F1934437A406A80BB1026
+          3364000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000040B0F220C212D55154762A6166A96E11D83B7FD2587B8FF48A3CFFF5A9A
+          C2FF030B102E0000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000008161E3C12374D851758
+          7DC61575AAFC1176ACFF1B76A7FF3C7C9FFF6E98AEFF7B898FFF156791FF3B89
+          B9FF07131C420000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000000000013425E96136FA6FF166EA2FF2F79
+          A5FF5A89A3FFA1B6C2FFCBCFD2FFE9E2DFFFEDE7E4FFEAE2DEFF41687DFF227A
+          B2FF061118450000000000000000000000000000000000000000000000000000
+          000000000000000000000000000003070A17548CAEFB819EB0FFC1C8CDFFF2F0
+          EFFFFEFDFCFFFFFFFFFFFCFBFAFFF1F1F1FFEAEAEAFFEFEDECFF7B8D97FF1067
+          A1FF07131C460000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000040E1420B8D0E0FFFFFFFFFFFFFFFFFFDAD9
+          D9FFD6D6D6FFD1D1D1FFFDFDFDFFF3F3F3FFEBEBEBFFF1EFEEFF9AA8B0FF0B5D
+          96FF0A1923450000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000040E131F5B92B9FFFFFFFFFFFFFFFFFFE9E9
+          E9FF828282FF8C8C8CFFD0D0D0FFCCCCCCFFF5F5F5FFF6F4F3FF9CA9B2FF0C5A
+          93FF0A1923450000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000050E141F3F7BA9FFFBFBFBFFFBFAFAFFFEFE
+          FEFFA7A7A7FFC1C1C1FFD2D2D2FFB2B2B2FFBCBCBCFFF3F1F0FFA4B4BCFF0F5E
+          97FF0A1923440000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000050F141F4077A5FFF7F7F7FFFAFAFAFFFBFB
+          FBFFD3D3D3FFE3E3E3FFF7F7F7FFE3E3E3FFD5D5D5FFDDDBDAFFA0B3BBFF1777
+          ADFF0A1923430000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000050F141F4578A5FFECEBECFFD8D8D8FFE1E1
+          E1FFE2E2E2FFD3D3D3FFC4C4C4FFBABABAFFD7D7D7FFF4F2F1FFA5B8C0FF1679
+          AFFF091923410000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000050F151F3C9DCBFFDFDEDEFFB4B3B3FFB8B8
+          B8FFC5C5C5FFBFBFBFFFC5C5C5FFDBDBDBFFD5D5D5FFEBE9E8FFA7BBC3FF167C
+          B2FF0A1923400000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000050F151F39A6D5FFE6E7E7FFBDBDBDFFDFDF
+          DFFFEBEBEBFFEAEAEAFFF1F1F1FFE8E8E8FFEBEBEBFFF6F3F2FFA7BCC4FF177E
+          B5FF0918223E0000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000510151F39A6D6FFF7F8F8FFEFEEEEFFEBEB
+          EBFFD5D5D5FFD3D3D3FFD4D4D4FFC3C3C3FFD3D3D3FFFFFCFBFFA9BEC6FF1780
+          B7FF0918223D0000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000510151F3AA9D9FFECEDEDFFCBCACAFFC5C5
+          C5FFC6C6C6FFD4D4D4FFDEDEDEFFE4E4E4FFFFFFFFFFFFFFFFFFB1C6CFFF1782
+          B9FF0918223C0000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000510161F38AADAFFF5F5F6FFE6E6E6FFEAEA
+          EAFFF0F0F0FFECECECFFE0E0E0FFD7D7D7FFF4F4F4FFFFFFFFFFB9CFD8FF1784
+          BBFF0918213A0000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000510161F38ACDCFFF6F6F7FFCBCBCBFFCECE
+          CEFFD3D3D3FFC3C3C3FFCDCDCDFFE6E6E6FFF6F6F6FFFFFFFFFFBCD2DBFF1686
+          BDFF091822390000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000511161F39AEDFFFEAEAEAFFC1C0C0FFD1D1
+          D1FFD1D1D1FFBFBFBFFFCCCCCCFFDFDFDFFFF4F4F4FFFFFFFFFFBED5DDFF1788
+          C0FF091922380000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000511161F38B0E0FFEDEEEEFFCCCCCCFFCECE
+          CEFFCCCCCCFFD0D0D0FFE2E2E2FFE6E6E6FFEFEFEFFFFFFEFDFFC1D8E1FF178A
+          C2FF091922380000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000511171F35AFE0FFFCFCFCFFF2F2F2FFF2F2
+          F2FFF1F1F1FFEAEAEAFFD7D7D7FFC1C1C1FFA8A7A7FFDBD7D5FFCAE0E8FF158B
+          C4FF091923380000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000511171F36B2E3FFF6F4F3FFC2C1C0FFB6B6
+          B6FFB1B1B1FFA1A1A1FF929292FF94908FFF8C8988FFA6BCC5FF7EBED7FF2898
+          CCFF09171F310000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000612182031B2E5FFCCDAE0FFB7B6B6FFC3BC
+          B8FFB5B5B4FFB4B4B4FFB2B0B0FF8A9FA7FF3593B8FF1BA9E1FF2BADE1FF4075
+          92C1000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000040C0F1417A2DAF81BADE5FF3DB1DDFF80B9
+          CFFFBBBBBAFFBABABAFFA2A4A5FF5397B3F325627E9A254F63811A3745600206
+          080C000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000C2936451E5A759019465A700E28
+          35436A8897D1B3B4B5FFA3A6A8FF355463960000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00000610161D294B5D824B6F80B70610151E0000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000}
+      end
+      item
+        Image.Data = {
+          36090000424D3609000000000000360000002800000018000000180000000100
+          2000000000000009000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          000001010132171824AB181828AC0B0C0F7C0000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          000007070A695464DBFF6C82FDFF2B3065E10000000200000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          000007070A69304CE1FF3C62FFFF202868E00000000200000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          000007070A69092BDCFF0937FFFF151D65E00000000100000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          000007070967001CD9FF0024FFFF111962E00000000100000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          000012121A9D4558DDFF4D66F1FF343D97FC0202013400000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000303
+          02443744A7FF6C88FFFF718DFDFF4C65EFFF191B35C400000002000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000000000000000000000000000000000C161B
+          46D71D41F5FF335CFFFF335CFFFF204CFFFF0B25C4FF09090B77000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000000000000000000000000000C0C0E830A27
+          D0FF0031FFFF0638FFFF0F3FFFFF1D4BFFFF1D45FDFF222C7CF2000000230000
+          0000000000000000000000000000000000000000000000000000000000000000
+          000000000000000000000000000000000000000000000101012C4F5691F696AA
+          FFFF869FFFFF839CFFFF8FA7FFFF9BB0FFFF9DB2FFFF8D9CF2FF151621AA0000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000D30303DCAD5D8F9FFD5DA
+          FBFFC6CBF5FFBFC4F2FFBEC3F2FFBDC3F3FFC8CEF5FFE0E5FFFF9FA1C5FF0909
+          096E000000000000000000000000000000000000000000000000000000000000
+          000000000000000000000000000202020236101334CC2E37BDFF3942C6FF2933
+          BEFF343EC0FF5059CCFF5E66D0FF5059CCFF3842C6FF2E38C1FF3F48D0FF1820
+          8DFC0D0D108C0000000900000000000000000000000000000000000000000000
+          0000000000000000000005050656181E55E25058C1FF8386B7FFA9ABC4FFCFCC
+          D3FFD5D1D3FFF3F4F7FFF4F4F6FFEAEBEDFFECEDF3FFD3D4E2FF9093BAFF646A
+          BAFF111CADFF0B0B0F8000000000000000000000000000000000000000000000
+          0000000000000000000001010129111221A27679A6FFB7B9CDFFD7D8DAFFE0DA
+          D4FFE0DCD7FFFAFBFAFFF9F9F8FFEFEFEEFFF7F7F6FFF1F1EDFFCACAD1FF9294
+          B8FF242A77F50303044600000000000000000000000000000000000000000000
+          000000000000000000000000000000000002020203430C0E1A969D9EAEFBE1DB
+          D6FFDEDAD7FFF6F6F7FFF5F5F5FFECECECFFF3F3F3FFF7F6F4FF838498F90607
+          0D750000001E0000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000015A6A6A4F4DFD9
+          D5FFE1DEDBFFF8F8F9FFF7F7F7FFEEEEEEFFF4F4F4FFF8F8F8FF959592F50000
+          0015000000000000000000000000000000000000000000000000000000000000
+          000000000000000000000000000000000000000000000101012FC7C7C7FFDCD4
+          CFFFE2DFDDFFF9FAFAFFF8F8F8FFEFF0F0FFF5F5F5FFF6F6F6FFBCBCBCFF0101
+          012D000000000000000000000000000000000000000000000000000000000000
+          000000000000000000000000000000000000000000000404044AD6D6D6FFDBD3
+          CDFFE3E0DDFFF4F4F4FFF3F3F2FFEDECEBFFF2F2F1FFF1F0F0FFD3D3D3FF0303
+          0342000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000009090968E3E3E3FFDCD4
+          CEFFDAD2CBFFD9D1CAFFD9D1CAFFDAD2CBFFCFC8C2FFC9C4BFFFD7D6D6FF0707
+          075C000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000013131388F4F4F4FFF4F2
+          F1FFF2F0EFFFF2F0EFFFF2F0EFFFF0EEEDFFDCDBDAFFF1F0F0FFD7D7D7FF0808
+          0861000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000000000000000000242424A6FFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFCFCFCFFEFEFEFFFFFFFFFFF606060DB0000
+          000F000000000000000000000000000000000000000000000000000000000000
+          000000000000000000000000000000000000000000003B3B3BBCFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFDFDFDFFF6F6F6FFC7C7C7FF030303460000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000000000000000000373737BBEEEEEEFFEBEB
+          EBFFEAEAEAFFEAEAEAFFEAEAEAFFECECECFFD1D1D1FF1E1E1E9D000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000000000000000000040404491F1F1F9E1C1C
+          1C961C1C1C961C1C1C961C1C1C961D1D1D961B1B1B9B00000024000000000000
+          0000000000000000000000000000000000000000000000000000}
+        Mask.Data = {
+          9E000000424D9E000000000000003E0000002800000018000000180000000100
+          010000000000600000000000000000000000020000000000000000000000FFFF
+          FF00000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000}
+      end
+      item
+        Image.Data = {
+          36090000424D3609000000000000360000002800000018000000180000000100
+          2000000000000009000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000100040210
+          072C0F3C21752B804DAD061C0C42000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000002000702110730134226764F9A72D57DD0
+          9CFF99DDAFFF5AD79BFF4DB663E3000100040000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00000003010903140934143C2578519B73DA79CD98FF9AD39BFF75B456FF3C8E
+          05FF6EB25AFF5ED39CFF4BB060E4000100040000000000000000000000000000
+          000000000000000000000000000000000000000000000003010A0720104F1B47
+          308A5DA17CDC7ECA94FF81C47AFF6AAE46FF358B01FF278300FF3B900DFF2E88
+          00FF6CB25BFF5BCD97FF48AC5CE4000100040000000000000000000000000000
+          000000000000000000000002000C0C2717522D55438E6FAA8EDF87CE9AFF7FC2
+          75FF66AA3DFF338A01FF268300FF49981CFF87BC6AFFC3DFB4FFF0F8ECFF3C90
+          0BFF6AB058FF58C891FF46A759E4000100040000000000000000000000000000
+          0000000000000105032984AF9EDEB6E3C1FF77BB65FF57A22BFF308900FF2885
+          00FF559F2BFFA4CB8DFFD8EACEFFFFFFFDFFFFFFFFFFEAEEEDFFD0DECFFF3F93
+          0DFF6BAF59FF55C18CFF43A256E3000100040000000000000000000000000000
+          0000000000000C181256B2E3B6FF63A535FF469616FF63A73EFFB2D49FFFDEED
+          D6FFFFFFFFFFFFFFFFFFEAF0EBFF82A486FF4A7B4DFF0E5110FF7DA37AFF499A
+          17FF6CAF5AFF52BC87FF419E54E3000100030000000000000000000000000000
+          0000000000000A1510539DD49FFF70AE49FFE9F3E3FFFFFFFFFFFFFFFFFFFAFB
+          FBFFD5E1D6FF8DAD8CFF478048FF759E75FF055000FF296B20FFD8E5D4FF3E92
+          0CFF6EB05CFF52BB86FF3E9951E2000100030000000000000000000000000000
+          0000000000000A140F559BD29DFF7DB559FFF1F5F1FFD7E2D8FF86A885FF2A68
+          28FF14580EFF015300FF8AB688FF5A914DFF0E5F00FFA8C5A0FFFDFFFBFF398E
+          06FF73B865FF60D79EFF3C964EE2000100030000000000000000000000000000
+          0000000000001E271C6B97CC98FF8BBE68FF8AAD87FF4D8349FF4F8648FF3776
+          2BFF0E6100FF63A55CFF90B883FF136800FF166E00FF619E49FFFAFDF8FF388E
+          05FF77B968FF5ED199FF39914BE2000100030000000000000000000000000000
+          0000000000004F584E778FC28EFF8DBF6CFFD0DFCBFF6C9E60FF5E974EFF5D96
+          49FF519D43FFB3D4AAFF287B07FF459023FF65A446FFA4C992FFF6FAF3FF388E
+          05FF79B96CFF58C891FF328843E2010201030000000000000000000000000000
+          000000000000576056748EBE8DFF8EC06FFFFEFFFEFFE3EDE0FF79AC62FF67A9
+          50FFC2E4BCFF529A2EFF2B8600FFB9D7A8FFFFFFFFFFFFFFFFFFF1F6EDFF378E
+          04FF7BB96EFF54C18AFF308541E2010201030000000000000000000000000000
+          000000000000555E567292C090FF93C276FFFBFDF9FFFFFFFFFFD6EACFFFA9DA
+          A1FFAFD29BFF4E9B22FF2C8800FF3C9111FFC5DEB7FFFFFFFFFFF0F5E9FF378E
+          04FF7CB86FFF51B982FF338544E2000100030000000000000000000000000000
+          0000000000004F52437199C79AFF99C57CFFFBFDFAFFFFFFFFFFD3F2D4FFC7E3
+          BDFF71AE4DFF70B14FFF459618FF2A8500FF318B08FFC4DCB3FFF5F5EDFF378D
+          03FF7EB771FF4DB27BFF318141E2000100030000000000000000000000000000
+          0000000000005054486F9EC99FFF9EC883FFFFFEFEFFDFF6E0FFCBEBC8FF8CBD
+          6EFF88BB69FF9FD897FF6ABE59FF33A014FF2A9806FF6FB350FFF7F5EDFF368E
+          03FF7FB671FF46A970FF328142E2010101030000000000000000000000000000
+          000000000000535B536DA1C8A0FFA5CC8CFFEFFAEFFFCFF2D1FFA9CE93FF7AB4
+          58FFD2E5C6FFFEFFFFFFB5E8B6FFB8E4B3FFD5E9CBFFF0F2E5FFEEEEE0FF368E
+          02FF7FB570FF3CA162FF348245E2010202030000000000000000000000000000
+          0000000000004B4B3C6BA6CBA7FFAED196FFD8F2D8FFB1D9A4FFADD198FFD3E6
+          C8FFFFFFFFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFBFEFFEAEAD8FF358D
+          00FF80B570FF359C58FF2E7D40E2010201030000000000000000000000000000
+          00000000000050554D69AACBA8FFAFD299FFF7FBF5FFFBFCF9FFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFBFBF8FFE4EDDAFFCADEB9FFB0D098FF68A841FF2484
+          00FF7FB472FF2C984DFF29793BE2010201030000000000000000000000000000
+          0000000000004D4F4567AECDADFFB5D6A0FFFCFDFBFFFFFFFFFFFAFCF9FFE4F0
+          DDFFCEE4C2FFB8D7A6FF96C47BFF80B860FF7BB658FF82B960FF9AC57CFFA1C7
+          84FF9AC396FF3FA45BFF257838E2010201030000000000000000000000000000
+          00000000000047443465B4D1B4FFB7D7A3FFD5E7CAFFC1DDB2FFA8CF92FF9BC8
+          81FF99C67DFF9FCA85FFB3D49FFFB9D4AAFFB1CCAAFFB2CDB3FFAFCEB7FF94C4
+          A4FF65B57BFF4CB163FF1B6A2EDB000000000000000000000000000000000000
+          0000000000004F524B63B8D1B6FFBADAA6FFB4D6A0FFBDDAACFFCEE3C3FFCEE0
+          C9FFBED2BEFFB2CAB8FFA5C1B1FF89B397FF6CAB7FFF4E9B62FF38864BFF2D7D
+          40F6286637C7173F218802110631000000000000000000000000000000000000
+          0000000000003D433861CAD9CBFFDCE7D8FFC9D9CAFFB8CEBEFF9DBBA8FF7AA7
+          88FF599669FF458755FF468655FB437C4FE6315231BF1B2D1E5A1621193B080E
+          0A1C000000000000000000000000000000000000000000000000000000000000
+          0000000000001E251C4196B19DFB73A17FFF4D885BFF3E7D4CFF3F764AF0587F
+          5FD8687969A64C504B5F212221240909090A0000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000020241E33627460AD676D638A3838353E131212130303
+          0303000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000}
+      end
+      item
+        Image.Data = {
+          36090000424D3609000000000000360000002800000018000000180000000100
+          2000000000000009000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000050101
+          0122060606460D0D0D5F0E0E0E600707074B0101012800000008000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000000000000000011191919766B696BCCB0A9
+          B0F2CAC0CAFFC7BEC6FFC1B8C0FFBAB0B9FF9F979EF5656365D41E1E1E840000
+          001A000000000000000000000000000000000000000000000000000000000000
+          00000000000000000000000000000909094E7E7C7ED6E9E0E9FFC9D2C9FF88B1
+          88FF57A359FF42A748FF42A94BFF51A35BFF76A67DFFA2B0A4FFB8AFB6FF7B78
+          7BE60E0E0E610000000100000000000000000000000000000000000000000000
+          000000000000000000001C1C1C7AE9E5E9FFE3E4E3FF529A4DFF14A00FFF0EB0
+          0FFF12BA19FF10BF1DFF19C42BFF1DC734FF1CC436FF21BC3CFF44A154FFA5AB
+          A6FFB8B1B7FF2828289800000006000000000000000000000000000000000000
+          0000000000001D1D1D77EDE9EDFFBACBB8FF208B14FF0BA601FF19B014FF17B2
+          19FF1AB922FF78D07FFF55CD65FF20C33AFF2AC747FF2BCB4CFF24CE46FF22AF
+          3DFF82A287FFC0B8BFFF25252590000000000000000000000000000000000000
+          000006060642E0DCE0FCBDC8BAFF108602FF119F01FF19A50EFF0FA90BFF2BB8
+          2DFF9FCFA2FFEAD8E8FF61CE70FF15C132FF29C74AFF30CA55FF2FCA54FF2ACF
+          4BFF1BBA36FF809F85FFB7AFB6FF0D0E0D620000000000000000000000000000
+          000D7A797ACBDEDDDEFF29821AFF129400FF169903FF0E9F02FF54BB4FFFC5D5
+          C5FFD9D1D9FFD3CED2FF9AD2A2FF65CE77FF3CCC5AFF26C94DFF2FCA54FF2CC8
+          4CFF26CD42FF1DB131FF9CAA9DFF7E7B7DE60101012100000000000000001313
+          1361F3EDF4FF6B9762FF0E8900FF179000FF1D9909FF90CA8BFFE4E0E5FFDCD8
+          DCFFD4D4D4FFD0D0D0FFD5CED4FFDBD1D9FFCBD6CDFF72D487FF25C847FF28C7
+          47FF27C740FF1ACC30FF47A451FFC0B6BFFF1B1C1B7D00000000000000016766
+          67BAE0DEE0FF2F851AFF188A00FF178C00FF289913FFBFD9BDFFEFE6F0FFDEDD
+          DEFFD9D9D9FFD6D6D6FFD5D2D5FFCFCECFFFD0CDD0FFDDD3DBFF85D393FF1EC4
+          39FF24C43AFF20C733FF18B125FFA1AAA1FF5B595BC60000000700000015B1AF
+          B2E4AEB9ACFF1C7E03FF1B8600FF1C8A00FF168C00FF199709FF8AC783FFECE7
+          ECFFE5E0E5FFDBDBDBFFCEDACFFFDAD7DAFFD5D1D4FFCECDCEFFD8D2D7FF53CB
+          63FF1AC02CFF1FC22EFF10C11CFF6BA16EFF9E969EF60101012B04040430CFCD
+          D0F9A9B6A5FF3E9324FF167F00FF1D8600FF1C8900FF188F01FF119501FF53B5
+          4BFFCFDFCEFFF6E8F6FF66C86AFF4DC154FFCDD9CEFFD6D3D6FFD7CFD6FFA9D2
+          ACFF1ABE27FF1CBE26FF12C219FF44A247FFB8AEB7FF0909095208080842D6D4
+          D7FFAEBCA9FF8DBE7BFF378E1DFF167F00FF138100FF118600FF118D00FF0E94
+          00FF2CA824FFBCDBBAFF63C364FF05A90AFF70C874FFE3DBE3FFD6D4D6FFCFD6
+          CFFF30C036FF16BA1CFF12BF14FF35A535FFBFB6BFFF0F0F0F6408080841D3D2
+          D4FFB2BDAEFF9FC68FFF8EBD7EFF4D9A35FFA7CE9DFFBBDAB3FFBDDBB7FF46A7
+          39FF109401FF1DA114FF26A920FF16A713FF4BBB4BFFE4E0E4FFDBDADBFFD9DA
+          D9FF3CBF3DFF11B412FF0EBA0DFF35A333FFC5BCC5FF0F0F0F630303032DC5C4
+          C5F8B7BCB5FFA7C998FF9AC28AFF97C287FFEEF5ECFFFFFFFFFFFFFFFFFF8BC4
+          81FF088800FF1A980AFF1B9D0FFF0B9D02FF65C061FFEDE6EEFFE1DFE1FFD8DE
+          D8FF2CB627FF11B00CFF10B508FF4C9F47FFC6BDC7FF0808084E00000013A4A4
+          A4E0BFBFBFFFAFCAA3FFA3C693FF97C086FFD4E6CEFFFFFFFFFFFFFFFFFFF5F9
+          F5FF5BAB4AFF0F8A00FF0E9000FF44AD37FFD9E6D8FFECE9ECFFEDE7EDFFBADA
+          B8FF22AF18FF2DB421FF1DAF0EFF82AB7EFFAEA7AFF201010126000000005E5E
+          5EB2D4D3D5FFBECCB7FFADCC9EFFA2C693FFB0CFA4FFFDFEFDFFFFFFFFFFFFFF
+          FFFFF9FBF8FFC4E0BEFFBBDDB5FFF2F5F1FFF8F5F9FFF1F1F1FFF6F2F7FF7DC8
+          73FF3DB22DFF3BB72AFF2EA021FFCACEC9FF616061BF00000004000000001010
+          1055DAD9DAFFB9BBB8FFC2D9B6FFACCB9EFFA2C693FFCFE2C7FFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFDFDFDFFFCFBFCFFFFFDFFFFB8DDB1FF4CB2
+          3BFF4DB53DFF3BB52AFF6EA866FFF0E8F1FF1919197300000000000000000000
+          0008696969BDCBCACCFFBFC6BCFFBCD6B0FFAECCA1FFA5C896FFC7DEBEFFF7FA
+          F6FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF6F9F5FFB3D9AAFF65B855FF5DB6
+          4CFF55BA44FF489D3BFFD6DAD5FF898889DB0000001800000000000000000000
+          000004040433C5C5C5F6BEBDBFFFC7D1C3FFBFD8B3FFB0CDA2FFA5C897FFA9CC
+          9BFFC1DBB8FFD5E7CFFFD4E7CEFFB8D9AFFF8CC47DFF6FB75DFF6FB95EFF67BC
+          56FF55A547FFBBC6BAFFE0DDE0FF090909510000000000000000000000000000
+          00000000000016161663D1D1D1FDC0BEC0FFC0C6BDFFC7DCBCFFB5D2A8FFAACB
+          9CFFA0C691FF98C389FF91C081FF88BE78FF85BE75FF81C070FF77BD66FF6FA4
+          64FFC2CAC0FFF0EDF1FF2020207C000000000000000000000000000000000000
+          0000000000000000000015151561CBCACBFACDCCCDFFBABBB9FFC5D0C0FFBDD4
+          B2FFB3D1A6FFACD09EFFA4CC95FF9AC78CFF91C183FF8CB881FF99AF93FFE2E0
+          E2FFE3E0E3FF2020207E00000000000000000000000000000000000000000000
+          000000000000000000000000000006060639686868BFD8D7D8FFD2D1D3FFC5C6
+          C5FFB8BCB6FFBAC2B6FFB7C1B3FFB0BAACFFC0C6BFFFDFDEDFFFE9E6EAFF8080
+          80D2090909490000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000711111159606060B6A7A6
+          A7E4C6C5C7F9D2D1D3FFD5D3D6FFD0CED1FBB1B1B1E86C6C6CC0161616670000
+          000C000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000010000
+          00140404042F0808084509090946040404330000001800000002000000000000
+          0000000000000000000000000000000000000000000000000000}
+      end>
+  end
+  object ZExcelExport: TZReadOnlyQuery
+    Connection = ConnectionModule.ZConnection
+    SQL.Strings = (
+      
+        'select sel_nro_moto_by_tipo_categoria(ipe.tipo_categoria_oid, ip' +
+        'e.piloto_oid) nro_moto,'
+      
+        '       UC_Words(CONCAT(p.apellido, '#39', '#39' , p.nombre)) as nombre_p' +
+        'iloto, '
+      
+        '       sel_nombre_categoria_by_tipo_categoria(ipe.tipo_categoria' +
+        '_oid, ipe.piloto_oid) categoria,'
+      
+        '       SUM(sel_lap_time_in_seconds(tte.oid, tt.piloto_oid, tt.nr' +
+        'o_vuelta)) tiempo_sec,'
+      '       MAX(nro_vuelta) max_nro_vuelta'
+      'from toma_tiempos tt'
+      
+        '     join toma_tiempo_evento tte on tt.toma_tiempo_evento_oid = ' +
+        'tte.oid'
+      '     join piloto p on tt.piloto_oid = p.oid'
+      '     join inscripcion_piloto_evento ipe on '
+      
+        '          (ipe.evento_oid = tte.evento_oid and ipe.piloto_oid = ' +
+        'tt.piloto_oid)'
+      '          '
+      'where tte.oid = :toma_tiempo_evento_oid'
+      'and tt.is_deleted = 0'
+      'group by p.oid'
+      'order by max_nro_vuelta desc, tiempo_sec')
+    Params = <
+      item
+        DataType = ftInteger
+        Name = 'toma_tiempo_evento_oid'
+        ParamType = ptInput
+      end>
+    Left = 648
+    Top = 384
+    ParamData = <
+      item
+        DataType = ftInteger
+        Name = 'toma_tiempo_evento_oid'
+        ParamType = ptInput
+      end>
+  end
+  object ZROQTomaTiemposExp: TZQuery
+    Connection = ConnectionModule.ZConnection
+    SQL.Strings = (
+      
+        'select sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_catego' +
+        'ria_oid, tte.evento_oid, ipe.piloto_oid) '#39'Nro. Moto'#39','
+      
+        '       CASE WHEN c.utiliza_acompaniante = 1 THEN CONCAT(UC_Words' +
+        '(CONCAT(p.apellido, '#39', '#39' , p.nombre)), IFNULL(UC_Words(CONCAT('#39' ' +
+        '/ '#39', n.apellido, '#39', '#39' , n.nombre)), '#39#39')) '
+      '            ELSE UC_Words(CONCAT(p.apellido, '#39', '#39' , p.nombre))'
+      '       end as '#39'Competidor'#39','
+      
+        'sel_nombre_categoria_by_evento_and_tipo_categoria(ipe.tipo_categ' +
+        'oria_oid, tte.evento_oid, ipe.piloto_oid) '#39'Categor'#237'a'#39','
+      'tt.nro_vuelta Vuelta,'
+      
+        'CONCAT(TIME_FORMAT(CAST(tt.tiempo_pasada AS TIME), '#39'%H:%i:%s.%f'#39 +
+        '),'#39'.'#39') '#39'Tiempo de Pasada'#39','
+      
+        'CONCAT(sel_lap_time(tte.oid, tt.piloto_oid, tt.nro_vuelta), '#39'.'#39')' +
+        ' Tiempo,'
+      
+        'case tt.is_deleted when 0 then '#39#39' when 1 then '#39'#ELIMINADO'#39' end a' +
+        's Eliminado'
+      'from toma_tiempos tt'
+      
+        '    join toma_tiempo_evento tte on tt.toma_tiempo_evento_oid = t' +
+        'te.oid '
+      '    left join piloto p on tt.piloto_oid = p.oid'
+      '    left join inscripcion_piloto_evento ipe on '
+      
+        '          (ipe.evento_oid = tte.evento_oid and ipe.piloto_oid = ' +
+        'tt.piloto_oid)'
+      '    left join navegante n on n.piloto_oid = p.oid, categorias c'
+      'where tt.toma_tiempo_evento_oid =:toma_tiempo_evento_oid'
+      
+        '  and (:piloto_oid is null or :piloto_oid = 0 or p.oid = :piloto' +
+        '_oid)'
+      
+        '  and c.oid = sel_categoria_oid_by_evento_and_tipo_categoria(ipe' +
+        '.tipo_categoria_oid, ipe.evento_oid, ipe.piloto_oid)'
+      'order by CAST(tt.tiempo_pasada AS TIME)')
+    Params = <
+      item
+        DataType = ftInteger
+        Name = 'toma_tiempo_evento_oid'
+        ParamType = ptInput
+      end
+      item
+        DataType = ftUnknown
+        Name = 'piloto_oid'
+        ParamType = ptUnknown
+      end>
+    Left = 656
+    Top = 336
+    ParamData = <
+      item
+        DataType = ftInteger
+        Name = 'toma_tiempo_evento_oid'
+        ParamType = ptInput
+      end
+      item
+        DataType = ftUnknown
+        Name = 'piloto_oid'
+        ParamType = ptUnknown
+      end>
+  end
+  object Timer: TTimer
+    Enabled = False
+    OnTimer = TimerTimer
+    Left = 408
+    Top = 32
+  end
+  object ZTomaTiempoEvento: TZReadOnlyQuery
+    Connection = ConnectionModule.ZConnection
+    SQL.Strings = (
+      
+        'select oid, CONCAT(date_format(toma_tiempo_start_time, '#39'%d/%m/%Y' +
+        ' %H:%i:%s'#39'), '#39' - '#39', nombre) as nombre, evento_oid'
+      'from toma_tiempo_evento'
+      'where tipo_toma_tiempo = '#39'CARRERA'#39
+      'order by oid desc')
+    Params = <>
+    MasterFields = 'oid'
+    MasterSource = DSEvento
+    LinkedFields = 'evento_oid'
+    Left = 824
+    Top = 432
+  end
+  object QueryCategorias: TZQuery
+    Connection = ConnectionModule.ZConnection
+    SQL.Strings = (
+      'select distinct cat.oid, cat.nombre'
+      'from toma_tiempos tt'
+      
+        '     join toma_tiempo_evento tte on tt.toma_tiempo_evento_oid = ' +
+        'tte.oid'
+      '     join piloto p on tt.piloto_oid = p.oid '
+      '     join categorias cat on cat.oid = tt.categoria_oid'
+      'where tte.oid = :toma_tiempo_evento_oid'
+      'and tt.is_deleted = 0')
+    Params = <
+      item
+        DataType = ftUnknown
+        Name = 'toma_tiempo_evento_oid'
+        ParamType = ptUnknown
+      end>
+    Left = 888
+    Top = 384
+    ParamData = <
+      item
+        DataType = ftUnknown
+        Name = 'toma_tiempo_evento_oid'
+        ParamType = ptUnknown
+      end>
+  end
+  object DSCategorias: TDataSource
+    DataSet = QueryCategorias
+    Left = 888
+    Top = 432
+  end
+  object ZTomaTiempoEventoCont: TZReadOnlyQuery
+    Connection = ConnectionModule.ZConnection
+    SQL.Strings = (
+      
+        'select oid, CONCAT(date_format(toma_tiempo_start_time, '#39'%d/%m/%Y' +
+        ' %H:%i:%s'#39'), '#39' - '#39', nombre) as nombre, evento_oid'
+      'from toma_tiempo_evento'
+      'where tipo_toma_tiempo = '#39'CARRERA'#39
+      'order by oid desc')
+    Params = <>
+    MasterFields = 'oid'
+    MasterSource = DSEvento
+    LinkedFields = 'evento_oid'
+    Left = 784
+    Top = 72
+  end
+  object DSTomaTiempoEventoCont: TDataSource
+    DataSet = ZTomaTiempoEventoCont
+    Left = 856
+    Top = 72
+  end
+  object ZReSetPosition: TZQuery
+    Connection = ConnectionModule.ZConnection
+    SQL.Strings = (
+      'SET @posicion=:posicion;')
+    Params = <
+      item
+        DataType = ftInteger
+        Name = 'posicion'
+        ParamType = ptInput
+      end>
+    Left = 472
+    Top = 368
+    ParamData = <
+      item
+        DataType = ftInteger
+        Name = 'posicion'
+        ParamType = ptInput
+      end>
+  end
+  object QueryCategoriasFilter: TZQuery
+    Connection = ConnectionModule.ZConnection
+    SQL.Strings = (
+      'select distinct cat.oid, cat.nombre'
+      'from toma_tiempos tt'
+      
+        '     join toma_tiempo_evento tte on tt.toma_tiempo_evento_oid = ' +
+        'tte.oid'
+      '     join piloto p on tt.piloto_oid = p.oid, categorias cat '
+      
+        'where sel_categoria_oid_by_evento_and_tipo_categoria((select min' +
+        '(ipe.tipo_categoria_oid)'
+      
+        '                                               from inscripcion_' +
+        'piloto_evento ipe'
+      
+        '                                               where ipe.evento_' +
+        'oid = tte.evento_oid '
+      
+        '                                               and ipe.piloto_oi' +
+        'd = p.oid), tte.evento_oid, p.oid) = cat.oid'
+      'and tte.oid = :toma_tiempo_evento_oid'
+      'and tt.is_deleted = 0')
+    Params = <
+      item
+        DataType = ftUnknown
+        Name = 'toma_tiempo_evento_oid'
+        ParamType = ptUnknown
+      end>
+    Left = 856
+    Top = 296
+    ParamData = <
+      item
+        DataType = ftUnknown
+        Name = 'toma_tiempo_evento_oid'
+        ParamType = ptUnknown
+      end>
+  end
+  object DSFilterPiloto: TDataSource
+    Left = 936
+    Top = 432
+  end
+  object ZFilterPiloto: TZReadOnlyQuery
+    Connection = ConnectionModule.ZConnection
+    SQL.Strings = (
+      
+        'select distinct p.oid, CONCAT(CAST(sel_nro_moto_by_evento_and_ti' +
+        'po_categoria(:tipo_categoria_oid, :evento_oid, p.oid) AS CHAR CH' +
+        'ARACTER SET latin1) COLLATE latin1_spanish_ci,'#39' - '#39', p.apellido,' +
+        ' '#39', '#39' , p.nombre) as nombre, tt.toma_tiempo_evento_oid'
+      
+        'from (select toma_tiempo_evento_oid, is_deleted, piloto_oid from' +
+        ' toma_tiempos UNION select toma_tiempo_evento_oid, is_deleted, p' +
+        'iloto_oid from toma_tiempos_reconocimiento) tt'
+      '     inner join piloto p on tt.piloto_oid = p.oid'
+      'where tt.is_deleted = 0'
+      '      and tt.toma_tiempo_evento_oid = :toma_tiempo_evento_oid'
+      
+        '      and  sel_nro_moto_by_evento_and_tipo_categoria(:tipo_categ' +
+        'oria_oid, :evento_oid, p.oid) != '#39'0'#39
+      
+        'order by sel_nro_moto_by_evento_and_tipo_categoria(:tipo_categor' +
+        'ia_oid, :evento_oid, p.oid), p.apellido, p.nombre')
+    Params = <
+      item
+        DataType = ftUnknown
+        Name = 'tipo_categoria_oid'
+        ParamType = ptUnknown
+      end
+      item
+        DataType = ftInteger
+        Name = 'evento_oid'
+        ParamType = ptInput
+      end
+      item
+        DataType = ftUnknown
+        Name = 'toma_tiempo_evento_oid'
+        ParamType = ptUnknown
+      end>
+    Left = 544
+    Top = 224
+    ParamData = <
+      item
+        DataType = ftUnknown
+        Name = 'tipo_categoria_oid'
+        ParamType = ptUnknown
+      end
+      item
+        DataType = ftInteger
+        Name = 'evento_oid'
+        ParamType = ptInput
+      end
+      item
+        DataType = ftUnknown
+        Name = 'toma_tiempo_evento_oid'
+        ParamType = ptUnknown
+      end>
+  end
+  object scExcelExportPosiciones: TscExcelExport
+    DataPipe = dpDataSet
+    StyleColumnWidth = cwDefault
+    ColumnWidth = 0
+    FontHeader.Charset = DEFAULT_CHARSET
+    FontHeader.Color = clWindowText
+    FontHeader.Height = 1
+    FontHeader.Name = 'Tahoma'
+    FontHeader.Orientation = 0
+    FontHeader.Style = []
+    FontHeader.Alignment = haGeneral
+    FontHeader.WrapText = False
+    BorderHeader.BackAlternateColor = clBlack
+    MergeHeaderCells = True
+    FontTitles.Charset = DEFAULT_CHARSET
+    FontTitles.Color = clWindowText
+    FontTitles.Height = 1
+    FontTitles.Name = 'Tahoma'
+    FontTitles.Orientation = 0
+    FontTitles.Style = []
+    FontTitles.Alignment = haGeneral
+    FontTitles.WrapText = False
+    BorderTitles.BackAlternateColor = clBlack
+    AutoFilter = False
+    FontData.Charset = DEFAULT_CHARSET
+    FontData.Color = clWindowText
+    FontData.Height = 1
+    FontData.Name = 'Tahoma'
+    FontData.Orientation = 0
+    FontData.Style = []
+    FontData.Alignment = haGeneral
+    FontData.WrapText = False
+    FontSummary.Charset = DEFAULT_CHARSET
+    FontSummary.Color = clWindowText
+    FontSummary.Height = 1
+    FontSummary.Name = 'Tahoma'
+    FontSummary.Orientation = 0
+    FontSummary.Style = []
+    FontSummary.Alignment = haGeneral
+    FontSummary.WrapText = False
+    BorderSummary.BackAlternateColor = clBlack
+    SummarySelection = ssNone
+    SummaryCalculation = scSUM
+    FontFooter.Charset = DEFAULT_CHARSET
+    FontFooter.Color = clWindowText
+    FontFooter.Height = 1
+    FontFooter.Name = 'Tahoma'
+    FontFooter.Orientation = 0
+    FontFooter.Style = []
+    FontFooter.Alignment = haGeneral
+    FontFooter.WrapText = False
+    BorderFooter.BackAlternateColor = clBlack
+    MergeFooterCells = True
+    FontGroup.Charset = DEFAULT_CHARSET
+    FontGroup.Color = clWindowText
+    FontGroup.Height = 1
+    FontGroup.Name = 'Tahoma'
+    FontGroup.Orientation = 0
+    FontGroup.Style = []
+    FontGroup.Alignment = haGeneral
+    FontGroup.WrapText = False
+    BorderGroup.BackAlternateColor = clBlack
+    GroupOptions.ClearContents = True
+    GroupOptions.BorderRange = bsRow
+    GroupOptions.IntervalFontSize = 2
+    OnGetCellStyleEvent = scExcelExportPosicionesGetCellStyleEvent
+    Left = 304
+    Top = 400
+  end
+  object scExcelExport: TscExcelExport
+    DataPipe = dpDataSet
+    StyleColumnWidth = cwDefault
+    ColumnWidth = 0
+    FontHeader.Charset = DEFAULT_CHARSET
+    FontHeader.Color = clWindowText
+    FontHeader.Height = 1
+    FontHeader.Name = 'Tahoma'
+    FontHeader.Orientation = 0
+    FontHeader.Style = []
+    FontHeader.Alignment = haGeneral
+    FontHeader.WrapText = False
+    BorderHeader.BackAlternateColor = clBlack
+    MergeHeaderCells = True
+    FontTitles.Charset = DEFAULT_CHARSET
+    FontTitles.Color = clWindowText
+    FontTitles.Height = 1
+    FontTitles.Name = 'Tahoma'
+    FontTitles.Orientation = 0
+    FontTitles.Style = []
+    FontTitles.Alignment = haGeneral
+    FontTitles.WrapText = False
+    BorderTitles.BackAlternateColor = clBlack
+    AutoFilter = False
+    FontData.Charset = DEFAULT_CHARSET
+    FontData.Color = clWindowText
+    FontData.Height = 1
+    FontData.Name = 'Tahoma'
+    FontData.Orientation = 0
+    FontData.Style = []
+    FontData.Alignment = haGeneral
+    FontData.WrapText = False
+    FontSummary.Charset = DEFAULT_CHARSET
+    FontSummary.Color = clWindowText
+    FontSummary.Height = 1
+    FontSummary.Name = 'Tahoma'
+    FontSummary.Orientation = 0
+    FontSummary.Style = []
+    FontSummary.Alignment = haGeneral
+    FontSummary.WrapText = False
+    BorderSummary.BackAlternateColor = clBlack
+    SummarySelection = ssNone
+    SummaryCalculation = scSUM
+    FontFooter.Charset = DEFAULT_CHARSET
+    FontFooter.Color = clWindowText
+    FontFooter.Height = 1
+    FontFooter.Name = 'Tahoma'
+    FontFooter.Orientation = 0
+    FontFooter.Style = []
+    FontFooter.Alignment = haGeneral
+    FontFooter.WrapText = False
+    BorderFooter.BackAlternateColor = clBlack
+    MergeFooterCells = True
+    FontGroup.Charset = DEFAULT_CHARSET
+    FontGroup.Color = clWindowText
+    FontGroup.Height = 1
+    FontGroup.Name = 'Tahoma'
+    FontGroup.Orientation = 0
+    FontGroup.Style = []
+    FontGroup.Alignment = haGeneral
+    FontGroup.WrapText = False
+    BorderGroup.BackAlternateColor = clBlack
+    GroupOptions.ClearContents = True
+    GroupOptions.BorderRange = bsRow
+    GroupOptions.IntervalFontSize = 2
+    Left = 304
+    Top = 448
+  end
+  object ZSetDifAnt: TZQuery
+    Connection = ConnectionModule.ZConnectionQueries
+    SQL.Strings = (
+      'set @tant= :tant;')
+    Params = <
+      item
+        DataType = ftUnknown
+        Name = 'tant'
+        ParamType = ptUnknown
+      end>
+    Left = 472
+    Top = 464
+    ParamData = <
+      item
+        DataType = ftUnknown
+        Name = 'tant'
+        ParamType = ptUnknown
+      end>
+  end
+  object ZSetDifPrim: TZQuery
+    Connection = ConnectionModule.ZConnectionQueries
+    SQL.Strings = (
+      'set @tprim= :tprim;')
+    Params = <
+      item
+        DataType = ftUnknown
+        Name = 'tprim'
+        ParamType = ptUnknown
+      end>
+    Left = 472
+    Top = 416
+    ParamData = <
+      item
+        DataType = ftUnknown
+        Name = 'tprim'
+        ParamType = ptUnknown
+      end>
+  end
+  object ZMaxVuelta: TZQuery
+    Connection = ConnectionModule.ZConnectionQueries
+    SQL.Strings = (
+      'set @maxvuelta= :maxvuelta;')
+    Params = <
+      item
+        DataType = ftUnknown
+        Name = 'maxvuelta'
+        ParamType = ptUnknown
+      end>
+    Left = 472
+    Top = 512
+    ParamData = <
+      item
+        DataType = ftUnknown
+        Name = 'maxvuelta'
+        ParamType = ptUnknown
+      end>
+  end
+  object QueryCatByTipoFilter: TZQuery
+    Connection = ConnectionModule.ZConnection
+    SQL.Strings = (
+      
+        'select oid from categorias where tipo_categoria_oid = :tipo_cate' +
+        'goria_oid;')
+    Params = <
+      item
+        DataType = ftUnknown
+        Name = 'tipo_categoria_oid'
+        ParamType = ptUnknown
+      end>
+    Left = 728
+    Top = 296
+    ParamData = <
+      item
+        DataType = ftUnknown
+        Name = 'tipo_categoria_oid'
+        ParamType = ptUnknown
+      end>
+  end
+  object ZGetTomaTiempo: TZReadOnlyQuery
+    Connection = ConnectionModule.ZConnectionQueries
+    SQL.Strings = (
+      'select tte.oid as toma_tiempo_evento_oid, tte.evento_oid'
+      'from toma_tiempo_evento tte '
+      'where tte.oid = :toma_tiempo_evento_oid')
+    Params = <
+      item
+        DataType = ftUnknown
+        Name = 'toma_tiempo_evento_oid'
+        ParamType = ptUnknown
+      end>
+    Left = 48
+    Top = 96
+    ParamData = <
+      item
+        DataType = ftUnknown
+        Name = 'toma_tiempo_evento_oid'
+        ParamType = ptUnknown
+      end>
+  end
+  object ZROQCantPilotosCorriendo: TZReadOnlyQuery
+    Connection = ConnectionModule.ZConnection
+    SQL.Strings = (
+      'SELECT '
+      '    tt.piloto_oid,'
+      '    MAX(tt.nro_vuelta) AS cant_vueltas,'
+      '    enc.nro_vueltas AS max_vueltas'
+      'FROM toma_tiempos tt'
+      
+        '    JOIN toma_tiempo_evento tte ON tt.toma_tiempo_evento_oid = t' +
+        'te.oid'
+      '    LEFT JOIN piloto p ON tt.piloto_oid = p.oid'
+      
+        '    LEFT JOIN inscripcion_piloto_evento ipe ON ipe.evento_oid = ' +
+        'tte.evento_oid '
+      
+        '                                           AND ipe.piloto_oid = ' +
+        'tt.piloto_oid'
+      
+        '    JOIN categorias c ON c.oid = sel_categoria_oid_by_evento_and' +
+        '_tipo_categoria('
+      
+        '                                 ipe.tipo_categoria_oid, ipe.eve' +
+        'nto_oid, ipe.piloto_oid)'
+      
+        '    LEFT JOIN evento_num_categoria enc ON enc.categoria_oid = c.' +
+        'oid '
+      
+        '                                      AND enc.evento_oid = ipe.e' +
+        'vento_oid'
+      'WHERE tt.toma_tiempo_evento_oid = :toma_tiempo_evento_oid'
+      '  AND tt.is_deleted = 0'
+      '  AND EXISTS (SELECT 1 FROM toma_tiempos tt_ins '
+      
+        '    WHERE tt_ins.toma_tiempo_evento_oid = tt.toma_tiempo_evento_' +
+        'oid '
+      '          AND tt_ins.piloto_oid = tt.piloto_oid '
+      '          AND tt_ins.categoria_oid IS NOT NULL)'
+      '  AND NOT EXISTS ('
+      '      SELECT 1 '
+      '      FROM recargo_toma_tiempo_evento r '
+      '      WHERE r.toma_tiempo_evento_oid = tte.oid  '
+      '        AND r.piloto_oid = tt.piloto_oid         '
+      '        AND r.tipo_recargo IN (2, 7)'
+      '  )'
+      'GROUP BY tt.piloto_oid'
+      'HAVING enc.nro_vueltas > MAX(tt.nro_vuelta)')
+    Params = <
+      item
+        DataType = ftUnknown
+        Name = 'toma_tiempo_evento_oid'
+        ParamType = ptUnknown
+      end>
+    Left = 80
+    Top = 144
+    ParamData = <
+      item
+        DataType = ftUnknown
+        Name = 'toma_tiempo_evento_oid'
+        ParamType = ptUnknown
+      end>
+  end
+  object ZROQCantPilotosLargado: TZReadOnlyQuery
+    Connection = ConnectionModule.ZConnection
+    SQL.Strings = (
+      
+        'select tt.piloto_oid, MAX(tt.nro_vuelta) cant_vueltas, enc.nro_v' +
+        'ueltas as max_vueltas '
+      'from toma_tiempos tt'
+      
+        '    JOIN toma_tiempo_evento tte ON tt.toma_tiempo_evento_oid = t' +
+        'te.oid '
+      '    LEFT JOIN piloto p ON tt.piloto_oid = p.oid'
+      '    LEFT JOIN inscripcion_piloto_evento ipe ON '
+      
+        '        (ipe.evento_oid = tte.evento_oid AND ipe.piloto_oid = tt' +
+        '.piloto_oid), '
+      '        categorias c'
+      
+        '                   LEFT join evento_num_categoria enc on enc.cat' +
+        'egoria_oid = c.oid     '
+      'where toma_tiempo_evento_oid = :toma_tiempo_evento_oid'
+      '  AND EXISTS (SELECT 1 FROM toma_tiempos tt_ins '
+      
+        '    WHERE tt_ins.toma_tiempo_evento_oid = tt.toma_tiempo_evento_' +
+        'oid '
+      '          AND tt_ins.piloto_oid = tt.piloto_oid '
+      '          AND tt_ins.categoria_oid IS NOT NULL)'
+      '      and is_deleted = 0'
+      
+        '      and c.oid = sel_categoria_oid_by_evento_and_tipo_categoria' +
+        '(ipe.tipo_categoria_oid, ipe.evento_oid, ipe.piloto_oid)'
+      'group by 1')
+    Params = <
+      item
+        DataType = ftUnknown
+        Name = 'toma_tiempo_evento_oid'
+        ParamType = ptUnknown
+      end>
+    Left = 80
+    Top = 200
+    ParamData = <
+      item
+        DataType = ftUnknown
+        Name = 'toma_tiempo_evento_oid'
+        ParamType = ptUnknown
+      end>
+  end
+  object ZROQPilotoEnGrilla: TZReadOnlyQuery
+    Connection = ConnectionModule.ZConnectionQueries
+    SQL.Strings = (
+      'select gp.piloto_oid'
+      'from grilla_de_partida_categorias gpc '
+      
+        '    join grilla_de_partida gp on gpc.oid = gp.grilla_de_partida_' +
+        'categoria_oid'
+      'where gpc.evento_oid = :evento_oid'
+      '    and gp.estado_piloto_partida = 1 -- HABILITADO  '
+      '    and gp.piloto_oid = :piloto_oid'
+      
+        '    and gp.categoria_oid = sel_categoria_oid_by_evento_and_tipo_' +
+        'categoria(:tipo_categoria_oid, :evento_oid, :piloto_oid)')
+    Params = <
+      item
+        DataType = ftUnknown
+        Name = 'evento_oid'
+        ParamType = ptUnknown
+      end
+      item
+        DataType = ftUnknown
+        Name = 'piloto_oid'
+        ParamType = ptUnknown
+      end
+      item
+        DataType = ftUnknown
+        Name = 'tipo_categoria_oid'
+        ParamType = ptUnknown
+      end>
+    Left = 192
+    Top = 392
+    ParamData = <
+      item
+        DataType = ftUnknown
+        Name = 'evento_oid'
+        ParamType = ptUnknown
+      end
+      item
+        DataType = ftUnknown
+        Name = 'piloto_oid'
+        ParamType = ptUnknown
+      end
+      item
+        DataType = ftUnknown
+        Name = 'tipo_categoria_oid'
+        ParamType = ptUnknown
+      end>
+  end
+end

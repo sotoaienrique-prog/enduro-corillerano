@@ -1,0 +1,400 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{D2B05D26-9AA0-45D5-B8A6-022903FDA2F1}</ProjectGuid>
+			<ProjectVersion>13.4</ProjectVersion>
+			<FrameworkType>VCL</FrameworkType>
+			<MainSource>enduro.dpr</MainSource>
+			<Base>True</Base>
+			<Config Condition="'$(Config)'==''">Debug</Config>
+			<Platform Condition="'$(Platform)'==''">Win32</Platform>
+			<TargetedPlatforms>1</TargetedPlatforms>
+			<AppType>Application</AppType>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="('$(Platform)'=='Win64' and '$(Base)'=='true') or '$(Base_Win64)'!=''">
+			<Base_Win64>true</Base_Win64>
+			<CfgParent>Base</CfgParent>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Base)'=='true') or '$(Base_Win32)'!=''">
+			<Base_Win32>true</Base_Win32>
+			<CfgParent>Base</CfgParent>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Debug' or '$(Cfg_1)'!=''">
+			<Cfg_1>true</Cfg_1>
+			<CfgParent>Base</CfgParent>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Cfg_1)'=='true') or '$(Cfg_1_Win32)'!=''">
+			<Cfg_1_Win32>true</Cfg_1_Win32>
+			<CfgParent>Cfg_1</CfgParent>
+			<Cfg_1>true</Cfg_1>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Release' or '$(Cfg_2)'!=''">
+			<Cfg_2>true</Cfg_2>
+			<CfgParent>Base</CfgParent>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Cfg_2)'=='true') or '$(Cfg_2_Win32)'!=''">
+			<Cfg_2_Win32>true</Cfg_2_Win32>
+			<CfgParent>Cfg_2</CfgParent>
+			<Cfg_2>true</Cfg_2>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Base)'!=''">
+			<DCC_UsePackage>DBXInterBaseDriver;DataSnapServer;DataSnapCommon;DbxCommonDriver;dbxcds;CustomIPTransport;dsnap;IndyCore;IPIndyImpl;bindcompfmx;dbrtl;bindcomp;inetdb;xmlrtl;ibxpress;bindengine;soaprtl;DBXInformixDriver;DBXFirebirdDriver;inet;DBXSybaseASADriver;dbexpress;fmx;IndySystem;DataSnapClient;DataSnapProviderClient;DBXOracleDriver;fmxase;inetdbxpress;rtl;DbxClientDriver;IndyProtocols;DBXMySQLDriver;fmxobj;fmxdae;DataSnapIndy10ServerTransport;$(DCC_UsePackage)</DCC_UsePackage>
+			<Icon_MainIcon>$(BDS)\bin\delphi_PROJECTICON.ico</Icon_MainIcon>
+			<DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
+			<DCC_DcuOutput>.\$(Platform)\$(Config)</DCC_DcuOutput>
+			<DCC_ExeOutput>.\$(Platform)\$(Config)</DCC_ExeOutput>
+			<DCC_E>false</DCC_E>
+			<DCC_N>false</DCC_N>
+			<DCC_S>false</DCC_S>
+			<DCC_F>false</DCC_F>
+			<DCC_K>false</DCC_K>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Base_Win64)'!=''">
+			<DCC_UsePackage>cxPageControlD16;dxComnD16;dxPSCoreD16;dcldxSkinsCoreD16;cxSpreadSheetD16;dxSkinLiquidSkyD16;dxSkinSilverD16;dxSkinHighContrastD16;vclimg;dxSkinOffice2010SilverD16;dxSkinOffice2010BlackD16;vcldb;cxPivotGridChartD16;dxRibbonD16;cxVerticalGridD16;dxSkinLilianD16;dxThemeD16;dxSkinBlueD16;cxSchedulerGridD16;cxTreeListdxBarPopupMenuD16;dxSkinOffice2010BlueD16;dxGDIPlusD16;dxPSdxDBTVLnkD16;dxSkinTheAsphaltWorldD16;dxSkinSevenD16;cxTreeListD16;cxLibraryD16;dxPSdxDBOCLnkD16;dxPScxSchedulerLnkD16;dxSkinPumpkinD16;dxBarExtItemsD16;dxLayoutControlD16;dxDockingD16;dxSkinXmas2008BlueD16;dxSkinMcSkinD16;cxPivotGridD16;dxPSTeeChartD16;cxEditorsD16;dxPScxCommonD16;DBXOdbcDriver;dxPSLnksD16;dxBarExtDBItemsD16;dxSkinsCoreD16;dxmdsD16;vclactnband;bindcompvcl;dxSkinSummer2008D16;dxTabbedMDID16;vclie;dxPSdxLCLnkD16;dxSkinSharpPlusD16;dxSkinBlackD16;dsnapcon;vclx;dxSkinsdxBarPainterD16;dxPScxTLLnkD16;cxSchedulerD16;dxSkinValentineD16;dxSkinWhiteprintD16;cxPageControldxBarPopupMenuD16;dxSkinOffice2007SilverD16;dxPSdxFCLnkD16;cxBarEditItemD16;TeeDB;dxNavBarD16;dxSkinSpringTimeD16;vclib;dxPSDBTeeChartD16;dxSkinOffice2007BlueD16;dxSkinsdxNavBarPainterD16;cxPivotGridOLAPD16;dxdbtrD16;dxSpellCheckerD16;DBXSybaseASEDriver;dxBarDBNavD16;dxSkinGlassOceansD16;dxSkinStardustD16;dxCoreD16;dxorgcD16;vcldsnap;dxSkinDarkSideD16;dxSkinscxPCPainterD16;dxPScxExtCommonD16;DBXDb2Driver;dxdborD16;vcl;dxSkinscxSchedulerPainterD16;dxPSdxOCLnkD16;dxPScxSSLnkD16;DBXMSSQLDriver;dxSkinCoffeeD16;dxSkinDarkRoomD16;dxPScxVGridLnkD16;dxPScxPivotGridLnkD16;webdsnap;dxBarD16;dxtrmdD16;dxPScxPCProdD16;dxSkinDevExpressStyleD16;dxSkiniMaginaryD16;dxSkinOffice2007BlackD16;adortl;dxPScxGridLnkD16;dxSkinLondonLiquidSkyD16;dxPsPrVwAdvD16;dxSkinOffice2007GreenD16;dxSkinSharpD16;Tee;dxSkinSevenClassicD16;dxSkinsdxDLPainterD16;dxPSPrVwRibbonD16;dxSkinBlueprintD16;TeeUI;dxSkinMoneyTwinsD16;dxSkinDevExpressDarkStyleD16;dxSkinCaramelD16;vcltouch;websnap;dxSkinFoggyD16;VclSmp;dxFlowChartD16;dxSkinsdxRibbonPainterD16;DataSnapConnectors;dxSkinVS2010D16;cxGridD16;dxSkinOffice2007PinkD16;office2010rt;$(DCC_UsePackage)</DCC_UsePackage>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Base_Win32)'!=''">
+			<DCC_UsePackage>JvGlobus;JvMM;JvManagedThreads;cxPageControlD16;dxComnD16;JvCrypt;dxPSCoreD16;dcldxSkinsCoreD16;JvNet;cxSpreadSheetD16;dxSkinLiquidSkyD16;dxSkinSilverD16;dxSkinHighContrastD16;JvDotNetCtrls;vclimg;fmi;dxSkinOffice2010SilverD16;dxSkinOffice2010BlackD16;JvXPCtrls;vcldb;cxPivotGridChartD16;dxRibbonD16;cxVerticalGridD16;dxSkinLilianD16;dxThemeD16;dxSkinBlueD16;cxSchedulerGridD16;cxTreeListdxBarPopupMenuD16;dxSkinOffice2010BlueD16;dxGDIPlusD16;CloudService;dxPSdxDBTVLnkD16;FmxTeeUI;dxSkinTheAsphaltWorldD16;tmsexdxe2;dxSkinSevenD16;cxTreeListD16;JvDB;cxLibraryD16;dxPSdxDBOCLnkD16;JvRuntimeDesign;dxPScxSchedulerLnkD16;JclDeveloperTools;dxSkinPumpkinD16;dxBarExtItemsD16;dxLayoutControlD16;dxDockingD16;vcldbx;dxSkinXmas2008BlueD16;dxSkinMcSkinD16;cxPivotGridD16;dxPSTeeChartD16;cxEditorsD16;dxPScxCommonD16;JvPluginSystem;DBXOdbcDriver;JvCmp;dxPSLnksD16;JvTimeFramework;dxBarExtDBItemsD16;dxSkinsCoreD16;dxmdsD16;frxDB16;intrawebdb_120_160;fs16;FMXTee;vclactnband;bindcompvcl;dxSkinSummer2008D16;dxTabbedMDID16;vclie;Jcl;dxPSdxLCLnkD16;dxSkinSharpPlusD16;dxSkinBlackD16;dsnapcon;JvPascalInterpreter;vclx;dxSkinsdxBarPainterD16;dxPScxTLLnkD16;cxSchedulerD16;dxSkinValentineD16;dxSkinWhiteprintD16;JvBDE;cxPageControldxBarPopupMenuD16;ZComponent;dxSkinOffice2007SilverD16;dxPSdxFCLnkD16;JvDlgs;cxBarEditItemD16;TeeDB;dxNavBarD16;dxSkinSpringTimeD16;Rave100VCL;vclib;inetdbbde;dxPSDBTeeChartD16;dxSkinOffice2007BlueD16;dxSkinsdxNavBarPainterD16;cxPivotGridOLAPD16;dxdbtrD16;dxSpellCheckerD16;DBXSybaseASEDriver;dxBarDBNavD16;dxSkinGlassOceansD16;dxSkinStardustD16;dxCoreD16;dxorgcD16;vcldsnap;dxSkinDarkSideD16;dxSkinscxPCPainterD16;dxPScxExtCommonD16;DBXDb2Driver;Intraweb_120_160;JvCore;vclribbon;frxe16;dxdborD16;vcl;dxSkinscxSchedulerPainterD16;dxPSdxOCLnkD16;dxPScxSSLnkD16;DBXMSSQLDriver;dxSkinCoffeeD16;dxSkinDarkRoomD16;dxPScxVGridLnkD16;dxPScxPivotGridLnkD16;tmsdxe2;JvAppFrm;webdsnap;dxBarD16;dxtrmdD16;dxPScxPCProdD16;dxSkinDevExpressStyleD16;dxSkiniMaginaryD16;dxSkinOffice2007BlackD16;JvDocking;adortl;dxPScxGridLnkD16;JvWizards;JvHMI;dxSkinLondonLiquidSkyD16;JvBands;ZDbc;frx16;dxPsPrVwAdvD16;dxSkinOffice2007GreenD16;ZPlain;dxSkinSharpD16;Tee;JclContainers;JvSystem;dxSkinSevenClassicD16;svnui;dxSkinsdxDLPainterD16;JvControls;dxPSPrVwRibbonD16;dxSkinBlueprintD16;TeeUI;JvJans;dxSkinMoneyTwinsD16;JvPageComps;JvPrintPreview;JvStdCtrls;JvCustom;dxSkinDevExpressDarkStyleD16;dxSkinCaramelD16;vcltouch;ZCore;tmsxlsdxe2;websnap;dxSkinFoggyD16;VclSmp;fsDB16;dxFlowChartD16;dxSkinsdxRibbonPainterD16;DataSnapConnectors;dxSkinVS2010D16;JclVcl;cxGridD16;dxSkinOffice2007PinkD16;ZParseSql;tmswizdxe2;svn;bdertl;dclExcelExportPackXE2;office2010rt;dclExcelExportPack12;$(DCC_UsePackage)</DCC_UsePackage>
+			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+			<DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
+			<VerInfo_Locale>1033</VerInfo_Locale>
+			<Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
+			<VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_1)'!=''">
+			<DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
+			<DCC_Optimize>false</DCC_Optimize>
+			<DCC_GenerateStackFrames>true</DCC_GenerateStackFrames>
+			<DCC_DebugInfoInExe>true</DCC_DebugInfoInExe>
+			<DCC_RemoteDebug>true</DCC_RemoteDebug>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
+			<Icon_MainIcon>E:\Enduro CORDILLERNO\Iconos\senna_helmet.ico</Icon_MainIcon>
+			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+			<VerInfo_Locale>1033</VerInfo_Locale>
+			<DCC_RemoteDebug>false</DCC_RemoteDebug>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_2)'!=''">
+			<DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
+			<DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
+			<DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
+			<DCC_DebugInformation>false</DCC_DebugInformation>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
+			<Icon_MainIcon>enduro_Icon.ico</Icon_MainIcon>
+			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+			<VerInfo_Locale>1033</VerInfo_Locale>
+		</PropertyGroup>
+		<ItemGroup>
+			<DelphiCompile Include="$(MainSource)">
+				<MainSource>MainSource</MainSource>
+			</DelphiCompile>
+			<DCCReference Include="Unit1.pas">
+				<Form>Principal</Form>
+			</DCCReference>
+			<DCCReference Include="LoginForm.pas">
+				<Form>Login</Form>
+			</DCCReference>
+			<DCCReference Include="DataModule.pas">
+				<Form>ConnectionModule</Form>
+				<DesignClass>TDataModule</DesignClass>
+			</DCCReference>
+			<DCCReference Include="F_EEMessage.pas">
+				<Form>F_EE_Message</Form>
+			</DCCReference>
+			<DCCReference Include="Entidades.pas"/>
+			<DCCReference Include="ValidationHelper.pas"/>
+			<DCCReference Include="BindingHelperUnit.pas"/>
+			<DCCReference Include="AbstractCRUD.pas">
+				<Form>AbstractCRUDFrame</Form>
+				<DesignClass>TFrame</DesignClass>
+			</DCCReference>
+			<DCCReference Include="AbstractEditor.pas">
+				<Form>AbstractEdit</Form>
+			</DCCReference>
+			<DCCReference Include="EditMemosEditor.pas">
+				<Form>EditMemos</Form>
+			</DCCReference>
+			<DCCReference Include="UserCRUDUnit.pas">
+				<Form>UserCRUD</Form>
+				<DesignClass>TFrame</DesignClass>
+			</DCCReference>
+			<DCCReference Include="UserEditorUnit.pas">
+				<Form>UserEditor</Form>
+			</DCCReference>
+			<DCCReference Include="BussinessDataSubsystemFacade.pas"/>
+			<DCCReference Include="EncodingHelper.pas"/>
+			<DCCReference Include="LoggedUserSingleton.pas"/>
+			<DCCReference Include="PilotCRUDUnit.pas">
+				<Form>PilotCRUD</Form>
+				<DesignClass>TFrame</DesignClass>
+			</DCCReference>
+			<DCCReference Include="PilotEditorUnit.pas">
+				<Form>PilotEditor</Form>
+			</DCCReference>
+			<DCCReference Include="EventCRUDUnit.pas">
+				<Form>EventCRUD</Form>
+				<DesignClass>TFrame</DesignClass>
+			</DCCReference>
+			<DCCReference Include="EventoEditorUnit.pas">
+				<Form>EventEditor</Form>
+			</DCCReference>
+			<DCCReference Include="InscripcionCRUD.pas">
+				<Form>InscripcionesCRUD</Form>
+				<DesignClass>TFrame</DesignClass>
+			</DCCReference>
+			<DCCReference Include="PuntuacionCRUDUnit.pas">
+				<Form>PuntuacionCRUD</Form>
+				<DesignClass>TFrame</DesignClass>
+			</DCCReference>
+			<DCCReference Include="ConfigurationEditorFrame.pas">
+				<Form>ConfigurationFrame</Form>
+				<DesignClass>TFrame</DesignClass>
+			</DCCReference>
+			<DCCReference Include="ConfigureFilesUtilities.pas"/>
+			<DCCReference Include="CategoriaCrudUnit.pas">
+				<Form>CategoriaCRUD</Form>
+				<DesignClass>TFrame</DesignClass>
+			</DCCReference>
+			<DCCReference Include="CategoriaEdit.pas">
+				<Form>CategoriaEditor</Form>
+			</DCCReference>
+			<DCCReference Include="HandicupCRUDUnit.pas">
+				<Form>HandicupCRUD</Form>
+				<DesignClass>TFrame</DesignClass>
+			</DCCReference>
+			<DCCReference Include="HandicupEditUnit.pas">
+				<Form>HandicupEditor</Form>
+			</DCCReference>
+			<DCCReference Include="MotoCRUDUnit.pas">
+				<Form>MotoCRUD</Form>
+				<DesignClass>TFrame</DesignClass>
+			</DCCReference>
+			<DCCReference Include="MotoEditorUnit.pas">
+				<Form>MotoEditor</Form>
+			</DCCReference>
+			<DCCReference Include="PilotEditorInnerUnit.pas">
+				<Form>PilotInnerEditor</Form>
+				<FormType>dfm</FormType>
+			</DCCReference>
+			<DCCReference Include="GrillaTiempoEspera.pas">
+				<Form>FGrillaTiempoEspera</Form>
+				<FormType>dfm</FormType>
+			</DCCReference>
+			<DCCReference Include="FormularioTiempoEspera.pas">
+				<Form>AddPilotToWaitingGrid</Form>
+				<FormType>dfm</FormType>
+			</DCCReference>
+			<DCCReference Include="ReportPuestoEvento.pas">
+				<Form>ReportePuestoEvento</Form>
+				<FormType>dfm</FormType>
+			</DCCReference>
+			<DCCReference Include="F_CustReport.pas">
+				<Form>CustPreview</Form>
+			</DCCReference>
+			<DCCReference Include="ReportTotalPuestoEvento.pas">
+				<Form>ReporteTotalPuestoEvento</Form>
+				<FormType>dfm</FormType>
+			</DCCReference>
+			<DCCReference Include="CampeonatoCRUDUnit.pas">
+				<Form>CampeonatoCRUD</Form>
+				<FormType>dfm</FormType>
+				<DesignClass>TFrame</DesignClass>
+			</DCCReference>
+			<DCCReference Include="CampeonatoEditorUnit.pas">
+				<Form>CampeonatoEditor</Form>
+				<FormType>dfm</FormType>
+			</DCCReference>
+			<DCCReference Include="ReporteMotos.pas">
+				<Form>ReportMotos</Form>
+				<FormType>dfm</FormType>
+			</DCCReference>
+			<DCCReference Include="ReportePuntuacionEvento.pas">
+				<Form>ReportPuntuacionEvento</Form>
+				<FormType>dfm</FormType>
+			</DCCReference>
+			<DCCReference Include="MotoEditorInnerUnit.pas">
+				<Form>MotoEditorInner</Form>
+				<FormType>dfm</FormType>
+			</DCCReference>
+			<DCCReference Include="TomaTiemposUnit.pas">
+				<Form>TomaTiempos</Form>
+				<FormType>dfm</FormType>
+			</DCCReference>
+			<DCCReference Include="GrillaPartidaUnit.pas">
+				<Form>GrillaPartida</Form>
+				<FormType>dfm</FormType>
+			</DCCReference>
+			<DCCReference Include="CambiarEstadoPilotoGrillaUnit.pas">
+				<Form>CambiarEstadoPilotoGrilla</Form>
+				<FormType>dfm</FormType>
+			</DCCReference>
+			<DCCReference Include="Demopreview.pas">
+				<Form>FormPreview</Form>
+			</DCCReference>
+			<DCCReference Include="AddTomaTiempo.pas">
+				<Form>AddTomaTiempoForm</Form>
+				<FormType>dfm</FormType>
+			</DCCReference>
+			<DCCReference Include="GrillaTomaTiempo.pas">
+				<Form>GrillaTomaTiempoForm</Form>
+				<FormType>dfm</FormType>
+			</DCCReference>
+			<DCCReference Include="RecargoTomaTiempoEventoUnit.pas">
+				<Form>RecargoTomaTiempoEvento</Form>
+				<FormType>dfm</FormType>
+			</DCCReference>
+			<DCCReference Include="TomaTiemposEditUnit.pas">
+				<Form>TomaTiemposEdit</Form>
+				<FormType>dfm</FormType>
+			</DCCReference>
+			<DCCReference Include="ReconocimientoUnit.pas">
+				<Form>Reconocimiento</Form>
+				<FormType>dfm</FormType>
+			</DCCReference>
+			<DCCReference Include="GrillaReconocimiento.pas">
+				<Form>GrillaReconocimientoForm</Form>
+				<FormType>dfm</FormType>
+			</DCCReference>
+			<DCCReference Include="ContactoCRUDUnit.pas">
+				<Form>ContactCRUD</Form>
+				<FormType>dfm</FormType>
+				<DesignClass>TFrame</DesignClass>
+			</DCCReference>
+			<DCCReference Include="ContactoEditorUnit.pas">
+				<Form>ContactEdit</Form>
+				<FormType>dfm</FormType>
+			</DCCReference>
+			<DCCReference Include="GrillaTomaTiempoMultiCat.pas">
+				<Form>GrillaTomaTiempoMultiCatForm</Form>
+			</DCCReference>
+			<DCCReference Include="ConsultaDatosPilotoUnit.pas">
+				<Form>ConsultaDatosPiloto</Form>
+				<FormType>dfm</FormType>
+			</DCCReference>
+			<DCCReference Include="GrillaReconocimientoMulti.pas">
+				<Form>GrillaReconocimientoMultiForm</Form>
+			</DCCReference>
+			<DCCReference Include="AgrupacionReconocimiento.pas">
+				<Form>AgrupacionReconocimientoForm</Form>
+				<FormType>dfm</FormType>
+			</DCCReference>
+			<DCCReference Include="EditAgrupacionTomaTiempos.pas">
+				<Form>EdicionAgrupacion</Form>
+				<FormType>dfm</FormType>
+			</DCCReference>
+			<DCCReference Include="GrillaAgrupacionTomasMultiCat.pas">
+				<Form>GrillaAgrupacionMultiCatForm</Form>
+			</DCCReference>
+			<DCCReference Include="NumeracionDisponibleEdit.pas">
+				<Form>FormNumeracionDisponible</Form>
+			</DCCReference>
+			<DCCReference Include="NaveganteEdit.pas">
+				<Form>NaveganteEditor</Form>
+				<FormType>dfm</FormType>
+			</DCCReference>
+			<DCCReference Include="GrillaAbastecimiento.pas">
+				<Form>FGrillaAbastecimiento</Form>
+			</DCCReference>
+			<DCCReference Include="AgregarTomaTiempoAbastecimiento.pas">
+				<Form>AddTomaTiempoAbastecimiento</Form>
+			</DCCReference>
+			<DCCReference Include="ImportarAbastecimientoEnTomaTiempo.pas">
+				<Form>ImportarTomaTiempoAbastecimiento</Form>
+			</DCCReference>
+			<DCCReference Include="GrillaAdministracionAbastecimiento.pas">
+				<Form>TAdminGillaAbastecimiento</Form>
+				<FormType>dfm</FormType>
+			</DCCReference>
+			<DCCReference Include="AgregarTomaTiempoAbastecimientoWithTime.pas">
+				<Form>AddTomaTiempoAbastecimientoWithTime</Form>
+			</DCCReference>
+			<DCCReference Include="GrillaTomaTiempoMultiCatEPU.pas">
+				<Form>GrillaTomaTiempoMultiCatEPUForm</Form>
+			</DCCReference>
+			<DCCReference Include="PuntosCRUDUnit.pas">
+				<Form>TPuntosCRUD</Form>
+				<FormType>dfm</FormType>
+				<DesignClass>TFrame</DesignClass>
+			</DCCReference>
+			<DCCReference Include="PuntosEditUnit.pas">
+				<Form>PuntosEditor</Form>
+				<FormType>dfm</FormType>
+			</DCCReference>
+			<DCCReference Include="AddTomaTiempoGrilla.pas">
+				<Form>TAddTomaTiempoGridForm</Form>
+				<FormType>dfm</FormType>
+			</DCCReference>
+			<DCCReference Include="Utomatiempoio.pas"/>
+			<BuildConfiguration Include="Release">
+				<Key>Cfg_2</Key>
+				<CfgParent>Base</CfgParent>
+			</BuildConfiguration>
+			<BuildConfiguration Include="Base">
+				<Key>Base</Key>
+			</BuildConfiguration>
+			<BuildConfiguration Include="Debug">
+				<Key>Cfg_1</Key>
+				<CfgParent>Base</CfgParent>
+			</BuildConfiguration>
+		</ItemGroup>
+		<ProjectExtensions>
+			<Borland.Personality>Delphi.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<Delphi.Personality>
+					<VersionInfo>
+						<VersionInfo Name="IncludeVerInfo">False</VersionInfo>
+						<VersionInfo Name="AutoIncBuild">False</VersionInfo>
+						<VersionInfo Name="MajorVer">1</VersionInfo>
+						<VersionInfo Name="MinorVer">0</VersionInfo>
+						<VersionInfo Name="Release">0</VersionInfo>
+						<VersionInfo Name="Build">0</VersionInfo>
+						<VersionInfo Name="Debug">False</VersionInfo>
+						<VersionInfo Name="PreRelease">False</VersionInfo>
+						<VersionInfo Name="Special">False</VersionInfo>
+						<VersionInfo Name="Private">False</VersionInfo>
+						<VersionInfo Name="DLL">False</VersionInfo>
+						<VersionInfo Name="Locale">11274</VersionInfo>
+						<VersionInfo Name="CodePage">1252</VersionInfo>
+					</VersionInfo>
+					<VersionInfoKeys>
+						<VersionInfoKeys Name="CompanyName"/>
+						<VersionInfoKeys Name="FileDescription"/>
+						<VersionInfoKeys Name="FileVersion">1.0.0.0</VersionInfoKeys>
+						<VersionInfoKeys Name="InternalName"/>
+						<VersionInfoKeys Name="LegalCopyright"/>
+						<VersionInfoKeys Name="LegalTrademarks"/>
+						<VersionInfoKeys Name="OriginalFilename"/>
+						<VersionInfoKeys Name="ProductName"/>
+						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
+						<VersionInfoKeys Name="Comments"/>
+					</VersionInfoKeys>
+					<Source>
+						<Source Name="MainSource">enduro.dpr</Source>
+					</Source>
+					<Excluded_Packages>
+						<Excluded_Packages Name="C:\Users\Enrique\Documents\DevExpress VCL\Library\Delphi16\dclcxPivotGridOLAPD16.bpl">ExpressPivotGrid 2 OLAP by Developer Express Inc.</Excluded_Packages>
+						<Excluded_Packages Name="$(BDSBIN)\dcloffice2k160.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
+						<Excluded_Packages Name="$(BDSBIN)\dclofficexp160.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
+					</Excluded_Packages>
+				</Delphi.Personality>
+				<Deployment/>
+				<Platforms>
+					<Platform value="Win64">False</Platform>
+					<Platform value="Win32">True</Platform>
+				</Platforms>
+				<ModelSupport>False</ModelSupport>
+			</BorlandProject>
+			<ProjectFileVersion>12</ProjectFileVersion>
+		</ProjectExtensions>
+		<Import Condition="Exists('$(BDS)\Bin\CodeGear.Delphi.Targets')" Project="$(BDS)\Bin\CodeGear.Delphi.Targets"/>
+		<Import Condition="Exists('$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj')" Project="$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj"/>
+	</Project>
