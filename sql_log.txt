@@ -1,0 +1,317 @@
+2026-04-02 20:28:01 cat: Connect, proto: mysqld-5, msg: CONNECT TO "enduro" AS USER "root"
+2026-04-02 20:28:01 cat: Execute, proto: mysqld-5, msg: SET NAMES utf8
+2026-04-02 20:28:13 cat: Execute, proto: mysqld-5, msg: SELECT nro_competidor 'Nro. Competidor', nombre_piloto Competidor, Categoria, CONCAT(sel_formatted_total_time(SUM(tiempo_total)), '.') 'Tiempo Total', SUM(ranking.Vueltas) Vueltas from (select tte.oid, sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) nro_competidor, CONCAT(p.apellido, ', ', p.nombre) as nombre_piloto, sel_nombre_categoria_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) Categoria, sel_categoria_oid_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) categoria_oid, sel_total_time_recono(tt.toma_tiempo_evento_oid, tt.piloto_oid) tiempo_total, sel_can_vueltas_recono(tt.toma_tiempo_evento_oid, tt.piloto_oid) Vueltas from toma_tiempos_reconocimiento tt join toma_tiempo_evento tte on tt.toma_tiempo_evento_oid = tte.oid join piloto p on tt.piloto_oid = p.oid join inscripcion_piloto_evento ipe on (ipe.evento_oid = tte.evento_oid and ipe.piloto_oid = tt.piloto_oid) where tte.oid in (SELECT DISTINCT toma_tiempo_oid FROM toma_tiempo_agrupacion_tt WHERE toma_tiempo_agrupacion_oid = NULL) group by p.oid, tte.oid) ranking inner join categorias c on c.oid = categoria_oid group by nro_competidor, nombre_piloto, Categoria order by c.orden IS NULL, c.orden, Vueltas desc, 'Tiempo Total' asc
+2026-04-02 20:28:13 cat: Execute, proto: mysqld-5, msg: SHOW TABLES FROM enduro LIKE 'ranking'
+2026-04-02 20:28:13 cat: Execute, proto: mysqld-5, msg: SHOW TABLES FROM enduro LIKE 'categorias'
+2026-04-02 20:28:13 cat: Execute, proto: mysqld-5, msg: SHOW FULL COLUMNS FROM enduro.categorias LIKE '%'
+2026-04-02 20:31:02 cat: Execute, proto: mysqld-5, msg: SELECT nro_competidor 'Nro. Competidor', nombre_piloto Competidor, Categoria, CONCAT(sel_formatted_total_time(SUM(tiempo_total)), '.') 'Tiempo Total', SUM(ranking.Vueltas) Vueltas from (select tte.oid, sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) nro_competidor, CONCAT(p.apellido, ', ', p.nombre) as nombre_piloto, sel_nombre_categoria_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) Categoria, sel_categoria_oid_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) categoria_oid, sel_total_time_recono(tt.toma_tiempo_evento_oid, tt.piloto_oid) tiempo_total, sel_can_vueltas_recono(tt.toma_tiempo_evento_oid, tt.piloto_oid) Vueltas from toma_tiempos_reconocimiento tt join toma_tiempo_evento tte on tt.toma_tiempo_evento_oid = tte.oid join piloto p on tt.piloto_oid = p.oid join inscripcion_piloto_evento ipe on (ipe.evento_oid = tte.evento_oid and ipe.piloto_oid = tt.piloto_oid) where tte.oid in (SELECT DISTINCT toma_tiempo_oid FROM toma_tiempo_agrupacion_tt WHERE toma_tiempo_agrupacion_oid = 1) group by p.oid, tte.oid) ranking inner join categorias c on c.oid = categoria_oid group by nro_competidor, nombre_piloto, Categoria order by c.orden IS NULL, c.orden, Vueltas desc, 'Tiempo Total' asc
+2026-04-02 20:33:42 cat: Execute, proto: mysqld-5, msg: SELECT nro_competidor
+       'Nro. Competidor',
+       nombre_piloto
+       Competidor,
+       categoria,
+       Concat(Sel_formatted_total_time(Sel_total_time(1031, piloto_oid)), '.')
+       AS 'PE1',
+       Sel_pos_total_time_recono(1031, piloto_oid, categoria_oid)
+       AS 'Pos. PE1',
+       Concat(Sel_formatted_total_time(Sel_total_time(1032, piloto_oid)), '.')
+       AS 'PE2',
+       Sel_pos_total_time_recono(1032, piloto_oid, categoria_oid)
+       AS 'Pos. PE2',
+       Concat(Sel_formatted_total_time(Sel_total_time(1033, piloto_oid)), '.')
+       AS 'PE3',
+       Sel_pos_total_time_recono(1033, piloto_oid, categoria_oid)
+       AS 'Pos. PE3',
+       Concat(Sel_formatted_total_time(Sel_total_time(1034, piloto_oid)), '.')
+       AS 'PE4',
+       Sel_pos_total_time_recono(1034, piloto_oid, categoria_oid)
+       AS 'Pos. PE4',
+       Concat(Sel_formatted_total_time(Sel_total_time(1035, piloto_oid)), '.')
+       AS 'PE5',
+       Sel_pos_total_time_recono(1035, piloto_oid, categoria_oid)
+       AS 'Pos. PE5',
+       Concat(Sel_formatted_total_time(Sel_total_time(1036, piloto_oid)), '.')
+       AS 'PE6',
+       Sel_pos_total_time_recono(1036, piloto_oid, categoria_oid)
+       AS 'Pos. PE6',
+       Concat(Sel_formatted_total_time(Sel_total_time(1037, piloto_oid)), '.')
+       AS 'PE7',
+       Sel_pos_total_time_recono(1037, piloto_oid, categoria_oid)
+       AS 'Pos. PE7',
+       Concat(Sel_formatted_total_time(Sel_total_time(1464, piloto_oid)), '.')
+       AS
+       'Domingo 29/03',
+       Sel_pos_total_time_recono(1464, piloto_oid, categoria_oid)
+       AS
+       'Pos. Domingo 29/03',
+       Sel_pos_agrup_total_time_recono(1, piloto_oid, categoria_oid)
+       TotalPuestos,
+       Concat(Sel_formatted_total_time(Sum(tiempo_total)), '.')
+       'Tiempo Total',
+       Sum(ranking.vueltas)
+       Vueltas
+FROM   (SELECT tte.oid,
+               Sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid,
+               tte.evento_oid, ipe.piloto_oid)
+               nro_competidor
+                      ,
+       Sel_categoria_oid_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid,
+       tte.evento_oid, tt.piloto_oid)                            categoria_oid,
+       CASE
+         WHEN c.utiliza_acompaniante = 1 THEN
+         Concat(Uc_words(Concat(p.apellido,
+                         ', ',
+                         p.nombre)), Ifnull(
+         Uc_words(
+         Concat(' / ', n.apellido, ', ', n.nombre)), ' '))
+         ELSE Uc_words(Concat(p.apellido, ', ', p.nombre))
+       END                                                       AS
+               nombre_piloto,
+       Sel_nombre_categoria_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid,
+       tte.evento_oid, ipe.piloto_oid)                           Categoria,
+       Sel_total_time(tt.toma_tiempo_evento_oid, tt.piloto_oid)  tiempo_total,
+       Sel_can_vueltas(tt.toma_tiempo_evento_oid, tt.piloto_oid) Vueltas,
+       p.oid                                                     AS piloto_oid
+        FROM   toma_tiempos tt
+               JOIN toma_tiempo_evento tte
+                 ON tt.toma_tiempo_evento_oid = tte.oid
+               JOIN piloto p
+                 ON tt.piloto_oid = p.oid
+               JOIN inscripcion_piloto_evento ipe
+                 ON ( ipe.evento_oid = tte.evento_oid
+                      AND ipe.piloto_oid = tt.piloto_oid )
+               LEFT JOIN navegante n
+                      ON n.piloto_oid = p.oid,
+               categorias c
+        WHERE  tte.oid IN (SELECT DISTINCT toma_tiempo_oid
+                           FROM   toma_tiempo_agrupacion_tt
+                           WHERE  toma_tiempo_agrupacion_oid = 1)
+               AND c.oid =
+       Sel_categoria_oid_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid,
+                   ipe.evento_oid, ipe.piloto_oid)
+        GROUP  BY p.oid,
+                  tte.oid) ranking
+GROUP  BY nro_competidor,
+          nombre_piloto,
+          categoria
+ORDER  BY categoria,
+          totalpuestos,
+          Sel_pos_total_time_recono((SELECT Max(toma_tiempo_oid)
+                                     FROM   toma_tiempo_agrupacion_tt
+                                     WHERE  toma_tiempo_agrupacion_oid = ),
+          piloto_oid,
+          categoria_oid) 
+, errcode: 1064, error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '),
+          piloto_oid,
+          categoria_oid)' at line 94
+2026-04-02 20:34:03 cat: Execute, proto: mysqld-5, msg: SELECT nro_competidor
+       'Nro. Competidor',
+       nombre_piloto
+       Competidor,
+       categoria,
+       Concat(Sel_formatted_total_time(Sel_total_time(1031, piloto_oid)), '.')
+       AS 'PE1',
+       Sel_pos_total_time_recono(1031, piloto_oid, categoria_oid)
+       AS 'Pos. PE1',
+       Concat(Sel_formatted_total_time(Sel_total_time(1032, piloto_oid)), '.')
+       AS 'PE2',
+       Sel_pos_total_time_recono(1032, piloto_oid, categoria_oid)
+       AS 'Pos. PE2',
+       Concat(Sel_formatted_total_time(Sel_total_time(1033, piloto_oid)), '.')
+       AS 'PE3',
+       Sel_pos_total_time_recono(1033, piloto_oid, categoria_oid)
+       AS 'Pos. PE3',
+       Concat(Sel_formatted_total_time(Sel_total_time(1034, piloto_oid)), '.')
+       AS 'PE4',
+       Sel_pos_total_time_recono(1034, piloto_oid, categoria_oid)
+       AS 'Pos. PE4',
+       Concat(Sel_formatted_total_time(Sel_total_time(1035, piloto_oid)), '.')
+       AS 'PE5',
+       Sel_pos_total_time_recono(1035, piloto_oid, categoria_oid)
+       AS 'Pos. PE5',
+       Concat(Sel_formatted_total_time(Sel_total_time(1036, piloto_oid)), '.')
+       AS 'PE6',
+       Sel_pos_total_time_recono(1036, piloto_oid, categoria_oid)
+       AS 'Pos. PE6',
+       Concat(Sel_formatted_total_time(Sel_total_time(1037, piloto_oid)), '.')
+       AS 'PE7',
+       Sel_pos_total_time_recono(1037, piloto_oid, categoria_oid)
+       AS 'Pos. PE7',
+       Concat(Sel_formatted_total_time(Sel_total_time(1464, piloto_oid)), '.')
+       AS
+       'Domingo 29/03',
+       Sel_pos_total_time_recono(1464, piloto_oid, categoria_oid)
+       AS
+       'Pos. Domingo 29/03',
+       Sel_pos_agrup_total_time_recono(1, piloto_oid, categoria_oid)
+       TotalPuestos,
+       Concat(Sel_formatted_total_time(Sum(tiempo_total)), '.')
+       'Tiempo Total',
+       Sum(ranking.vueltas)
+       Vueltas
+FROM   (SELECT tte.oid,
+               Sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid,
+               tte.evento_oid, ipe.piloto_oid)
+               nro_competidor
+                      ,
+       Sel_categoria_oid_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid,
+       tte.evento_oid, tt.piloto_oid)                            categoria_oid,
+       CASE
+         WHEN c.utiliza_acompaniante = 1 THEN
+         Concat(Uc_words(Concat(p.apellido,
+                         ', ',
+                         p.nombre)), Ifnull(
+         Uc_words(
+         Concat(' / ', n.apellido, ', ', n.nombre)), ' '))
+         ELSE Uc_words(Concat(p.apellido, ', ', p.nombre))
+       END                                                       AS
+               nombre_piloto,
+       Sel_nombre_categoria_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid,
+       tte.evento_oid, ipe.piloto_oid)                           Categoria,
+       Sel_total_time(tt.toma_tiempo_evento_oid, tt.piloto_oid)  tiempo_total,
+       Sel_can_vueltas(tt.toma_tiempo_evento_oid, tt.piloto_oid) Vueltas,
+       p.oid                                                     AS piloto_oid
+        FROM   toma_tiempos tt
+               JOIN toma_tiempo_evento tte
+                 ON tt.toma_tiempo_evento_oid = tte.oid
+               JOIN piloto p
+                 ON tt.piloto_oid = p.oid
+               JOIN inscripcion_piloto_evento ipe
+                 ON ( ipe.evento_oid = tte.evento_oid
+                      AND ipe.piloto_oid = tt.piloto_oid )
+               LEFT JOIN navegante n
+                      ON n.piloto_oid = p.oid,
+               categorias c
+        WHERE  tte.oid IN (SELECT DISTINCT toma_tiempo_oid
+                           FROM   toma_tiempo_agrupacion_tt
+                           WHERE  toma_tiempo_agrupacion_oid = 1)
+               AND c.oid =
+       Sel_categoria_oid_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid,
+                   ipe.evento_oid, ipe.piloto_oid)
+        GROUP  BY p.oid,
+                  tte.oid) ranking
+GROUP  BY nro_competidor,
+          nombre_piloto,
+          categoria
+ORDER  BY categoria,
+          totalpuestos,
+          Sel_pos_total_time_recono((SELECT Max(toma_tiempo_oid)
+                                     FROM   toma_tiempo_agrupacion_tt
+                                     WHERE  toma_tiempo_agrupacion_oid = ),
+          piloto_oid,
+          categoria_oid) 
+, errcode: 1064, error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '),
+          piloto_oid,
+          categoria_oid)' at line 94
+2026-04-02 20:44:16 cat: Execute, proto: mysqld-5, msg: SELECT nro_competidor 'Nro. Competidor', nombre_piloto Competidor, Categoria, CONCAT(sel_formatted_total_time(SUM(tiempo_total)), '.') 'Tiempo Total', SUM(ranking.Vueltas) Vueltas from (select tte.oid, sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) nro_competidor, CONCAT(p.apellido, ', ', p.nombre) as nombre_piloto, sel_nombre_categoria_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) Categoria, sel_categoria_oid_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) categoria_oid, sel_total_time_recono(tt.toma_tiempo_evento_oid, tt.piloto_oid) tiempo_total, sel_can_vueltas_recono(tt.toma_tiempo_evento_oid, tt.piloto_oid) Vueltas from toma_tiempos_reconocimiento tt join toma_tiempo_evento tte on tt.toma_tiempo_evento_oid = tte.oid join piloto p on tt.piloto_oid = p.oid join inscripcion_piloto_evento ipe on (ipe.evento_oid = tte.evento_oid and ipe.piloto_oid = tt.piloto_oid) where tte.oid in (SELECT DISTINCT toma_tiempo_oid FROM toma_tiempo_agrupacion_tt WHERE toma_tiempo_agrupacion_oid = NULL) group by p.oid, tte.oid) ranking inner join categorias c on c.oid = categoria_oid group by nro_competidor, nombre_piloto, Categoria order by c.orden IS NULL, c.orden, Vueltas desc, 'Tiempo Total' asc
+2026-04-02 20:44:27 cat: Execute, proto: mysqld-5, msg: SELECT nro_competidor 'Nro. Competidor', nombre_piloto Competidor, Categoria, CONCAT(sel_formatted_total_time(SUM(tiempo_total)), '.') 'Tiempo Total', SUM(ranking.Vueltas) Vueltas from (select tte.oid, sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) nro_competidor, CONCAT(p.apellido, ', ', p.nombre) as nombre_piloto, sel_nombre_categoria_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) Categoria, sel_categoria_oid_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) categoria_oid, sel_total_time_recono(tt.toma_tiempo_evento_oid, tt.piloto_oid) tiempo_total, sel_can_vueltas_recono(tt.toma_tiempo_evento_oid, tt.piloto_oid) Vueltas from toma_tiempos_reconocimiento tt join toma_tiempo_evento tte on tt.toma_tiempo_evento_oid = tte.oid join piloto p on tt.piloto_oid = p.oid join inscripcion_piloto_evento ipe on (ipe.evento_oid = tte.evento_oid and ipe.piloto_oid = tt.piloto_oid) where tte.oid in (SELECT DISTINCT toma_tiempo_oid FROM toma_tiempo_agrupacion_tt WHERE toma_tiempo_agrupacion_oid = NULL) group by p.oid, tte.oid) ranking inner join categorias c on c.oid = categoria_oid group by nro_competidor, nombre_piloto, Categoria order by c.orden IS NULL, c.orden, Vueltas desc, 'Tiempo Total' asc
+2026-04-02 20:44:35 cat: Execute, proto: mysqld-5, msg: SELECT nro_competidor 'Nro. Competidor', nombre_piloto Competidor, Categoria, CONCAT(sel_formatted_total_time(SUM(tiempo_total)), '.') 'Tiempo Total', SUM(ranking.Vueltas) Vueltas from (select tte.oid, sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) nro_competidor, CONCAT(p.apellido, ', ', p.nombre) as nombre_piloto, sel_nombre_categoria_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) Categoria, sel_categoria_oid_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) categoria_oid, sel_total_time_recono(tt.toma_tiempo_evento_oid, tt.piloto_oid) tiempo_total, sel_can_vueltas_recono(tt.toma_tiempo_evento_oid, tt.piloto_oid) Vueltas from toma_tiempos_reconocimiento tt join toma_tiempo_evento tte on tt.toma_tiempo_evento_oid = tte.oid join piloto p on tt.piloto_oid = p.oid join inscripcion_piloto_evento ipe on (ipe.evento_oid = tte.evento_oid and ipe.piloto_oid = tt.piloto_oid) where tte.oid in (SELECT DISTINCT toma_tiempo_oid FROM toma_tiempo_agrupacion_tt WHERE toma_tiempo_agrupacion_oid = NULL) group by p.oid, tte.oid) ranking inner join categorias c on c.oid = categoria_oid group by nro_competidor, nombre_piloto, Categoria order by c.orden IS NULL, c.orden, Vueltas desc, 'Tiempo Total' asc
+2026-04-02 20:44:35 cat: Execute, proto: mysqld-5, msg: SELECT nro_competidor 'Nro. Competidor', nombre_piloto Competidor, Categoria, CONCAT(sel_formatted_total_time(SUM(tiempo_total)), '.') 'Tiempo Total', SUM(ranking.Vueltas) Vueltas from (select tte.oid, sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) nro_competidor, CONCAT(p.apellido, ', ', p.nombre) as nombre_piloto, sel_nombre_categoria_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) Categoria, sel_categoria_oid_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) categoria_oid, sel_total_time_recono(tt.toma_tiempo_evento_oid, tt.piloto_oid) tiempo_total, sel_can_vueltas_recono(tt.toma_tiempo_evento_oid, tt.piloto_oid) Vueltas from toma_tiempos_reconocimiento tt join toma_tiempo_evento tte on tt.toma_tiempo_evento_oid = tte.oid join piloto p on tt.piloto_oid = p.oid join inscripcion_piloto_evento ipe on (ipe.evento_oid = tte.evento_oid and ipe.piloto_oid = tt.piloto_oid) where tte.oid in (SELECT DISTINCT toma_tiempo_oid FROM toma_tiempo_agrupacion_tt WHERE toma_tiempo_agrupacion_oid = NULL) group by p.oid, tte.oid) ranking inner join categorias c on c.oid = categoria_oid group by nro_competidor, nombre_piloto, Categoria order by c.orden IS NULL, c.orden, Vueltas desc, 'Tiempo Total' asc
+2026-04-02 20:44:35 cat: Execute, proto: mysqld-5, msg: SELECT nro_competidor 'Nro. Competidor', nombre_piloto Competidor, Categoria, CONCAT(sel_formatted_total_time(SUM(tiempo_total)), '.') 'Tiempo Total', SUM(ranking.Vueltas) Vueltas from (select tte.oid, sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) nro_competidor, CONCAT(p.apellido, ', ', p.nombre) as nombre_piloto, sel_nombre_categoria_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) Categoria, sel_categoria_oid_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) categoria_oid, sel_total_time_recono(tt.toma_tiempo_evento_oid, tt.piloto_oid) tiempo_total, sel_can_vueltas_recono(tt.toma_tiempo_evento_oid, tt.piloto_oid) Vueltas from toma_tiempos_reconocimiento tt join toma_tiempo_evento tte on tt.toma_tiempo_evento_oid = tte.oid join piloto p on tt.piloto_oid = p.oid join inscripcion_piloto_evento ipe on (ipe.evento_oid = tte.evento_oid and ipe.piloto_oid = tt.piloto_oid) where tte.oid in (SELECT DISTINCT toma_tiempo_oid FROM toma_tiempo_agrupacion_tt WHERE toma_tiempo_agrupacion_oid = NULL) group by p.oid, tte.oid) ranking inner join categorias c on c.oid = categoria_oid group by nro_competidor, nombre_piloto, Categoria order by c.orden IS NULL, c.orden, Vueltas desc, 'Tiempo Total' asc
+2026-04-02 20:44:36 cat: Execute, proto: mysqld-5, msg: SELECT nro_competidor 'Nro. Competidor', nombre_piloto Competidor, Categoria, CONCAT(sel_formatted_total_time(SUM(tiempo_total)), '.') 'Tiempo Total', SUM(ranking.Vueltas) Vueltas from (select tte.oid, sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) nro_competidor, CONCAT(p.apellido, ', ', p.nombre) as nombre_piloto, sel_nombre_categoria_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) Categoria, sel_categoria_oid_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) categoria_oid, sel_total_time_recono(tt.toma_tiempo_evento_oid, tt.piloto_oid) tiempo_total, sel_can_vueltas_recono(tt.toma_tiempo_evento_oid, tt.piloto_oid) Vueltas from toma_tiempos_reconocimiento tt join toma_tiempo_evento tte on tt.toma_tiempo_evento_oid = tte.oid join piloto p on tt.piloto_oid = p.oid join inscripcion_piloto_evento ipe on (ipe.evento_oid = tte.evento_oid and ipe.piloto_oid = tt.piloto_oid) where tte.oid in (SELECT DISTINCT toma_tiempo_oid FROM toma_tiempo_agrupacion_tt WHERE toma_tiempo_agrupacion_oid = NULL) group by p.oid, tte.oid) ranking inner join categorias c on c.oid = categoria_oid group by nro_competidor, nombre_piloto, Categoria order by c.orden IS NULL, c.orden, Vueltas desc, 'Tiempo Total' asc
+2026-04-02 20:44:36 cat: Execute, proto: mysqld-5, msg: SELECT nro_competidor 'Nro. Competidor', nombre_piloto Competidor, Categoria, CONCAT(sel_formatted_total_time(SUM(tiempo_total)), '.') 'Tiempo Total', SUM(ranking.Vueltas) Vueltas from (select tte.oid, sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) nro_competidor, CONCAT(p.apellido, ', ', p.nombre) as nombre_piloto, sel_nombre_categoria_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) Categoria, sel_categoria_oid_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) categoria_oid, sel_total_time_recono(tt.toma_tiempo_evento_oid, tt.piloto_oid) tiempo_total, sel_can_vueltas_recono(tt.toma_tiempo_evento_oid, tt.piloto_oid) Vueltas from toma_tiempos_reconocimiento tt join toma_tiempo_evento tte on tt.toma_tiempo_evento_oid = tte.oid join piloto p on tt.piloto_oid = p.oid join inscripcion_piloto_evento ipe on (ipe.evento_oid = tte.evento_oid and ipe.piloto_oid = tt.piloto_oid) where tte.oid in (SELECT DISTINCT toma_tiempo_oid FROM toma_tiempo_agrupacion_tt WHERE toma_tiempo_agrupacion_oid = NULL) group by p.oid, tte.oid) ranking inner join categorias c on c.oid = categoria_oid group by nro_competidor, nombre_piloto, Categoria order by c.orden IS NULL, c.orden, Vueltas desc, 'Tiempo Total' asc
+2026-04-02 20:54:17 cat: Execute, proto: mysqld-5, msg: SELECT * FROM campeonato
+
+2026-04-02 20:54:17 cat: Execute, proto: mysqld-5, msg: SHOW TABLES FROM enduro LIKE 'campeonato'
+2026-04-02 20:54:17 cat: Execute, proto: mysqld-5, msg: SHOW FULL COLUMNS FROM enduro.campeonato LIKE '%'
+2026-04-02 20:54:17 cat: Execute, proto: mysqld-5, msg: select e.oid, CONCAT(e.nro_fecha, ' - ', DATE_FORMAT(e.fecha,  '%d/%m/%Y'), ' - ', e.nombre) as nombre, e.campeonato_oid 
+from evento e
+order by e.nro_fecha
+
+2026-04-02 20:54:17 cat: Execute, proto: mysqld-5, msg: SHOW TABLES FROM enduro LIKE 'evento'
+2026-04-02 20:54:17 cat: Execute, proto: mysqld-5, msg: SHOW FULL COLUMNS FROM enduro.evento LIKE '%'
+2026-04-02 20:54:17 cat: Execute, proto: mysqld-5, msg: select oid, CONCAT(date_format(toma_tiempo_start_time, '%d/%m/%Y %H:%i:%s'), ' - ', nombre) as nombre, evento_oid from toma_tiempo_evento where tipo_toma_tiempo = NULL order by oid desc
+2026-04-02 20:54:17 cat: Execute, proto: mysqld-5, msg: SHOW TABLES FROM enduro LIKE 'toma_tiempo_evento'
+2026-04-02 20:54:17 cat: Execute, proto: mysqld-5, msg: SHOW FULL COLUMNS FROM enduro.toma_tiempo_evento LIKE '%'
+2026-04-02 21:01:16 cat: Execute, proto: mysqld-5, msg: select e.oid, CONCAT(e.nro_fecha, ' - ', DATE_FORMAT(e.fecha,  '%d/%m/%Y'), ' - ', e.nombre) as nombre, e.campeonato_oid,
+CONCAT(e.nro_fecha, ' - ', e.nombre) as nombre_st
+from evento e
+order by e.nro_fecha
+
+2026-04-02 21:05:53 cat: Execute, proto: mysqld-5, msg: select oid, CONCAT(date_format(toma_tiempo_start_time, '%d/%m/%Y %H:%i:%s'), ' - ', nombre) as nombre, evento_oid, nombre as nombre_st from toma_tiempo_evento where tipo_toma_tiempo = NULL order by oid desc
+2026-04-02 21:05:58 cat: Execute, proto: mysqld-5, msg: select oid, CONCAT(date_format(toma_tiempo_start_time, '%d/%m/%Y %H:%i:%s'), ' - ', nombre) as nombre, evento_oid, nombre as nombre_st from toma_tiempo_evento where tipo_toma_tiempo = NULL order by oid desc
+2026-04-02 21:23:03 cat: Disconnect, proto: mysqld-5, msg: DISCONNECT FROM "enduro"
+2026-04-03 12:05:44 cat: Connect, proto: mysqld-5, msg: CONNECT TO "enduro" AS USER "root"
+2026-04-03 12:05:44 cat: Execute, proto: mysqld-5, msg: SET NAMES utf8
+2026-04-03 12:05:44 cat: Execute, proto: mysqld-5, msg: SELECT 0 as Posicion, nro_competidor 'Nro. Competidor', nombre_piloto Competidor, Categoria, CONCAT(sel_formatted_total_time(SUM(tiempo_total)), '.') 'Tiempo Total', SUM(ranking.Vueltas) Vueltas from (select tte.oid, sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) nro_competidor, CONCAT(p.apellido, ', ', p.nombre) as nombre_piloto, sel_nombre_categoria_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) Categoria, sel_categoria_oid_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) categoria_oid, sel_total_time_recono(tt.toma_tiempo_evento_oid, tt.piloto_oid) tiempo_total, sel_can_vueltas_recono(tt.toma_tiempo_evento_oid, tt.piloto_oid) Vueltas from toma_tiempos_reconocimiento tt join toma_tiempo_evento tte on tt.toma_tiempo_evento_oid = tte.oid join piloto p on tt.piloto_oid = p.oid join inscripcion_piloto_evento ipe on (ipe.evento_oid = tte.evento_oid and ipe.piloto_oid = tt.piloto_oid) where tte.oid in (SELECT DISTINCT toma_tiempo_oid FROM toma_tiempo_agrupacion_tt WHERE toma_tiempo_agrupacion_oid = NULL) group by p.oid, tte.oid) ranking inner join categorias c on c.oid = categoria_oid group by nro_competidor, nombre_piloto, Categoria order by c.orden IS NULL, c.orden, Vueltas desc, 'Tiempo Total' asc
+2026-04-03 12:05:44 cat: Execute, proto: mysqld-5, msg: SHOW TABLES FROM enduro LIKE 'ranking'
+2026-04-03 12:05:44 cat: Execute, proto: mysqld-5, msg: SHOW TABLES FROM enduro LIKE 'categorias'
+2026-04-03 12:05:44 cat: Execute, proto: mysqld-5, msg: SHOW FULL COLUMNS FROM enduro.categorias LIKE '%'
+2026-04-03 12:25:50 cat: Execute, proto: mysqld-5, msg: SELECT 0 as Posicion, nro_competidor 'Nro. Competidor', nombre_piloto Competidor, Categoria, CONCAT(sel_formatted_total_time(SUM(tiempo_total)), '.') 'Tiempo Total', SUM(ranking.Vueltas) Vueltas from (select tte.oid, sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) nro_competidor, CONCAT(p.apellido, ', ', p.nombre) as nombre_piloto, sel_nombre_categoria_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) Categoria, sel_categoria_oid_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) categoria_oid, sel_total_time_recono(tt.toma_tiempo_evento_oid, tt.piloto_oid) tiempo_total, sel_can_vueltas_recono(tt.toma_tiempo_evento_oid, tt.piloto_oid) Vueltas, ' as DescripcionRecargo, 0' as Recargo'
+from toma_tiempos_reconocimiento tt 
+     join toma_tiempo_evento tte on tt.toma_tiempo_evento_oid = tte.oid 
+     join piloto p on tt.piloto_oid = p.oid 
+     join inscripcion_piloto_evento ipe on 
+           (ipe.evento_oid = tte.evento_oid and ipe.piloto_oid = tt.piloto_oid) 
+     where tte.oid in (SELECT DISTINCT toma_tiempo_oid FROM toma_tiempo_agrupacion_tt WHERE toma_tiempo_agrupacion_oid = :toma_tiempo_agrupacion_oid)
+     group by p.oid, tte.oid) ranking inner join categorias c on c.oid = categoria_oid
+group by nro_competidor, nombre_piloto, Categoria
+order by c.orden IS NULL, c.orden, Vueltas desc, 'Tiempo Total' asc, errcode: 1064, error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''
+from toma_tiempos_reconocimiento tt 
+     join toma_tiempo_evento tte on tt.' at line 1
+2026-04-03 12:26:11 cat: Execute, proto: mysqld-5, msg: SELECT 0 as Posicion, nro_competidor 'Nro. Competidor', nombre_piloto Competidor, Categoria, CONCAT(sel_formatted_total_time(SUM(tiempo_total)), '.') 'Tiempo Total', SUM(ranking.Vueltas) Vueltas from (select tte.oid, sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) nro_competidor, CONCAT(p.apellido, ', ', p.nombre) as nombre_piloto, sel_nombre_categoria_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) Categoria, sel_categoria_oid_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) categoria_oid, sel_total_time_recono(tt.toma_tiempo_evento_oid, tt.piloto_oid) tiempo_total, sel_can_vueltas_recono(tt.toma_tiempo_evento_oid, tt.piloto_oid) Vueltas, '' as DescripcionRecargo, 0 as Recargo from toma_tiempos_reconocimiento tt join toma_tiempo_evento tte on tt.toma_tiempo_evento_oid = tte.oid join piloto p on tt.piloto_oid = p.oid join inscripcion_piloto_evento ipe on (ipe.evento_oid = tte.evento_oid and ipe.piloto_oid = tt.piloto_oid) where tte.oid in (SELECT DISTINCT toma_tiempo_oid FROM toma_tiempo_agrupacion_tt WHERE toma_tiempo_agrupacion_oid = NULL) group by p.oid, tte.oid) ranking inner join categorias c on c.oid = categoria_oid group by nro_competidor, nombre_piloto, Categoria order by c.orden IS NULL, c.orden, Vueltas desc, 'Tiempo Total' asc
+2026-04-03 12:26:50 cat: Execute, proto: mysqld-5, msg: SELECT 0 as Posicion, nro_competidor 'Nro. Competidor', nombre_piloto Competidor, Categoria, CONCAT(sel_formatted_total_time(SUM(tiempo_total)), '.') 'Tiempo Total', SUM(ranking.Vueltas) Vueltas from (select tte.oid, sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) nro_competidor, CONCAT(p.apellido, ', ', p.nombre) as nombre_piloto, sel_nombre_categoria_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) Categoria, sel_categoria_oid_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) categoria_oid, sel_total_time_recono(tt.toma_tiempo_evento_oid, tt.piloto_oid) tiempo_total, sel_can_vueltas_recono(tt.toma_tiempo_evento_oid, tt.piloto_oid) Vueltas, '' as DescripcionRecargo, 0 as Recargo from toma_tiempos_reconocimiento tt join toma_tiempo_evento tte on tt.toma_tiempo_evento_oid = tte.oid join piloto p on tt.piloto_oid = p.oid join inscripcion_piloto_evento ipe on (ipe.evento_oid = tte.evento_oid and ipe.piloto_oid = tt.piloto_oid) where tte.oid in (SELECT DISTINCT toma_tiempo_oid FROM toma_tiempo_agrupacion_tt WHERE toma_tiempo_agrupacion_oid = NULL) group by p.oid, tte.oid) ranking inner join categorias c on c.oid = categoria_oid group by nro_competidor, nombre_piloto, Categoria order by c.orden IS NULL, c.orden, Vueltas desc, 'Tiempo Total' asc
+2026-04-03 12:27:58 cat: Execute, proto: mysqld-5, msg: SELECT 0 as Posicion, nro_competidor 'Nro. Competidor', nombre_piloto Competidor, Categoria, CONCAT(sel_formatted_total_time(SUM(tiempo_total)), '.') 'Tiempo Total', SUM(ranking.Vueltas) Vueltas, '' as DescripcionRecargo, 0 as Recargo from (select tte.oid, sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) nro_competidor, CONCAT(p.apellido, ', ', p.nombre) as nombre_piloto, sel_nombre_categoria_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) Categoria, sel_categoria_oid_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) categoria_oid, sel_total_time_recono(tt.toma_tiempo_evento_oid, tt.piloto_oid) tiempo_total, sel_can_vueltas_recono(tt.toma_tiempo_evento_oid, tt.piloto_oid) Vueltas from toma_tiempos_reconocimiento tt join toma_tiempo_evento tte on tt.toma_tiempo_evento_oid = tte.oid join piloto p on tt.piloto_oid = p.oid join inscripcion_piloto_evento ipe on (ipe.evento_oid = tte.evento_oid and ipe.piloto_oid = tt.piloto_oid) where tte.oid in (SELECT DISTINCT toma_tiempo_oid FROM toma_tiempo_agrupacion_tt WHERE toma_tiempo_agrupacion_oid = NULL) group by p.oid, tte.oid) ranking inner join categorias c on c.oid = categoria_oid group by nro_competidor, nombre_piloto, Categoria order by c.orden IS NULL, c.orden, Vueltas desc, 'Tiempo Total' asc
+2026-04-03 12:31:26 cat: Disconnect, proto: mysqld-5, msg: DISCONNECT FROM "enduro"
+2026-04-03 20:06:16 cat: Connect, proto: mysqld-5, msg: CONNECT TO "enduro" AS USER "root"
+2026-04-03 20:06:16 cat: Execute, proto: mysqld-5, msg: SET NAMES utf8
+2026-04-03 20:06:17 cat: Execute, proto: mysqld-5, msg: SELECT 0 as Posicion, nro_competidor 'Nro. Competidor', nombre_piloto Competidor, Categoria, CONCAT(sel_formatted_total_time(SUM(tiempo_total)), '.') 'Tiempo Total', SUM(ranking.Vueltas) Vueltas, '' as DescripcionRecargo, 0 as Recargo, 0 as TOT_1, 0 as TOT_2, 0 as TOT_3, '' AS POS_1, '' AS POS_2, '' AS POS_3 from (select tte.oid, sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) nro_competidor, CONCAT(p.apellido, ', ', p.nombre) as nombre_piloto, sel_nombre_categoria_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) Categoria, sel_categoria_oid_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) categoria_oid, sel_total_time_recono(tt.toma_tiempo_evento_oid, tt.piloto_oid) tiempo_total, sel_can_vueltas_recono(tt.toma_tiempo_evento_oid, tt.piloto_oid) Vueltas from toma_tiempos_reconocimiento tt join toma_tiempo_evento tte on tt.toma_tiempo_evento_oid = tte.oid join piloto p on tt.piloto_oid = p.oid join inscripcion_piloto_evento ipe on (ipe.evento_oid = tte.evento_oid and ipe.piloto_oid = tt.piloto_oid) where tte.oid in (SELECT DISTINCT toma_tiempo_oid FROM toma_tiempo_agrupacion_tt WHERE toma_tiempo_agrupacion_oid = NULL) group by p.oid, tte.oid) ranking inner join categorias c on c.oid = categoria_oid group by nro_competidor, nombre_piloto, Categoria order by c.orden IS NULL, c.orden, Vueltas desc, 'Tiempo Total' asc
+2026-04-03 20:06:17 cat: Execute, proto: mysqld-5, msg: SHOW TABLES FROM enduro LIKE 'ranking'
+2026-04-03 20:06:17 cat: Execute, proto: mysqld-5, msg: SHOW TABLES FROM enduro LIKE 'categorias'
+2026-04-03 20:06:17 cat: Execute, proto: mysqld-5, msg: SHOW FULL COLUMNS FROM enduro.categorias LIKE '%'
+2026-04-03 22:34:02 cat: Disconnect, proto: mysqld-5, msg: DISCONNECT FROM "enduro"
+2026-04-04 16:12:34 cat: Connect, proto: mysqld-5, msg: CONNECT TO "enduro" AS USER "root"
+2026-04-04 16:12:34 cat: Execute, proto: mysqld-5, msg: SET NAMES utf8
+2026-04-04 16:12:35 cat: Execute, proto: mysqld-5, msg: SELECT 0 as Posicion, nro_competidor 'Nro. Competidor', nombre_piloto Competidor, Categoria, CONCAT(sel_formatted_total_time(SUM(tiempo_total)), '.') 'Tiempo Total', SUM(ranking.Vueltas) Vueltas, '' as DescripcionRecargo, 0 as Recargo, 0 as TOT_1, 0 as TOT_2, 0 as TOT_3, '' AS POS_1, '' AS POS_2, '' AS POS_3, 0 as TOT_4, 0 as TOT_5, 0 as TOT_6, '' AS POS_4, '' AS POS_5, '' AS POS_6 from (select tte.oid, sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) nro_competidor, CONCAT(p.apellido, ', ', p.nombre) as nombre_piloto, sel_nombre_categoria_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) Categoria, sel_categoria_oid_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) categoria_oid, sel_total_time_recono(tt.toma_tiempo_evento_oid, tt.piloto_oid) tiempo_total, sel_can_vueltas_recono(tt.toma_tiempo_evento_oid, tt.piloto_oid) Vueltas from toma_tiempos_reconocimiento tt join toma_tiempo_evento tte on tt.toma_tiempo_evento_oid = tte.oid join piloto p on tt.piloto_oid = p.oid join inscripcion_piloto_evento ipe on (ipe.evento_oid = tte.evento_oid and ipe.piloto_oid = tt.piloto_oid) where tte.oid in (SELECT DISTINCT toma_tiempo_oid FROM toma_tiempo_agrupacion_tt WHERE toma_tiempo_agrupacion_oid = NULL) group by p.oid, tte.oid) ranking inner join categorias c on c.oid = categoria_oid group by nro_competidor, nombre_piloto, Categoria order by c.orden IS NULL, c.orden, Vueltas desc, 'Tiempo Total' asc
+2026-04-04 16:12:35 cat: Execute, proto: mysqld-5, msg: SHOW TABLES FROM enduro LIKE 'ranking'
+2026-04-04 16:12:35 cat: Execute, proto: mysqld-5, msg: SHOW TABLES FROM enduro LIKE 'categorias'
+2026-04-04 16:12:35 cat: Execute, proto: mysqld-5, msg: SHOW FULL COLUMNS FROM enduro.categorias LIKE '%'
+2026-04-04 16:17:20 cat: Disconnect, proto: mysqld-5, msg: DISCONNECT FROM "enduro"
+2026-04-04 17:32:45 cat: Connect, proto: mysqld-5, msg: CONNECT TO "enduro" AS USER "root"
+2026-04-04 17:32:45 cat: Execute, proto: mysqld-5, msg: SET NAMES utf8
+2026-04-04 17:32:45 cat: Execute, proto: mysqld-5, msg: SELECT 0 as Posicion, nro_competidor 'Nro. Competidor', nombre_piloto Competidor, Categoria, CONCAT(sel_formatted_total_time(SUM(tiempo_total)), '.') 'Tiempo Total', SUM(ranking.Vueltas) Vueltas, '' as DescripcionRecargo, 0 as Recargo, 0 as TOT_1, 0 as TOT_2, 0 as TOT_3 0 as TOT_4, 0 as TOT_5, 0 as TOT_6 from (select tte.oid, sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) nro_competidor, CONCAT(p.apellido, ', ', p.nombre) as nombre_piloto, sel_nombre_categoria_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) Categoria, sel_categoria_oid_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) categoria_oid, sel_total_time_recono(tt.toma_tiempo_evento_oid, tt.piloto_oid) tiempo_total, sel_can_vueltas_recono(tt.toma_tiempo_evento_oid, tt.piloto_oid) Vueltas from toma_tiempos_reconocimiento tt join toma_tiempo_evento tte on tt.toma_tiempo_evento_oid = tte.oid join piloto p on tt.piloto_oid = p.oid join inscripcion_piloto_evento ipe on (ipe.evento_oid = tte.evento_oid and ipe.piloto_oid = tt.piloto_oid) where tte.oid in (SELECT DISTINCT toma_tiempo_oid FROM toma_tiempo_agrupacion_tt WHERE toma_tiempo_agrupacion_oid = NULL) group by p.oid, tte.oid) ranking inner join categorias c on c.oid = categoria_oid group by nro_competidor, nombre_piloto, Categoria order by c.orden IS NULL, c.orden, Vueltas desc, 'Tiempo Total' asc, errcode: 1064, error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '0 as TOT_4, 0 as TOT_5, 0 as TOT_6 from (select tte.oid, sel_nro_moto_by_evento_' at line 1
+2026-04-04 17:32:47 cat: Execute, proto: mysqld-5, msg: SELECT 0 as Posicion, nro_competidor 'Nro. Competidor', nombre_piloto Competidor, Categoria, CONCAT(sel_formatted_total_time(SUM(tiempo_total)), '.') 'Tiempo Total', SUM(ranking.Vueltas) Vueltas, '' as DescripcionRecargo, 0 as Recargo, 0 as TOT_1, 0 as TOT_2, 0 as TOT_3 0 as TOT_4, 0 as TOT_5, 0 as TOT_6 from (select tte.oid, sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) nro_competidor, CONCAT(p.apellido, ', ', p.nombre) as nombre_piloto, sel_nombre_categoria_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) Categoria, sel_categoria_oid_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) categoria_oid, sel_total_time_recono(tt.toma_tiempo_evento_oid, tt.piloto_oid) tiempo_total, sel_can_vueltas_recono(tt.toma_tiempo_evento_oid, tt.piloto_oid) Vueltas from toma_tiempos_reconocimiento tt join toma_tiempo_evento tte on tt.toma_tiempo_evento_oid = tte.oid join piloto p on tt.piloto_oid = p.oid join inscripcion_piloto_evento ipe on (ipe.evento_oid = tte.evento_oid and ipe.piloto_oid = tt.piloto_oid) where tte.oid in (SELECT DISTINCT toma_tiempo_oid FROM toma_tiempo_agrupacion_tt WHERE toma_tiempo_agrupacion_oid = NULL) group by p.oid, tte.oid) ranking inner join categorias c on c.oid = categoria_oid group by nro_competidor, nombre_piloto, Categoria order by c.orden IS NULL, c.orden, Vueltas desc, 'Tiempo Total' asc, errcode: 1064, error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '0 as TOT_4, 0 as TOT_5, 0 as TOT_6 from (select tte.oid, sel_nro_moto_by_evento_' at line 1
+2026-04-04 17:32:50 cat: Execute, proto: mysqld-5, msg: SELECT 0 as Posicion, nro_competidor 'Nro. Competidor', nombre_piloto Competidor, Categoria, CONCAT(sel_formatted_total_time(SUM(tiempo_total)), '.') 'Tiempo Total', SUM(ranking.Vueltas) Vueltas, '' as DescripcionRecargo, 0 as Recargo, 0 as TOT_1, 0 as TOT_2, 0 as TOT_3 0 as TOT_4, 0 as TOT_5, 0 as TOT_6 from (select tte.oid, sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) nro_competidor, CONCAT(p.apellido, ', ', p.nombre) as nombre_piloto, sel_nombre_categoria_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) Categoria, sel_categoria_oid_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) categoria_oid, sel_total_time_recono(tt.toma_tiempo_evento_oid, tt.piloto_oid) tiempo_total, sel_can_vueltas_recono(tt.toma_tiempo_evento_oid, tt.piloto_oid) Vueltas from toma_tiempos_reconocimiento tt join toma_tiempo_evento tte on tt.toma_tiempo_evento_oid = tte.oid join piloto p on tt.piloto_oid = p.oid join inscripcion_piloto_evento ipe on (ipe.evento_oid = tte.evento_oid and ipe.piloto_oid = tt.piloto_oid) where tte.oid in (SELECT DISTINCT toma_tiempo_oid FROM toma_tiempo_agrupacion_tt WHERE toma_tiempo_agrupacion_oid = NULL) group by p.oid, tte.oid) ranking inner join categorias c on c.oid = categoria_oid group by nro_competidor, nombre_piloto, Categoria order by c.orden IS NULL, c.orden, Vueltas desc, 'Tiempo Total' asc, errcode: 1064, error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '0 as TOT_4, 0 as TOT_5, 0 as TOT_6 from (select tte.oid, sel_nro_moto_by_evento_' at line 1
+2026-04-04 17:33:06 cat: Execute, proto: mysqld-5, msg: SELECT 0 as Posicion, nro_competidor 'Nro. Competidor', nombre_piloto Competidor, Categoria, CONCAT(sel_formatted_total_time(SUM(tiempo_total)), '.') 'Tiempo Total', SUM(ranking.Vueltas) Vueltas, '' as DescripcionRecargo, 0 as Recargo, 0 as TOT_1, 0 as TOT_2, 0 as TOT_3, 0 as TOT_4, 0 as TOT_5, 0 as TOT_6 from (select tte.oid, sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) nro_competidor, CONCAT(p.apellido, ', ', p.nombre) as nombre_piloto, sel_nombre_categoria_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) Categoria, sel_categoria_oid_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) categoria_oid, sel_total_time_recono(tt.toma_tiempo_evento_oid, tt.piloto_oid) tiempo_total, sel_can_vueltas_recono(tt.toma_tiempo_evento_oid, tt.piloto_oid) Vueltas from toma_tiempos_reconocimiento tt join toma_tiempo_evento tte on tt.toma_tiempo_evento_oid = tte.oid join piloto p on tt.piloto_oid = p.oid join inscripcion_piloto_evento ipe on (ipe.evento_oid = tte.evento_oid and ipe.piloto_oid = tt.piloto_oid) where tte.oid in (SELECT DISTINCT toma_tiempo_oid FROM toma_tiempo_agrupacion_tt WHERE toma_tiempo_agrupacion_oid = NULL) group by p.oid, tte.oid) ranking inner join categorias c on c.oid = categoria_oid group by nro_competidor, nombre_piloto, Categoria order by c.orden IS NULL, c.orden, Vueltas desc, 'Tiempo Total' asc
+2026-04-04 17:33:06 cat: Execute, proto: mysqld-5, msg: SHOW TABLES FROM enduro LIKE 'ranking'
+2026-04-04 17:33:06 cat: Execute, proto: mysqld-5, msg: SHOW TABLES FROM enduro LIKE 'categorias'
+2026-04-04 17:33:06 cat: Execute, proto: mysqld-5, msg: SHOW FULL COLUMNS FROM enduro.categorias LIKE '%'
+2026-04-05 10:04:10 cat: Execute, proto: mysqld-5, msg: SELECT * FROM campeonato
+, errcode: 2006, error: MySQL server has gone away
+2026-04-05 10:04:29 cat: Disconnect, proto: mysqld-5, msg: DISCONNECT FROM "enduro"
+2026-04-05 10:04:32 cat: Connect, proto: mysqld-5, msg: CONNECT TO "enduro" AS USER "root"
+2026-04-05 10:04:32 cat: Execute, proto: mysqld-5, msg: SET NAMES utf8
+2026-04-05 10:04:39 cat: Execute, proto: mysqld-5, msg: SELECT 0 as Posicion, nro_competidor 'Nro. Competidor', nombre_piloto Competidor, Categoria, CONCAT(sel_formatted_total_time(SUM(tiempo_total)), '.') 'Tiempo Total', SUM(ranking.Vueltas) Vueltas, '' as DescripcionRecargo, 0 as Recargo, 0 as TOT_1, 0 as TOT_2, 0 as TOT_3, 0 as TOT_4, 0 as TOT_5, 0 as TOT_6 from (select tte.oid, sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) nro_competidor, CONCAT(p.apellido, ', ', p.nombre) as nombre_piloto, sel_nombre_categoria_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) Categoria, sel_categoria_oid_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, tte.evento_oid, ipe.piloto_oid) categoria_oid, sel_total_time_recono(tt.toma_tiempo_evento_oid, tt.piloto_oid) tiempo_total, sel_can_vueltas_recono(tt.toma_tiempo_evento_oid, tt.piloto_oid) Vueltas from toma_tiempos_reconocimiento tt join toma_tiempo_evento tte on tt.toma_tiempo_evento_oid = tte.oid join piloto p on tt.piloto_oid = p.oid join inscripcion_piloto_evento ipe on (ipe.evento_oid = tte.evento_oid and ipe.piloto_oid = tt.piloto_oid) where tte.oid in (SELECT DISTINCT toma_tiempo_oid FROM toma_tiempo_agrupacion_tt WHERE toma_tiempo_agrupacion_oid = NULL) group by p.oid, tte.oid) ranking inner join categorias c on c.oid = categoria_oid group by nro_competidor, nombre_piloto, Categoria order by c.orden IS NULL, c.orden, Vueltas desc, 'Tiempo Total' asc
+2026-04-05 10:04:39 cat: Execute, proto: mysqld-5, msg: SHOW TABLES FROM enduro LIKE 'ranking'
+2026-04-05 10:04:39 cat: Execute, proto: mysqld-5, msg: SHOW TABLES FROM enduro LIKE 'categorias'
+2026-04-05 10:04:39 cat: Execute, proto: mysqld-5, msg: SHOW FULL COLUMNS FROM enduro.categorias LIKE '%'
+2026-04-05 10:04:58 cat: Execute, proto: mysqld-5, msg: SELECT * FROM campeonato
+
+2026-04-05 10:04:58 cat: Execute, proto: mysqld-5, msg: SHOW TABLES FROM enduro LIKE 'campeonato'
+2026-04-05 10:04:58 cat: Execute, proto: mysqld-5, msg: SHOW FULL COLUMNS FROM enduro.campeonato LIKE '%'
+2026-04-05 10:04:58 cat: Execute, proto: mysqld-5, msg: select e.oid, CONCAT(e.nro_fecha, ' - ', DATE_FORMAT(e.fecha,  '%d/%m/%Y'), ' - ', e.nombre) as nombre, e.campeonato_oid,
+CONCAT(e.nro_fecha, ' - ', e.nombre) as nombre_st
+from evento e
+order by e.nro_fecha
+
+2026-04-05 10:04:58 cat: Execute, proto: mysqld-5, msg: SHOW TABLES FROM enduro LIKE 'evento'
+2026-04-05 10:04:58 cat: Execute, proto: mysqld-5, msg: SHOW FULL COLUMNS FROM enduro.evento LIKE '%'
+2026-04-05 10:04:58 cat: Execute, proto: mysqld-5, msg: select oid, CONCAT(date_format(toma_tiempo_start_time, '%d/%m/%Y %H:%i:%s'), ' - ', nombre) as nombre, evento_oid, nombre as nombre_st from toma_tiempo_evento where tipo_toma_tiempo = NULL order by oid desc
+2026-04-05 10:04:58 cat: Execute, proto: mysqld-5, msg: SHOW TABLES FROM enduro LIKE 'toma_tiempo_evento'
+2026-04-05 10:04:58 cat: Execute, proto: mysqld-5, msg: SHOW FULL COLUMNS FROM enduro.toma_tiempo_evento LIKE '%'
+2026-04-05 11:09:28 cat: Disconnect, proto: mysqld-5, msg: DISCONNECT FROM "enduro"
+2026-09-02 17:24:56 cat: Connect, proto: mysqld-5, msg: CONNECT TO "enduro" AS USER "root"
+2026-09-02 17:24:56 cat: Execute, proto: mysqld-5, msg: SET NAMES utf8
+2026-09-02 17:25:03 cat: Execute, proto: mysqld-5, msg: SELECT MAX(sub.oid) AS oid, sub.piloto_oid, MAX(sub.nombre_evento) AS nombre_evento, sub.nombre_pilot, sub.nombre_piloto, MAX(sub.nombre_campeonato) AS nombre_campeonato, sub.evento_oid, GROUP_CONCAT(DISTINCT sub.nro_moto SEPARATOR ' / ') AS nro_moto, GROUP_CONCAT(DISTINCT sub.nombre_categoria SEPARATOR ' / ') AS nombres_categoria, GROUP_CONCAT(DISTINCT sub.tipo_categoria SEPARATOR ' / ') AS tipo_categoria, GROUP_CONCAT(DISTINCT sub.tipo_categoria_oid SEPARATOR ' / ') AS tipo_categoria_oid, MAX(sub.evento_oid) evento_oid, EXISTS ( SELECT 1 FROM inscripcion_piloto_evento ipe2 INNER JOIN evento e2 ON e2.oid = ipe2.evento_oid WHERE e2.campeonato_oid = MAX(sub.campeonato_oid) AND ipe2.piloto_oid = sub.piloto_oid ) AS tiene_inscripcion_campeonato FROM ( SELECT ipe.piloto_oid, ipe.oid, sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, ipe.evento_oid, p.oid) as nro_moto, ipe.evento_oid, ipe.tipo_categoria_oid, CONCAT(p.apellido, ', ' , p.nombre) nombre_pilot, CASE WHEN cat.utiliza_acompaniante = 1 THEN CONCAT(UC_Words(CONCAT(p.apellido, ', ' , p.nombre)), IFNULL(UC_Words(CONCAT(' / ', n.apellido, ', ' , n.nombre)), '')) ELSE UC_Words(CONCAT(p.apellido, ', ' , p.nombre)) end as nombre_piloto, CONCAT(e.nro_fecha, ' - ', DATE_FORMAT(e.fecha, '%d/%m/%Y'), ' - ', e.nombre) nombre_evento, c.nombre as nombre_campeonato, c.oid as campeonato_oid, sel_nombre_categoria_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, ipe.evento_oid, p.oid) as nombre_categoria, tc.nombre tipo_categoria FROM inscripcion_piloto_evento ipe JOIN piloto p on ipe.piloto_oid = p.oid JOIN evento e on ipe.evento_oid = e.oid JOIN campeonato c on e.campeonato_oid = c.oid JOIN tipo_categoria tc on ipe.tipo_categoria_oid = tc.oid left join navegante n on n.piloto_oid = p.oid, categorias cat WHERE (NULL is null or NULL = 0 or ipe.evento_oid= NULL) AND (NULL is null or NULL = 0 or ipe.piloto_oid= NULL) AND (NULL is null or NULL = 0 or CASE ipe.tipo_categoria_oid WHEN 1 THEN p.categoria_oid WHEN 2 THEN p.categoria_cuatriciclos_oid WHEN 3 THEN p.categoria_motocross_oid WHEN 4 THEN p.categoria_externa_oid END = NULL) and cat.oid = sel_categoria_oid_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, ipe.evento_oid, ipe.piloto_oid) LIMIT 500 ) AS sub GROUP BY sub.piloto_oid;, errcode: 1054, error: Unknown column 'p.categoria_externa_oid' in 'where clause'
+2026-09-02 17:25:50 cat: Disconnect, proto: mysqld-5, msg: DISCONNECT FROM "enduro"
+2026-09-02 17:25:58 cat: Connect, proto: mysqld-5, msg: CONNECT TO "enduro_25" AS USER "root"
+2026-09-02 17:25:58 cat: Execute, proto: mysqld-5, msg: SET NAMES utf8
+2026-09-02 17:26:05 cat: Execute, proto: mysqld-5, msg: SELECT MAX(sub.oid) AS oid, sub.piloto_oid, MAX(sub.nombre_evento) AS nombre_evento, sub.nombre_pilot, sub.nombre_piloto, MAX(sub.nombre_campeonato) AS nombre_campeonato, sub.evento_oid, GROUP_CONCAT(DISTINCT sub.nro_moto SEPARATOR ' / ') AS nro_moto, GROUP_CONCAT(DISTINCT sub.nombre_categoria SEPARATOR ' / ') AS nombres_categoria, GROUP_CONCAT(DISTINCT sub.tipo_categoria SEPARATOR ' / ') AS tipo_categoria, GROUP_CONCAT(DISTINCT sub.tipo_categoria_oid SEPARATOR ' / ') AS tipo_categoria_oid, MAX(sub.evento_oid) evento_oid, EXISTS ( SELECT 1 FROM inscripcion_piloto_evento ipe2 INNER JOIN evento e2 ON e2.oid = ipe2.evento_oid WHERE e2.campeonato_oid = MAX(sub.campeonato_oid) AND ipe2.piloto_oid = sub.piloto_oid ) AS tiene_inscripcion_campeonato FROM ( SELECT ipe.piloto_oid, ipe.oid, sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, ipe.evento_oid, p.oid) as nro_moto, ipe.evento_oid, ipe.tipo_categoria_oid, CONCAT(p.apellido, ', ' , p.nombre) nombre_pilot, CASE WHEN cat.utiliza_acompaniante = 1 THEN CONCAT(UC_Words(CONCAT(p.apellido, ', ' , p.nombre)), IFNULL(UC_Words(CONCAT(' / ', n.apellido, ', ' , n.nombre)), '')) ELSE UC_Words(CONCAT(p.apellido, ', ' , p.nombre)) end as nombre_piloto, CONCAT(e.nro_fecha, ' - ', DATE_FORMAT(e.fecha, '%d/%m/%Y'), ' - ', e.nombre) nombre_evento, c.nombre as nombre_campeonato, c.oid as campeonato_oid, sel_nombre_categoria_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, ipe.evento_oid, p.oid) as nombre_categoria, tc.nombre tipo_categoria FROM inscripcion_piloto_evento ipe JOIN piloto p on ipe.piloto_oid = p.oid JOIN evento e on ipe.evento_oid = e.oid JOIN campeonato c on e.campeonato_oid = c.oid JOIN tipo_categoria tc on ipe.tipo_categoria_oid = tc.oid left join navegante n on n.piloto_oid = p.oid, categorias cat WHERE (NULL is null or NULL = 0 or ipe.evento_oid= NULL) AND (NULL is null or NULL = 0 or ipe.piloto_oid= NULL) AND (NULL is null or NULL = 0 or CASE ipe.tipo_categoria_oid WHEN 1 THEN p.categoria_oid WHEN 2 THEN p.categoria_cuatriciclos_oid WHEN 3 THEN p.categoria_motocross_oid WHEN 4 THEN p.categoria_externa_oid END = NULL) and cat.oid = sel_categoria_oid_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, ipe.evento_oid, ipe.piloto_oid) LIMIT 500 ) AS sub GROUP BY sub.piloto_oid;
+2026-09-02 17:29:30 cat: Execute, proto: mysqld-5, msg: SELECT MAX(sub.oid) AS oid, sub.piloto_oid, MAX(sub.nombre_evento) AS nombre_evento, sub.nombre_pilot, sub.nombre_piloto, MAX(sub.nombre_campeonato) AS nombre_campeonato, sub.evento_oid, GROUP_CONCAT(DISTINCT sub.nro_moto SEPARATOR ' / ') AS nro_moto, GROUP_CONCAT(DISTINCT sub.nombre_categoria SEPARATOR ' / ') AS nombres_categoria, GROUP_CONCAT(DISTINCT sub.tipo_categoria SEPARATOR ' / ') AS tipo_categoria, GROUP_CONCAT(DISTINCT sub.tipo_categoria_oid SEPARATOR ' / ') AS tipo_categoria_oid, MAX(sub.evento_oid) evento_oid, EXISTS ( SELECT 1 FROM inscripcion_piloto_evento ipe2 INNER JOIN evento e2 ON e2.oid = ipe2.evento_oid WHERE e2.campeonato_oid = MAX(sub.campeonato_oid) AND ipe2.piloto_oid = sub.piloto_oid AND ipe2.evento_oid !=MAX(sub.piloto_oid) ) AS tiene_inscripcion_campeonato FROM ( SELECT ipe.piloto_oid, ipe.oid, sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, ipe.evento_oid, p.oid) as nro_moto, ipe.evento_oid, ipe.tipo_categoria_oid, CONCAT(p.apellido, ', ' , p.nombre) nombre_pilot, CASE WHEN cat.utiliza_acompaniante = 1 THEN CONCAT(UC_Words(CONCAT(p.apellido, ', ' , p.nombre)), IFNULL(UC_Words(CONCAT(' / ', n.apellido, ', ' , n.nombre)), '')) ELSE UC_Words(CONCAT(p.apellido, ', ' , p.nombre)) end as nombre_piloto, CONCAT(e.nro_fecha, ' - ', DATE_FORMAT(e.fecha, '%d/%m/%Y'), ' - ', e.nombre) nombre_evento, c.nombre as nombre_campeonato, c.oid as campeonato_oid, sel_nombre_categoria_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, ipe.evento_oid, p.oid) as nombre_categoria, tc.nombre tipo_categoria FROM inscripcion_piloto_evento ipe JOIN piloto p on ipe.piloto_oid = p.oid JOIN evento e on ipe.evento_oid = e.oid JOIN campeonato c on e.campeonato_oid = c.oid JOIN tipo_categoria tc on ipe.tipo_categoria_oid = tc.oid left join navegante n on n.piloto_oid = p.oid, categorias cat WHERE (NULL is null or NULL = 0 or ipe.evento_oid= NULL) AND (NULL is null or NULL = 0 or ipe.piloto_oid= NULL) AND (NULL is null or NULL = 0 or CASE ipe.tipo_categoria_oid WHEN 1 THEN p.categoria_oid WHEN 2 THEN p.categoria_cuatriciclos_oid WHEN 3 THEN p.categoria_motocross_oid WHEN 4 THEN p.categoria_externa_oid END = NULL) and cat.oid = sel_categoria_oid_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, ipe.evento_oid, ipe.piloto_oid) LIMIT 500 ) AS sub GROUP BY sub.piloto_oid;
+2026-09-02 17:34:43 cat: Execute, proto: mysqld-5, msg: SELECT MAX(sub.oid) AS oid, sub.piloto_oid, MAX(sub.nombre_evento) AS nombre_evento, sub.nombre_pilot, sub.nombre_piloto, MAX(sub.nombre_campeonato) AS nombre_campeonato, sub.evento_oid, GROUP_CONCAT(DISTINCT sub.nro_moto SEPARATOR ' / ') AS nro_moto, GROUP_CONCAT(DISTINCT sub.nombre_categoria SEPARATOR ' / ') AS nombres_categoria, GROUP_CONCAT(DISTINCT sub.tipo_categoria SEPARATOR ' / ') AS tipo_categoria, GROUP_CONCAT(DISTINCT sub.tipo_categoria_oid SEPARATOR ' / ') AS tipo_categoria_oid, MAX(sub.evento_oid) evento_oid, EXISTS ( SELECT 1 FROM inscripcion_piloto_evento ipe2 INNER JOIN evento e2 ON e2.oid = ipe2.evento_oid WHERE e2.campeonato_oid = MAX(sub.campeonato_oid) AND ipe2.piloto_oid = sub.piloto_oid AND ipe2.evento_oid !=MAX(sub.piloto_oid) ) AS tiene_inscripcion_campeonato, sub.tid FROM ( SELECT ipe.piloto_oid, ipe.oid, sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, ipe.evento_oid, p.oid) as nro_moto, ipe.evento_oid, ipe.tipo_categoria_oid, CONCAT(p.apellido, ', ' , p.nombre) nombre_pilot, CASE WHEN cat.utiliza_acompaniante = 1 THEN CONCAT(UC_Words(CONCAT(p.apellido, ', ' , p.nombre)), IFNULL(UC_Words(CONCAT(' / ', n.apellido, ', ' , n.nombre)), '')) ELSE UC_Words(CONCAT(p.apellido, ', ' , p.nombre)) end as nombre_piloto, CONCAT(e.nro_fecha, ' - ', DATE_FORMAT(e.fecha, '%d/%m/%Y'), ' - ', e.nombre) nombre_evento, c.nombre as nombre_campeonato, c.oid as campeonato_oid, sel_nombre_categoria_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, ipe.evento_oid, p.oid) as nombre_categoria, tc.nombre tipo_categoria, p.tid FROM inscripcion_piloto_evento ipe JOIN piloto p on ipe.piloto_oid = p.oid JOIN evento e on ipe.evento_oid = e.oid JOIN campeonato c on e.campeonato_oid = c.oid JOIN tipo_categoria tc on ipe.tipo_categoria_oid = tc.oid left join navegante n on n.piloto_oid = p.oid, categorias cat WHERE (NULL is null or NULL = 0 or ipe.evento_oid= NULL) AND (NULL is null or NULL = 0 or ipe.piloto_oid= NULL) AND (NULL is null or NULL = 0 or CASE ipe.tipo_categoria_oid WHEN 1 THEN p.categoria_oid WHEN 2 THEN p.categoria_cuatriciclos_oid WHEN 3 THEN p.categoria_motocross_oid WHEN 4 THEN p.categoria_externa_oid END = NULL) and cat.oid = sel_categoria_oid_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, ipe.evento_oid, ipe.piloto_oid) LIMIT 500 ) AS sub GROUP BY sub.piloto_oid;
+2026-09-02 17:34:44 cat: Execute, proto: mysqld-5, msg: SELECT MAX(sub.oid) AS oid, sub.piloto_oid, MAX(sub.nombre_evento) AS nombre_evento, sub.nombre_pilot, sub.nombre_piloto, MAX(sub.nombre_campeonato) AS nombre_campeonato, sub.evento_oid, GROUP_CONCAT(DISTINCT sub.nro_moto SEPARATOR ' / ') AS nro_moto, GROUP_CONCAT(DISTINCT sub.nombre_categoria SEPARATOR ' / ') AS nombres_categoria, GROUP_CONCAT(DISTINCT sub.tipo_categoria SEPARATOR ' / ') AS tipo_categoria, GROUP_CONCAT(DISTINCT sub.tipo_categoria_oid SEPARATOR ' / ') AS tipo_categoria_oid, MAX(sub.evento_oid) evento_oid, EXISTS ( SELECT 1 FROM inscripcion_piloto_evento ipe2 INNER JOIN evento e2 ON e2.oid = ipe2.evento_oid WHERE e2.campeonato_oid = MAX(sub.campeonato_oid) AND ipe2.piloto_oid = sub.piloto_oid AND ipe2.evento_oid !=MAX(sub.piloto_oid) ) AS tiene_inscripcion_campeonato, sub.tid FROM ( SELECT ipe.piloto_oid, ipe.oid, sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, ipe.evento_oid, p.oid) as nro_moto, ipe.evento_oid, ipe.tipo_categoria_oid, CONCAT(p.apellido, ', ' , p.nombre) nombre_pilot, CASE WHEN cat.utiliza_acompaniante = 1 THEN CONCAT(UC_Words(CONCAT(p.apellido, ', ' , p.nombre)), IFNULL(UC_Words(CONCAT(' / ', n.apellido, ', ' , n.nombre)), '')) ELSE UC_Words(CONCAT(p.apellido, ', ' , p.nombre)) end as nombre_piloto, CONCAT(e.nro_fecha, ' - ', DATE_FORMAT(e.fecha, '%d/%m/%Y'), ' - ', e.nombre) nombre_evento, c.nombre as nombre_campeonato, c.oid as campeonato_oid, sel_nombre_categoria_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, ipe.evento_oid, p.oid) as nombre_categoria, tc.nombre tipo_categoria, p.tid FROM inscripcion_piloto_evento ipe JOIN piloto p on ipe.piloto_oid = p.oid JOIN evento e on ipe.evento_oid = e.oid JOIN campeonato c on e.campeonato_oid = c.oid JOIN tipo_categoria tc on ipe.tipo_categoria_oid = tc.oid left join navegante n on n.piloto_oid = p.oid, categorias cat WHERE (NULL is null or NULL = 0 or ipe.evento_oid= NULL) AND (NULL is null or NULL = 0 or ipe.piloto_oid= NULL) AND (NULL is null or NULL = 0 or CASE ipe.tipo_categoria_oid WHEN 1 THEN p.categoria_oid WHEN 2 THEN p.categoria_cuatriciclos_oid WHEN 3 THEN p.categoria_motocross_oid WHEN 4 THEN p.categoria_externa_oid END = NULL) and cat.oid = sel_categoria_oid_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, ipe.evento_oid, ipe.piloto_oid) LIMIT 500 ) AS sub GROUP BY sub.piloto_oid;
+2026-09-02 17:35:25 cat: Disconnect, proto: mysqld-5, msg: DISCONNECT FROM "enduro_25"
+2026-09-03 20:20:44 cat: Connect, proto: mysqld-5, msg: CONNECT TO "enduro_25" AS USER "root"
+2026-09-03 20:20:44 cat: Execute, proto: mysqld-5, msg: SET NAMES utf8
+2026-09-03 20:20:50 cat: Execute, proto: mysqld-5, msg: SELECT MAX(sub.oid) AS oid, sub.piloto_oid, MAX(sub.nombre_evento) AS nombre_evento, sub.nombre_pilot, sub.nombre_piloto, MAX(sub.nombre_campeonato) AS nombre_campeonato, sub.evento_oid, GROUP_CONCAT(DISTINCT sub.nro_moto SEPARATOR ' / ') AS nro_moto, GROUP_CONCAT(DISTINCT sub.nombre_categoria SEPARATOR ' / ') AS nombres_categoria, GROUP_CONCAT(DISTINCT sub.tipo_categoria SEPARATOR ' / ') AS tipo_categoria, GROUP_CONCAT(DISTINCT sub.tipo_categoria_oid SEPARATOR ' / ') AS tipo_categoria_oid, MAX(sub.evento_oid) evento_oid, EXISTS ( SELECT 1 FROM inscripcion_piloto_evento ipe2 INNER JOIN evento e2 ON e2.oid = ipe2.evento_oid WHERE e2.campeonato_oid = MAX(sub.campeonato_oid) AND ipe2.piloto_oid = sub.piloto_oid AND ipe2.evento_oid !=MAX(sub.piloto_oid) ) AS tiene_inscripcion_campeonato, sub.tid FROM ( SELECT ipe.piloto_oid, ipe.oid, sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, ipe.evento_oid, p.oid) as nro_moto, ipe.evento_oid, ipe.tipo_categoria_oid, CONCAT(p.apellido, ', ' , p.nombre) nombre_pilot, CASE WHEN cat.utiliza_acompaniante = 1 THEN CONCAT(UC_Words(CONCAT(p.apellido, ', ' , p.nombre)), IFNULL(UC_Words(CONCAT(' / ', n.apellido, ', ' , n.nombre)), '')) ELSE UC_Words(CONCAT(p.apellido, ', ' , p.nombre)) end as nombre_piloto, CONCAT(e.nro_fecha, ' - ', DATE_FORMAT(e.fecha, '%d/%m/%Y'), ' - ', e.nombre) nombre_evento, c.nombre as nombre_campeonato, c.oid as campeonato_oid, sel_nombre_categoria_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, ipe.evento_oid, p.oid) as nombre_categoria, tc.nombre tipo_categoria, p.tid FROM inscripcion_piloto_evento ipe JOIN piloto p on ipe.piloto_oid = p.oid JOIN evento e on ipe.evento_oid = e.oid JOIN campeonato c on e.campeonato_oid = c.oid JOIN tipo_categoria tc on ipe.tipo_categoria_oid = tc.oid left join navegante n on n.piloto_oid = p.oid, categorias cat WHERE (NULL is null or NULL = 0 or ipe.evento_oid= NULL) AND (NULL is null or NULL = 0 or ipe.piloto_oid= NULL) AND (NULL is null or NULL = 0 or CASE ipe.tipo_categoria_oid WHEN 1 THEN p.categoria_oid WHEN 2 THEN p.categoria_cuatriciclos_oid WHEN 3 THEN p.categoria_motocross_oid WHEN 4 THEN p.categoria_externa_oid END = NULL) and cat.oid = sel_categoria_oid_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, ipe.evento_oid, ipe.piloto_oid) LIMIT 500 ) AS sub GROUP BY sub.piloto_oid;
+2026-09-04 05:04:12 cat: Disconnect, proto: mysqld-5, msg: DISCONNECT FROM "enduro_25"

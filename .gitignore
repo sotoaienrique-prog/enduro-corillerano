@@ -39,14 +39,3 @@ desktop.ini
 
 # Otros archivos que podrías querer ignorar
 *.log
-# Repositorio SVN legado (no versionar)
-conf/
-db/
-hooks/
-locks/
-
-# Backups de Delphi (archivos con ~)
-*~
-Desktop.ini
-sql_log.txt
-sql_log.txt
