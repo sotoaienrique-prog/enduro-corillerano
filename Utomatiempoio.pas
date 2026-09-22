@@ -56,6 +56,7 @@ uses
 
 type
   ETomaTiempoIO = class(Exception);
+  TTomaTiempoImportMode = (timMerge, timReemplazoTotal);
 
   TTomaTiempoImportStats = record
     AntenasInsertadas     : Integer;
@@ -63,6 +64,7 @@ type
     CabecerasReutilizadas : Integer;
     CabecerasInsertadas   : Integer;
     CabecerasConflicto    : Integer;
+    TomasEliminadas       : Integer;
     TomasInsertadas       : Integer;
     TomasOmitidas         : Integer;
     procedure Clear;
@@ -97,6 +99,8 @@ type
       var AStats: TTomaTiempoImportStats): Int64;
     procedure ImportarUnaToma(const ATomaTiempoEventoOid: Int64;
       const AFields: TArray<string>; var AStats: TTomaTiempoImportStats);
+    procedure EliminarTomasDeCabecera(const ATomaTiempoEventoOid: Int64;
+      var AStats: TTomaTiempoImportStats);
 
   public
     constructor Create(AConnection: TZConnection);
@@ -104,7 +108,8 @@ type
     function ExportarAgrupacion(AAgrupacionOid: Integer;
       const AFileName: string): Integer;
 
-    function ImportarDesdeArchivo(const AFileName: string): TTomaTiempoImportStats;
+    function ImportarDesdeArchivo(const AFileName: string;
+  AModo: TTomaTiempoImportMode = timMerge): TTomaTiempoImportStats;
   end;
 
 implementation
@@ -121,6 +126,7 @@ begin
   CabecerasReutilizadas := 0;
   CabecerasInsertadas   := 0;
   CabecerasConflicto    := 0;
+  TomasEliminadas       := 0;
   TomasInsertadas       := 0;
   TomasOmitidas         := 0;
 end;
@@ -130,10 +136,10 @@ begin
   Result :=
     Format('Lecturas de antena: %d insertadas, %d ya existian en destino.' + sLineBreak +
            'Cabeceras: %d reutilizadas, %d insertadas, %d en conflicto (oid duplicado con otro nombre).' + sLineBreak +
-           'Tomas de tiempo: %d insertadas, %d omitidas (ya existian).',
+           'Tomas de tiempo: %d eliminadas por reemplazo, %d insertadas, %d omitidas (ya existian).',
            [AntenasInsertadas, AntenasReutilizadas,
             CabecerasReutilizadas, CabecerasInsertadas, CabecerasConflicto,
-            TomasInsertadas, TomasOmitidas]);
+            TomasEliminadas, TomasInsertadas, TomasOmitidas]);
 end;
 
 { TTomaTiempoExportImport }
@@ -576,11 +582,39 @@ begin
   end;
 end;
 
+procedure TTomaTiempoExportImport.EliminarTomasDeCabecera(
+  const ATomaTiempoEventoOid: Int64; var AStats: TTomaTiempoImportStats);
+var
+  LQryCount, LQryDel: TZQuery;
+begin
+  LQryCount := NewQuery;
+  try
+    LQryCount.SQL.Text :=
+      'SELECT COUNT(*) AS cant FROM toma_tiempos WHERE toma_tiempo_evento_oid = :tte_oid';
+    LQryCount.ParamByName('tte_oid').AsLargeInt := ATomaTiempoEventoOid;
+    LQryCount.Open;
+    Inc(AStats.TomasEliminadas, LQryCount.FieldByName('cant').AsInteger);
+    LQryCount.Close;
+  finally
+    LQryCount.Free;
+  end;
+
+  LQryDel := NewQuery;
+  try
+    LQryDel.SQL.Text :=
+      'DELETE FROM toma_tiempos WHERE toma_tiempo_evento_oid = :tte_oid';
+    LQryDel.ParamByName('tte_oid').AsLargeInt := ATomaTiempoEventoOid;
+    LQryDel.ExecSQL;
+  finally
+    LQryDel.Free;
+  end;
+end;
+
 // ---------------------------------------------------------------------------
 // IMPORTAR - punto de entrada
 // ---------------------------------------------------------------------------
-function TTomaTiempoExportImport.ImportarDesdeArchivo(
-  const AFileName: string): TTomaTiempoImportStats;
+function TTomaTiempoExportImport.ImportarDesdeArchivo(const AFileName: string;
+  AModo: TTomaTiempoImportMode = timMerge): TTomaTiempoImportStats;
 var
   LLines: TStringList;
   I: Integer;
@@ -626,6 +660,8 @@ begin
         begin
           LCurrentEventoOid := ResolverCabecera(LFields, Result);
           LTieneEventoActual := True;
+          if AModo = timReemplazoTotal then
+            EliminarTomasDeCabecera(LCurrentEventoOid, Result);
         end
         else if LFields[0] = 'D' then
         begin
