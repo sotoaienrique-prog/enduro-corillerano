@@ -173,7 +173,7 @@ begin
     ftSmallint, ftInteger, ftWord, ftLargeint, ftAutoInc, ftLongWord:
       Result := IntToStr(AField.AsLargeInt);
     ftDate, ftTime, ftDateTime, ftTimeStamp:
-      Result := FormatDateTime('yyyy-mm-dd hh:nn:ss', AField.AsDateTime);
+      Result := FormatDateTime('yyyy-mm-dd hh:nn:ss.zzz', AField.AsDateTime);
     ftBoolean:
       if AField.AsBoolean then
         Result := '1'
@@ -248,15 +248,22 @@ begin
   Result := LResult;
 end;
 
-// Espera exactamente 'yyyy-mm-dd hh:nn:ss' (19 caracteres, sin depender
+// Espera exactamente 'yyyy-mm-dd hh:nn:ss.zzz' (19 caracteres, sin depender
 // de la configuracion regional de la maquina).
 function TTomaTiempoExportImport.ParseFixedDateTime(const S: string): TDateTime;
+var
+  LMs: Integer;
 begin
   if Length(S) < 19 then
     raise ETomaTiempoIO.CreateFmt('Fecha/hora con formato invalido: "%s"', [S]);
+
+  LMs := 0;
+  if (Length(S) >= 23) and (S[20] = '.') then
+    LMs := StrToInt(Copy(S, 21, 3));
+
   Result := EncodeDateTime(
     StrToInt(Copy(S, 1, 4)),  StrToInt(Copy(S, 6, 2)),  StrToInt(Copy(S, 9, 2)),
-    StrToInt(Copy(S, 12, 2)), StrToInt(Copy(S, 15, 2)), StrToInt(Copy(S, 18, 2)), 0);
+    StrToInt(Copy(S, 12, 2)), StrToInt(Copy(S, 15, 2)), StrToInt(Copy(S, 18, 2)), LMs);
 end;
 
 procedure TTomaTiempoExportImport.SetParamValue(AQuery: TZQuery;
