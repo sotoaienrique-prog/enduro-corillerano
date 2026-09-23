@@ -496,8 +496,8 @@ begin
 
       SetParamValue(LQryIns, 'nombre',     LNombreOrig,   ftString);
       SetParamValue(LQryIns, 'evento_oid', AFields[3],    ftInteger);
-      SetParamValue(LQryIns, 'start_time', AFields[4],    ftDateTime);
-      SetParamValue(LQryIns, 'end_time',   AFields[5],    ftDateTime);
+      SetParamValue(LQryIns, 'start_time', AFields[4],    ftString);
+      SetParamValue(LQryIns, 'end_time',   AFields[5],    ftString);
       SetParamValue(LQryIns, 'tipo',       AFields[6],    ftString);
       SetParamValue(LQryIns, 'estado',     AFields[7],    ftString);
       SetParamValue(LQryIns, 'tag_text',   AFields[8],    ftString);
@@ -547,7 +547,7 @@ begin
     LQryCheck.ParamByName('tte_oid').AsLargeInt := ATomaTiempoEventoOid;
     SetParamValue(LQryCheck, 'piloto_oid',    AFields[2], ftLargeint);
     SetParamValue(LQryCheck, 'nro_vuelta',    AFields[5], ftInteger);
-    SetParamValue(LQryCheck, 'tiempo_pasada', AFields[3], ftDateTime);
+    SetParamValue(LQryCheck, 'tiempo_pasada', AFields[3], ftString);
     LQryCheck.Open;
     LExiste := not LQryCheck.Eof;
     LQryCheck.Close;
@@ -566,7 +566,7 @@ begin
       '  (:piloto_oid, :tiempo_pasada, :is_deleted, :tte_oid, :nro_vuelta, ' +
       '   :evento_oid, :lectura_tag_antena_oid, 1, :categoria_oid)';
     SetParamValue(LQryIns, 'piloto_oid',           AFields[2], ftLargeint);
-    SetParamValue(LQryIns, 'tiempo_pasada',        AFields[3], ftDateTime);
+    SetParamValue(LQryIns, 'tiempo_pasada',         AFields[3], ftString);
     SetParamValue(LQryIns, 'is_deleted',           AFields[4], ftInteger);
     LQryIns.ParamByName('tte_oid').AsLargeInt := ATomaTiempoEventoOid;
     SetParamValue(LQryIns, 'nro_vuelta',            AFields[5], ftInteger);
