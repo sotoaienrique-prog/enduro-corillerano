@@ -304,16 +304,28 @@ procedure TEdicionAgrupacion.btnimportarFileClick(Sender: TObject);
 var
   LIO: TTomaTiempoExportImport;
   LStats: TTomaTiempoImportStats;
+  LModo: TTomaTiempoImportMode;
 begin
   OpenDialog1.Filter := 'Archivo de tomas de tiempo (*.tte)|*.tte|Todos los archivos (*.*)|*.*';
 
   if not OpenDialog1.Execute then
     Exit;
 
+  case MessageDlg(
+    '¿Cómo querés importar este archivo?' + sLineBreak + sLineBreak +
+    'MERGE: agrega tomas nuevas, respeta lo que ya existe.' + sLineBreak +
+    'REEMPLAZAR: borra las tomas existentes de cada evento del archivo antes de importar.',
+    mtConfirmation, [mbYes, mbNo, mbCancel], 0) of
+    mrYes: LModo := timMerge;           // "Merge"
+    mrNo:  LModo := timReemplazoTotal;  // "Reemplazar"
+  else
+    Exit; // Cancelar
+  end;
+
   LIO := TTomaTiempoExportImport.Create(ConnectionModule.ZConnection);
   try
     try
-      LStats := LIO.ImportarDesdeArchivo(OpenDialog1.FileName);
+      LStats := LIO.ImportarDesdeArchivo(OpenDialog1.FileName, LModo);
       ShowMessage('Importación completada.'#13#10#13#10 + LStats.AsText);
     except
       on E: Exception do
@@ -323,6 +335,7 @@ begin
     LIO.Free;
   end;
 end;
+
 function TEdicionAgrupacion.getAgrupacionPuntosSQL(agrupacionTomaTiempoOID : Integer; paraReportePDF: Boolean = False): String;
 var
   sqlString, columnasTramos: String;
