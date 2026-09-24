@@ -716,9 +716,9 @@ object TomaTiempos: TTomaTiempos
     end
     object btnAgregarPasadaConNumero: TAeroButton
       AlignWithMargins = True
-      Left = 175
+      Left = 168
       Top = 207
-      Width = 122
+      Width = 129
       Height = 32
       ImageIndex = 3
       Images = cxImageList

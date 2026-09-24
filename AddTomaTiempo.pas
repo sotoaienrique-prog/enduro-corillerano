@@ -60,38 +60,14 @@ begin
 end;
 
 procedure TAddTomaTiempoForm.btnAcceptClick(Sender: TObject);
-var
-  cantidadPilotos : Integer;
 begin
   if (txtNumMoto.Text > '') then
     begin
-      cantidadPilotos:= TBussinessDataSubsystemFacade.getInstance.
-        getCuentaPilotosByNumMotoAndTipoCategoria(StrToIntDef(txtNumMoto.Text, 0), tipoCategoriaOID, eventOID);
-
-      if (cantidadPilotos = 1) then
-        begin
-            self.pilotoOID:= TBussinessDataSubsystemFacade.getInstance
-              .getPilotoOIDByNumMotoAndTipoCategoria(StrToIntDef(txtNumMoto.Text, 0), tipoCategoriaOID, eventOID);
-            if (self.pilotoOID > 0) then
-              ModalResult:= mrOk
-        end
-      else if (cantidadPilotos = 0) then
-        begin
-          if (StrToIntDef(txtNumMoto.Text, 0) > 1000) then
-            begin
-              self.pilotoOID:= TBussinessDataSubsystemFacade.getInstance
-                .getPilotoOIDByNumMotoAndTipoCategoria(StrToIntDef(txtNumMoto.Text, 0), 4, eventOID);
-              if (self.pilotoOID > 0) then
-                ModalResult:= mrOk
-            end
-          else
-            setTListItemsByString(errorListView, 'No existe Piloto con el número ' + txtNumMoto.Text, 0);
-        end
-      else if (cantidadPilotos > 1) then
-        begin
-          setTListItemsByString(errorListView, 'Existen más de un Piloto con el número ' + txtNumMoto.Text, 0);
-        end;
-    end;
+      self.pilotoOID:= TBussinessDataSubsystemFacade.getInstance
+        .getPilotoOIDByNumMotoAndTipoCategoria(StrToIntDef(txtNumMoto.Text, 0), tipoCategoriaOID, eventOID);
+      if (self.pilotoOID > 0) then
+        ModalResult:= mrOk
+    end
 end;
 
 procedure TAddTomaTiempoForm.btnCancelClick(Sender: TObject);
