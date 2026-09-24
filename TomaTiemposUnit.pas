@@ -879,6 +879,10 @@ begin
           tipoCategoriaOID:= tcPair.Value;
         end;
 
+      // En el caso que NO haya grilla de partida, establecemos por defecto en 1
+      if (tipoCategoriaOID = 0) then
+        tipoCategoriaOID := 1;
+
       addTomaTiempoForm:= TAddTomaTiempoForm.Create(nil);
       addTomaTiempoForm.eventOID:= eventoOID;
       addTomaTiempoForm.tipoCategoriaOID:= tipoCategoriaOID;
