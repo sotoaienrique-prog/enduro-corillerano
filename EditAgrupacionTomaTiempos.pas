@@ -387,6 +387,7 @@ begin
     // Columnas fijas iniciales
     't.`Nro. Competidor`, ' +
     't.Competidor, ' +
+    't.`Tiempo Total` AS `T. Total`, ' +
     't.Cat, ' +
 
     // CAMBIO: Diferencias usando Backticks para el AS final
