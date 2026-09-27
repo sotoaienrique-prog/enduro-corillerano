@@ -201,17 +201,30 @@ object TomaTiempos: TTomaTiempos
           Height = 13
         end
         object lblCantPilotosCorriendoValue: TLabel
-          Left = 322
+          Left = 281
           Top = 11
           Width = 3
           Height = 13
         end
         object lblCantidadCorriendo: TLabel
-          Left = 201
+          Left = 160
           Top = 10
           Width = 118
           Height = 13
           Caption = 'Cant. Pilotos Corriendo: '
+        end
+        object lblCantExedidos: TLabel
+          Left = 301
+          Top = 10
+          Width = 102
+          Height = 13
+          Caption = 'Cant. Piloto V. de +: '
+        end
+        object lblCantExcedidosValue: TLabel
+          Left = 425
+          Top = 11
+          Width = 3
+          Height = 13
         end
       end
     end
@@ -716,9 +729,9 @@ object TomaTiempos: TTomaTiempos
     end
     object btnAgregarPasadaConNumero: TAeroButton
       AlignWithMargins = True
-      Left = 168
+      Left = 167
       Top = 207
-      Width = 129
+      Width = 122
       Height = 32
       ImageIndex = 3
       Images = cxImageList
@@ -2707,57 +2720,72 @@ object TomaTiempos: TTomaTiempos
   object ZROQCantPilotosCorriendo: TZReadOnlyQuery
     Connection = ConnectionModule.ZConnection
     SQL.Strings = (
-      'SELECT '
-      '    tt.piloto_oid,'
-      '    MAX(tt.nro_vuelta) AS cant_vueltas,'
-      '    enc.nro_vueltas AS max_vueltas'
-      'FROM toma_tiempos tt'
+      'SELECT COUNT(*) AS cant_corriendo'
+      'FROM ('
+      '    SELECT tt.piloto_oid'
+      '    FROM toma_tiempos tt'
       
-        '    JOIN toma_tiempo_evento tte ON tt.toma_tiempo_evento_oid = t' +
-        'te.oid'
-      '    LEFT JOIN piloto p ON tt.piloto_oid = p.oid'
+        '        JOIN toma_tiempo_evento tte ON tt.toma_tiempo_evento_oid' +
+        ' = tte.oid'
       
-        '    LEFT JOIN inscripcion_piloto_evento ipe ON ipe.evento_oid = ' +
-        'tte.evento_oid '
+        '        LEFT JOIN inscripcion_piloto_evento ipe ON ipe.evento_oi' +
+        'd = tte.evento_oid'
       
-        '                                           AND ipe.piloto_oid = ' +
-        'tt.piloto_oid'
+        '                                               AND ipe.piloto_oi' +
+        'd = tt.piloto_oid'
       
-        '    JOIN categorias c ON c.oid = sel_categoria_oid_by_evento_and' +
-        '_tipo_categoria('
+        '        JOIN categorias c ON c.oid = sel_categoria_oid_by_evento' +
+        '_and_tipo_categoria('
       
-        '                                 ipe.tipo_categoria_oid, ipe.eve' +
-        'nto_oid, ipe.piloto_oid)'
+        '                                     ipe.tipo_categoria_oid, ipe' +
+        '.evento_oid, ipe.piloto_oid)'
       
-        '    LEFT JOIN evento_num_categoria enc ON enc.categoria_oid = c.' +
-        'oid '
+        '        LEFT JOIN evento_num_categoria enc ON enc.categoria_oid ' +
+        '= c.oid'
       
-        '                                      AND enc.evento_oid = ipe.e' +
-        'vento_oid'
-      'WHERE tt.toma_tiempo_evento_oid = :toma_tiempo_evento_oid'
-      '  AND tt.is_deleted = 0'
-      '  AND EXISTS (SELECT 1 FROM toma_tiempos tt_ins '
+        '                                          AND enc.evento_oid = i' +
+        'pe.evento_oid'
       
-        '    WHERE tt_ins.toma_tiempo_evento_oid = tt.toma_tiempo_evento_' +
-        'oid '
-      '          AND tt_ins.piloto_oid = tt.piloto_oid '
-      '          AND tt_ins.categoria_oid IS NOT NULL)'
-      '  AND NOT EXISTS ('
-      '      SELECT 1 '
-      '      FROM recargo_toma_tiempo_evento r '
-      '      WHERE r.toma_tiempo_evento_oid = tte.oid  '
-      '        AND r.piloto_oid = tt.piloto_oid         '
-      '        AND r.tipo_recargo IN (2, 7)'
-      '  )'
-      'GROUP BY tt.piloto_oid'
-      'HAVING enc.nro_vueltas > MAX(tt.nro_vuelta)')
+        '        JOIN grilla_de_partida_categorias gpc ON gpc.categoria_o' +
+        'id = c.oid'
+      
+        '                                              AND gpc.evento_oid' +
+        ' = tte.evento_oid'
+      
+        '        JOIN tipo_de_largada tl ON tl.oid = gpc.tipo_de_largada_' +
+        'oid'
+      '    WHERE tt.toma_tiempo_evento_oid = :toma_tiempo_evento_oid'
+      '      AND tt.is_deleted = 0'
+      '      AND ( tl.oid = 3'
+      '            OR EXISTS (SELECT 1 FROM toma_tiempos tt_ins'
+      
+        '                       WHERE tt_ins.toma_tiempo_evento_oid = tt.' +
+        'toma_tiempo_evento_oid'
+      
+        '                             AND tt_ins.piloto_oid = tt.piloto_o' +
+        'id'
+      
+        '                             AND tt_ins.categoria_oid IS NOT NUL' +
+        'L) )'
+      '      AND NOT EXISTS ('
+      '          SELECT 1'
+      '          FROM recargo_toma_tiempo_evento r'
+      '          WHERE r.toma_tiempo_evento_oid = tte.oid'
+      '            AND r.piloto_oid = tt.piloto_oid'
+      '            AND r.tipo_recargo IN (2, 7)'
+      '      )'
+      '    GROUP BY tt.piloto_oid, tl.oid, enc.nro_vueltas'
+      
+        '    HAVING COALESCE(enc.nro_vueltas, 1) > MAX(COALESCE(tt.nro_vu' +
+        'elta, 0))'
+      ') corriendo')
     Params = <
       item
         DataType = ftUnknown
         Name = 'toma_tiempo_evento_oid'
         ParamType = ptUnknown
       end>
-    Left = 80
+    Left = 136
     Top = 144
     ParamData = <
       item
@@ -2769,42 +2797,47 @@ object TomaTiempos: TTomaTiempos
   object ZROQCantPilotosLargado: TZReadOnlyQuery
     Connection = ConnectionModule.ZConnection
     SQL.Strings = (
-      
-        'select tt.piloto_oid, MAX(tt.nro_vuelta) cant_vueltas, enc.nro_v' +
-        'ueltas as max_vueltas '
-      'from toma_tiempos tt'
+      'SELECT COUNT(DISTINCT tt.piloto_oid) AS cant_largados'
+      'FROM toma_tiempos tt'
       
         '    JOIN toma_tiempo_evento tte ON tt.toma_tiempo_evento_oid = t' +
-        'te.oid '
-      '    LEFT JOIN piloto p ON tt.piloto_oid = p.oid'
-      '    LEFT JOIN inscripcion_piloto_evento ipe ON '
+        'te.oid'
       
-        '        (ipe.evento_oid = tte.evento_oid AND ipe.piloto_oid = tt' +
-        '.piloto_oid), '
-      '        categorias c'
+        '    LEFT JOIN inscripcion_piloto_evento ipe ON ipe.evento_oid = ' +
+        'tte.evento_oid'
       
-        '                   LEFT join evento_num_categoria enc on enc.cat' +
-        'egoria_oid = c.oid     '
-      'where toma_tiempo_evento_oid = :toma_tiempo_evento_oid'
-      '  AND EXISTS (SELECT 1 FROM toma_tiempos tt_ins '
+        '                                           AND ipe.piloto_oid = ' +
+        'tt.piloto_oid'
       
-        '    WHERE tt_ins.toma_tiempo_evento_oid = tt.toma_tiempo_evento_' +
-        'oid '
-      '          AND tt_ins.piloto_oid = tt.piloto_oid '
-      '          AND tt_ins.categoria_oid IS NOT NULL)'
-      '      and is_deleted = 0'
+        '    JOIN categorias c ON c.oid = sel_categoria_oid_by_evento_and' +
+        '_tipo_categoria('
       
-        '      and c.oid = sel_categoria_oid_by_evento_and_tipo_categoria' +
-        '(ipe.tipo_categoria_oid, ipe.evento_oid, ipe.piloto_oid)'
-      'group by 1')
+        '                                 ipe.tipo_categoria_oid, ipe.eve' +
+        'nto_oid, ipe.piloto_oid)'
+      
+        '    JOIN grilla_de_partida_categorias gpc ON gpc.categoria_oid =' +
+        ' c.oid'
+      
+        '                                          AND gpc.evento_oid = t' +
+        'te.evento_oid'
+      '    JOIN tipo_de_largada tl ON tl.oid = gpc.tipo_de_largada_oid'
+      'WHERE tt.toma_tiempo_evento_oid = :toma_tiempo_evento_oid'
+      '  AND tt.is_deleted = 0'
+      '  AND ( tl.oid = 3'
+      '        OR EXISTS (SELECT 1 FROM toma_tiempos tt_ins'
+      
+        '                   WHERE tt_ins.toma_tiempo_evento_oid = tt.toma' +
+        '_tiempo_evento_oid'
+      '                         AND tt_ins.piloto_oid = tt.piloto_oid'
+      '                         AND tt_ins.categoria_oid IS NOT NULL) )')
     Params = <
       item
         DataType = ftUnknown
         Name = 'toma_tiempo_evento_oid'
         ParamType = ptUnknown
       end>
-    Left = 80
-    Top = 200
+    Left = 48
+    Top = 144
     ParamData = <
       item
         DataType = ftUnknown
@@ -2858,6 +2891,76 @@ object TomaTiempos: TTomaTiempos
       item
         DataType = ftUnknown
         Name = 'tipo_categoria_oid'
+        ParamType = ptUnknown
+      end>
+  end
+  object ZQRCantPilotoExcedido: TZReadOnlyQuery
+    Connection = ConnectionModule.ZConnection
+    SQL.Strings = (
+      'SELECT COUNT(*) AS cant_vueltas_de_mas'
+      'FROM ('
+      '    SELECT tt.piloto_oid'
+      '    FROM toma_tiempos tt'
+      
+        '        JOIN toma_tiempo_evento tte ON tt.toma_tiempo_evento_oid' +
+        ' = tte.oid'
+      
+        '        LEFT JOIN inscripcion_piloto_evento ipe ON ipe.evento_oi' +
+        'd = tte.evento_oid'
+      
+        '                                               AND ipe.piloto_oi' +
+        'd = tt.piloto_oid'
+      
+        '        JOIN categorias c ON c.oid = sel_categoria_oid_by_evento' +
+        '_and_tipo_categoria('
+      
+        '                                     ipe.tipo_categoria_oid, ipe' +
+        '.evento_oid, ipe.piloto_oid)'
+      
+        '        LEFT JOIN evento_num_categoria enc ON enc.categoria_oid ' +
+        '= c.oid'
+      
+        '                                          AND enc.evento_oid = i' +
+        'pe.evento_oid'
+      
+        '        JOIN grilla_de_partida_categorias gpc ON gpc.categoria_o' +
+        'id = c.oid'
+      
+        '                                              AND gpc.evento_oid' +
+        ' = tte.evento_oid'
+      
+        '        JOIN tipo_de_largada tl ON tl.oid = gpc.tipo_de_largada_' +
+        'oid'
+      '    WHERE tt.toma_tiempo_evento_oid = :toma_tiempo_evento_oid'
+      '      AND tt.is_deleted = 0'
+      '      AND ( tl.oid = 3'
+      '            OR EXISTS (SELECT 1 FROM toma_tiempos tt_ins'
+      
+        '                       WHERE tt_ins.toma_tiempo_evento_oid = tt.' +
+        'toma_tiempo_evento_oid'
+      
+        '                             AND tt_ins.piloto_oid = tt.piloto_o' +
+        'id'
+      
+        '                             AND tt_ins.categoria_oid IS NOT NUL' +
+        'L) )'
+      '    GROUP BY tt.piloto_oid, enc.nro_vueltas'
+      
+        '    HAVING MAX(COALESCE(tt.nro_vuelta, 0)) > COALESCE(enc.nro_vu' +
+        'eltas, 1)'
+      ') x')
+    Params = <
+      item
+        DataType = ftUnknown
+        Name = 'toma_tiempo_evento_oid'
+        ParamType = ptUnknown
+      end>
+    Left = 240
+    Top = 144
+    ParamData = <
+      item
+        DataType = ftUnknown
+        Name = 'toma_tiempo_evento_oid'
         ParamType = ptUnknown
       end>
   end
