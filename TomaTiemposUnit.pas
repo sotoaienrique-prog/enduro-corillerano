@@ -153,6 +153,9 @@ type
     ZROQCantPilotosLargado: TZReadOnlyQuery;
     cxGridTomaTiempoDBTableViewoid: TcxGridDBColumn;
     ZROQPilotoEnGrilla: TZReadOnlyQuery;
+    lblCantExedidos: TLabel;
+    lblCantExcedidosValue: TLabel;
+    ZQRCantPilotoExcedido: TZReadOnlyQuery;
     procedure FormCreate(Sender: TObject);
     procedure btnStartClick(Sender: TObject);
     procedure btnStartHoleshot;
@@ -326,10 +329,7 @@ begin
         Close;
         ParamByName('toma_tiempo_evento_oid').AsInteger:= tomaTiempoEvento;
         Open;
-        Last; // <--- Obliga a Zeos a ir al final y contar TODO
-
-        // Usamos RecordCount y lo convertimos a String para el Caption
-        lblCantPilotosCorriendoValue.Caption := IntToStr(RecordCount);
+        lblCantPilotosCorriendoValue.Caption := FieldByName('cant_corriendo').asstring;
       end;
 
     with ZROQCantPilotosLargado do
@@ -337,10 +337,15 @@ begin
         Close;
         ParamByName('toma_tiempo_evento_oid').AsInteger:= tomaTiempoEvento;
         Open;
-        Last; // <--- Obliga a Zeos a ir al final y contar TODO
+        lblCantPilotosValue.Caption := FieldByName('cant_largados').asstring;
+      end;
 
-        // Usamos RecordCount y lo convertimos a String para el Caption
-        lblCantPilotosValue.Caption := IntToStr(RecordCount);
+    with ZQRCantPilotoExcedido do
+      begin
+        Close;
+        ParamByName('toma_tiempo_evento_oid').AsInteger:= tomaTiempoEvento;
+        Open;
+        lblCantExcedidosValue.Caption := FieldByName('cant_vueltas_de_mas').asstring;
       end;
 end;
 

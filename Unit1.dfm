@@ -1,7 +1,7 @@
 object Principal: TPrincipal
   Left = 0
   Top = 0
-  Caption = 'Enduro Cordillerano - 24.09.26'
+  Caption = 'Enduro Cordillerano - 27.09.26'
   ClientHeight = 486
   ClientWidth = 1026
   Color = clBtnFace
@@ -98,7 +98,7 @@ object Principal: TPrincipal
         Progress.ShowBorder = False
         Progress.Stacked = False
         Style = psTime
-        Text = '17:49:54'
+        Text = '15:29:50'
         TimeFormat = 'hh:mm:ss'
         Width = 60
       end
@@ -125,7 +125,7 @@ object Principal: TPrincipal
         Progress.ShowBorder = False
         Progress.Stacked = True
         Style = psDate
-        Text = '23/07/2026'
+        Text = '27/09/2026'
         TimeFormat = 'hh:mm:ss'
         Width = 80
       end
