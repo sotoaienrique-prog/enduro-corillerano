@@ -84,6 +84,9 @@ type
     cxLabel3: TcxLabel;
     cmbTipoToma: TComboBox;
     scExcelExport: TscExcelExport;
+    cxGridDBTableViewDesc: TcxGridDBColumn;
+    lblDescripcion: TcxLabel;
+    txtDescripcion: TcxTextEdit;
     procedure FormCreate(Sender: TObject);
     procedure btnNewClick(Sender: TObject);
     procedure btnRecargoTiempoClick(Sender: TObject);
@@ -146,6 +149,7 @@ begin
   RecargoTomaTiempoEvento.TipoRecargoOID:= VarToIntDef(cmbTipoRecargo.KeyValue, 0);
   RecargoTomaTiempoEvento.SegundosRecargo:= StrToIntDef(txtSegundos.Text, 0);
   RecargoTomaTiempoEvento.TipoCategoriaOID:= StrToIntDef(cmbTipoCategoria.KeyValue, 0);
+  RecargoTomaTiempoEvento.Descripcion:= txtDescripcion.Text;
 
   if (RecargoTomaTiempoEvento.isValidObject) then
     begin

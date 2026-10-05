@@ -342,6 +342,7 @@ type
     fTipoCategoriaOID: Integer;
     fSegundosRecargo: SmallInt;
     fTipoRecargoOID: Integer;
+    fDescripcion: String;
 
   public
     property TomaTiempoEventoOID: Integer read fTomaTiempoEventoOID write fTomaTiempoEventoOID;
@@ -349,6 +350,7 @@ type
     property TipoCategoriaOID: Integer read fTipoCategoriaOID write fTipoCategoriaOID;
     property TipoRecargoOID: Integer read fTipoRecargoOID write fTipoRecargoOID;
     property SegundosRecargo: SmallInt read fSegundosRecargo write fSegundosRecargo;
+    property Descripcion: String read fDescripcion write fDescripcion;
 
     function getValidationResult(): TStringList; Override;
   end;

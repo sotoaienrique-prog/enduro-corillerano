@@ -1717,6 +1717,7 @@ procedure TBussinessDataSubsystemFacade.deletePuntos(OID: Integer);
           ParamByName('tipo_recargo').AsInteger:= recargoTomaTiempoEventoVO.TipoRecargoOID;
           ParamByName('tipo_categoria_oid').AsInteger:= recargoTomaTiempoEventoVO.TipoCategoriaOID;
           ParamByName('segundos_recargo').AsSmallInt:= recargoTomaTiempoEventoVO.SegundosRecargo;
+          ParamByName('descripcion').AsString:= recargoTomaTiempoEventoVO.Descripcion;
           ExecSQL;
         end;
       ConnectionModule.ZConnection.Commit;

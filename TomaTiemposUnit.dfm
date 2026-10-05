@@ -809,7 +809,7 @@ object TomaTiempos: TTomaTiempos
       Left = 288
       Top = 207
       Width = 105
-      Height = 63
+      Height = 32
       ImageIndex = 3
       Images = cxImageList
       Spacing = 10
@@ -819,6 +819,22 @@ object TomaTiempos: TTomaTiempos
       Enabled = False
       TabOrder = 33
       OnClick = btnAgregarTiempoSinPilotoClick
+    end
+    object addRegargo: TAeroButton
+      AlignWithMargins = True
+      Left = 286
+      Top = 238
+      Width = 110
+      Height = 32
+      ImageIndex = 3
+      Images = cxImageList
+      Spacing = 10
+      Version = '1.0.0.1'
+      Anchors = [akLeft, akTop, akRight]
+      Caption = 'Recargo'
+      Enabled = False
+      TabOrder = 34
+      OnClick = addRegargoClick
     end
   end
   object ZCampeonato: TZTable
@@ -1366,7 +1382,8 @@ object TomaTiempos: TTomaTiempos
       '    tte.evento_oid,'
       '    tt.nro_vuelta,'
       '    tt.is_deleted as deleted_val, '
-      '    tte.oid as toma_tiempo_evento_oid'
+      '    tte.oid as toma_tiempo_evento_oid,'
+      '    tt.piloto_oid'
       'FROM '
       '    toma_tiempos tt'
       
@@ -1460,6 +1477,9 @@ object TomaTiempos: TTomaTiempos
       FieldName = 'tiempo_pasada'
       ReadOnly = True
       Size = 60
+    end
+    object ZROQTomaTiempospiloto_oid: TLargeintField
+      FieldName = 'piloto_oid'
     end
   end
   object cxErrorImageList: TcxImageList
@@ -2462,8 +2482,8 @@ object TomaTiempos: TTomaTiempos
         Name = 'toma_tiempo_evento_oid'
         ParamType = ptUnknown
       end>
-    Left = 544
-    Top = 224
+    Left = 528
+    Top = 456
     ParamData = <
       item
         DataType = ftUnknown
