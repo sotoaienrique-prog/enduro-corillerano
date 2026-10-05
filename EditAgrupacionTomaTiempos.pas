@@ -110,6 +110,9 @@ type
     procedure SubirAWorker(const HTMLContent: string);
     procedure DiagnosticoSSL;
     procedure ExportarExcelYPDF(Dataset: TDataSet; const Instancia: string);
+    procedure AbrirConsultaPublicacion(Query: TZReadOnlyQuery);
+    function EsColumnaPublicable(Field: TField): Boolean;
+    procedure ExportarAExcel(Dataset: TDataSet);
   public
     procedure enableAddAgrupacion;
     procedure enableAddTomaTiempos;
@@ -121,7 +124,16 @@ var
   tipoTomaTiempo: String;
 implementation
 
+uses
+  System.Win.ComObj;
+
 {$R *.dfm}
+
+const
+  CAMPO_CATEGORIA_PUBLICACION = 'Cat';
+  // Formato Texto de Excel. Debe ser string tipado: el literal '@' es un Char y por OLE
+  // viaja como el ordinal 64, y Excel recibe el formato "64" en lugar de Texto.
+  FORMATO_TEXTO_EXCEL: WideString = '@';
 
 procedure TEdicionAgrupacion.selectCombosByDate;
 begin
@@ -225,25 +237,20 @@ begin
 end;
 
 procedure TEdicionAgrupacion.btnExportarAgrupacionClick(Sender: TObject);
+var
+  Consulta: TZReadOnlyQuery;
 begin
-      with zExportarAgrupacion do
-      begin
-        DisableControls;
-        try
-          Close;
-          Sql.Text:= getAgrupacionSQL(agrupacionTomaTiempoOID);
-          ParamByName('toma_tiempo_agrupacion_oid').AsInteger:= agrupacionTomaTiempoOID;
-          Open;
-        finally
-          EnableControls;
-        end;
-      end;
-
-      scExcelExport.Dataset:= zExportarAgrupacion;
-      scExcelExport.WorksheetName := 'Toma de Tiempos Agrupada';
-      scExcelExport.ExportDataset;
-      scExcelExport.Disconnect;
+  // Consulta propia: JvReportTimer (exportación WEB) reutiliza zExportarAgrupacion cada 30 s
+  Consulta := TZReadOnlyQuery.Create(nil);
+  try
+    Consulta.Connection := zExportarAgrupacion.Connection;
+    AbrirConsultaPublicacion(Consulta);
+    ExportarAExcel(Consulta);
+  finally
+    Consulta.Free;
+  end;
 end;
+
 
 procedure TEdicionAgrupacion.btnExportarAgrupacionPuntosClick(Sender: TObject);
 begin
@@ -574,51 +581,268 @@ begin
   end;
 end;
 
-procedure ActualizarWebNetlifyInvisibles;
-var
-  StartInfo: TStartupInfo;
-  ProcInfo: TProcessInformation;
-  Comando: string;
+function TEdicionAgrupacion.EsColumnaPublicable(Field: TField): Boolean;
 begin
-  Comando := 'C:\enduro\Dropbox\Reportes Web\actualizar.bat';
-
-  FillChar(StartInfo, SizeOf(StartInfo), 0);
-  StartInfo.cb := SizeOf(StartInfo);
-  // Configuramos para que la ventana de la consola nazca oculta
-  StartInfo.dwFlags := STARTF_USESHOWWINDOW;
-  StartInfo.wShowWindow := SW_HIDE;
-
-  // Creamos el proceso en Windows
-  if CreateProcess(nil, PChar(Comando), nil, nil, False,
-                   CREATE_NO_WINDOW, nil, nil, StartInfo, ProcInfo) then
-  begin
-    // Cerramos los handles inmediatamente para liberar memoria
-    CloseHandle(ProcInfo.hProcess);
-    CloseHandle(ProcInfo.hThread);
-  end;
+  // Misma regla para HTML y Excel: campo visible y que no sea la categoría (va como título de bloque)
+  Result := Field.Visible and not SameText(Field.FieldName, CAMPO_CATEGORIA_PUBLICACION);
 end;
 
+procedure TEdicionAgrupacion.AbrirConsultaPublicacion(Query: TZReadOnlyQuery);
+begin
+  // Consulta única de publicación: la usan la exportación WEB y la de Excel
+  with Query do
+  begin
+    Close;
+    Sql.Text := getAgrupacionPuntosSQL(agrupacionTomaTiempoOID);
+    ParamByName('toma_tiempo_agrupacion_oid').AsInteger := agrupacionTomaTiempoOID;
+
+    DisableControls;
+    try
+      Open;
+    finally
+      EnableControls;
+    end;
+  end;
+
+  // Columnas internas que no se publican
+  OcultarCamposExportacion(Query, ['Posicion', 'categoria_oid', 'piloto_oid', 'Categoria_Control', '_p', '_a', '_vp', '_va', 'tiempo_total_raw']);
+end;
+
+procedure TEdicionAgrupacion.ExportarAExcel(Dataset: TDataSet);
+const
+  xlCenter      = -4108;
+  xlLeft        = -4131;
+  xlRight       = -4152;
+  xlEdgeBottom  = 9;
+  xlContinuous  = 1;
+  xlLandscape   = 2;
+var
+  Excel, Libro, Hoja, Fila: Variant;
+  Filas: array of Variant;
+  Columnas: array of TField;
+  Conteo: TStringList;
+  CategoriaActual: string;
+  NumCols, FilaExcel, PosicionEnCategoria, i: Integer;
+
+  function Rango(FilaDesde, ColDesde, FilaHasta, ColHasta: Integer): Variant;
+  begin
+    Result := Hoja.Range[Hoja.Cells[FilaDesde, ColDesde], Hoja.Cells[FilaHasta, ColHasta]];
+  end;
+
+  function ObtenerConteo(const Categoria: string): Integer;
+  var
+    idx: Integer;
+  begin
+    idx := Conteo.IndexOfName(Categoria);
+    if idx >= 0 then
+      Result := StrToInt(Conteo.ValueFromIndex[idx])
+    else
+      Result := 0;
+  end;
+
+  procedure EscribirTituloCategoria(const Categoria: string);
+  var
+    R, Encabezados: Variant;
+    c: Integer;
+  begin
+    // Fila de título: igual al encabezado de la tarjeta HTML
+    R := Rango(FilaExcel, 1, FilaExcel, NumCols);
+    R.NumberFormat := FORMATO_TEXTO_EXCEL;
+    R.Interior.Color := RGB(44, 62, 80);
+    R.Font.Color := RGB(255, 255, 255);
+    R.Font.Bold := True;
+    R := Rango(FilaExcel, 1, FilaExcel, NumCols - 1);
+    R.Merge; // celdas combinadas: AutoFit no ensancha la columna Pos. por el nombre
+    R.HorizontalAlignment := xlLeft;
+    Hoja.Cells[FilaExcel, 1].Value := Categoria;
+    Hoja.Cells[FilaExcel, NumCols].HorizontalAlignment := xlRight;
+    Hoja.Cells[FilaExcel, NumCols].Value := IntToStr(ObtenerConteo(Categoria)) +
+      ' de ' + IntToStr(ObtenerConteo(Categoria)) + ' participantes';
+    Inc(FilaExcel);
+
+    // Fila de encabezados de columna
+    Encabezados := VarArrayCreate([1, NumCols], varVariant);
+    Encabezados[1] := 'Pos.';
+    for c := 0 to High(Columnas) do
+      Encabezados[c + 2] := Columnas[c].DisplayLabel;
+    R := Rango(FilaExcel, 1, FilaExcel, NumCols);
+    R.NumberFormat := FORMATO_TEXTO_EXCEL;
+    R.Value := Encabezados;
+    R.Font.Bold := True;
+    R.Interior.Color := RGB(236, 240, 241);
+    R.Borders[xlEdgeBottom].LineStyle := xlContinuous;
+    Inc(FilaExcel);
+  end;
+
+  procedure VolcarFilasCategoria;
+  var
+    Bloque, Datos: Variant;
+    f, c: Integer;
+  begin
+    if Length(Filas) = 0 then
+      Exit;
+
+    // Una sola asignación por categoría (Variant array 2D), sobre columnas ya formateadas
+    Bloque := VarArrayCreate([1, Length(Filas), 1, NumCols], varVariant);
+    for f := 0 to High(Filas) do
+    begin
+      Datos := Filas[f];
+      for c := 1 to NumCols do
+        Bloque[f + 1, c] := Datos[c];
+    end;
+    Rango(FilaExcel, 1, FilaExcel + High(Filas), NumCols).Value := Bloque;
+
+    // Columna Pos.: negrita y colores de podio del HTML (.top1/.top2/.top3)
+    Rango(FilaExcel, 1, FilaExcel + High(Filas), 1).Font.Bold := True;
+    if Length(Filas) > 0 then
+      Hoja.Cells[FilaExcel, 1].Font.Color := RGB(212, 175, 55);
+    if Length(Filas) > 1 then
+      Hoja.Cells[FilaExcel + 1, 1].Font.Color := RGB(167, 167, 173);
+    if Length(Filas) > 2 then
+      Hoja.Cells[FilaExcel + 2, 1].Font.Color := RGB(205, 127, 50);
+
+    Inc(FilaExcel, Length(Filas) + 1); // fila en blanco entre categorías
+    SetLength(Filas, 0);
+  end;
+
+begin
+  if Dataset.IsEmpty then
+  begin
+    TF_EE_Message.ShowMessage(TComponent(Self), 'Exportar a Excel',
+      'La agrupación no tiene tomas de tiempo para exportar.', TF_EE_Message.INFORMATION, False);
+    Exit;
+  end;
+
+  // Mismas columnas y en el mismo orden que el HTML
+  for i := 0 to Dataset.FieldCount - 1 do
+    if EsColumnaPublicable(Dataset.Fields[i]) then
+    begin
+      SetLength(Columnas, Length(Columnas) + 1);
+      Columnas[High(Columnas)] := Dataset.Fields[i];
+    end;
+  NumCols := Length(Columnas) + 1; // + columna Pos.
+
+  try
+    Excel := CreateOleObject('Excel.Application');
+  except
+    on E: Exception do
+    begin
+      TF_EE_Message.ShowMessage(TComponent(Self), 'No se pudo iniciar Excel',
+        'Verifique que Microsoft Excel esté instalado en este equipo.' + sLineBreak + E.Message,
+        TF_EE_Message.ERROR, False);
+      Exit;
+    end;
+  end;
+
+  Conteo := TStringList.Create;
+  Screen.Cursor := crHourGlass;
+  try
+    try
+      Excel.ScreenUpdating := False;
+      Excel.DisplayAlerts := False;
+      Libro := Excel.Workbooks.Add;
+      Hoja := Libro.Worksheets[1];
+      Hoja.Name := 'Toma de Tiempos Agrupada';
+
+      // Formato ANTES de escribir: columnas de texto en '@' para que Excel no convierta
+      // tiempos (MM:SS.mmm / HH:MM:SS.mmm), Nro. Competidor ni diferencias.
+      // Las numéricas (Pos., P. <toma>, Vueltas, Recargo) quedan en General.
+      Rango(1, 1, 1, NumCols).EntireColumn.HorizontalAlignment := xlCenter;
+      for i := 0 to High(Columnas) do
+        if not (Columnas[i] is TNumericField) then
+          Hoja.Cells[1, i + 2].EntireColumn.NumberFormat := FORMATO_TEXTO_EXCEL;
+
+      FilaExcel := 1;
+
+      // Pre-conteo de participantes por categoría (igual que ExportarAHTML)
+      Dataset.First;
+      while not Dataset.Eof do
+      begin
+        CategoriaActual := Trim(Dataset.FieldByName(CAMPO_CATEGORIA_PUBLICACION).AsString);
+        i := Conteo.IndexOfName(CategoriaActual);
+        if i >= 0 then
+          Conteo.ValueFromIndex[i] := IntToStr(StrToInt(Conteo.ValueFromIndex[i]) + 1)
+        else
+          Conteo.Add(CategoriaActual + '=1');
+        Dataset.Next;
+      end;
+
+      // Recorrido principal: un bloque por categoría
+      CategoriaActual := '';
+      PosicionEnCategoria := 0;
+      Dataset.First;
+      while not Dataset.Eof do
+      begin
+        if Trim(Dataset.FieldByName(CAMPO_CATEGORIA_PUBLICACION).AsString) <> CategoriaActual then
+        begin
+          VolcarFilasCategoria;
+          CategoriaActual := Trim(Dataset.FieldByName(CAMPO_CATEGORIA_PUBLICACION).AsString);
+          EscribirTituloCategoria(CategoriaActual);
+          PosicionEnCategoria := 0;
+        end;
+
+        Inc(PosicionEnCategoria);
+
+        // Mismo valor que el <td> del HTML (Field.AsString); los numéricos van como número
+        Fila := VarArrayCreate([1, NumCols], varVariant);
+        Fila[1] := PosicionEnCategoria;
+        for i := 0 to High(Columnas) do
+          if (Columnas[i] is TNumericField) and not Columnas[i].IsNull then
+            Fila[i + 2] := Columnas[i].AsFloat
+          else
+            Fila[i + 2] := Columnas[i].AsString;
+
+        SetLength(Filas, Length(Filas) + 1);
+        Filas[High(Filas)] := Fila;
+
+        Dataset.Next;
+      end;
+      VolcarFilasCategoria;
+
+      Rango(1, 1, FilaExcel, NumCols).Columns.AutoFit;
+
+      // Impresión: horizontal y 1 página de ancho, como ExportarExcelYPDF
+      try
+        Hoja.PageSetup.Orientation := xlLandscape;
+        Hoja.PageSetup.Zoom := False;
+        Hoja.PageSetup.FitToPagesWide := 1;
+        Hoja.PageSetup.FitToPagesTall := False;
+      except
+        // Sin impresora instalada PageSetup puede fallar; no impide la exportación
+      end;
+
+      Excel.ScreenUpdating := True;
+      Excel.DisplayAlerts := True;
+      Excel.Visible := True;
+      Excel.UserControl := True; // Excel queda abierto para el usuario al liberar las referencias
+    except
+      on E: Exception do
+      begin
+        try
+          Excel.DisplayAlerts := False;
+          Excel.Quit; // descarta el libro a medio generar
+        except
+        end;
+        TF_EE_Message.ShowMessage(TComponent(Self), 'Error al exportar a Excel',
+          E.Message, TF_EE_Message.ERROR, False);
+      end;
+    end;
+  finally
+    Screen.Cursor := crDefault;
+    Conteo.Free;
+    SetLength(Filas, 0);
+    Fila := Unassigned;
+    Hoja := Unassigned;
+    Libro := Unassigned;
+    Excel := Unassigned;
+  end;
+end;
 
 procedure TEdicionAgrupacion.JvReportTimerTimer(Sender: TObject);
 var
   RutaArchivo, TextoCabecera, Instancia, Modo: string;
 begin
-      with zExportarAgrupacion do
-      begin
-        Close; // Cierra primero
-        Sql.Text := getAgrupacionPuntosSQL(agrupacionTomaTiempoOID);
-        ParamByName('toma_tiempo_agrupacion_oid').AsInteger := agrupacionTomaTiempoOID;
-
-        DisableControls; // Desactiva justo antes de abrir
-        try
-          Open;
-        finally
-          EnableControls;
-        end;
-      end;
-
-      // Ocultamos las columnas que no queremos ver en la exportaciÓn
-      OcultarCamposExportacion(zExportarAgrupacion, ['Posicion', 'categoria_oid', 'piloto_oid', 'Categoria_Control', '_p', '_a', '_vp', '_va', 'tiempo_total_raw']);
+      AbrirConsultaPublicacion(zExportarAgrupacion);
       ExportarAHTML(zExportarAgrupacion);
       //Modo:= ReadStringFromIniFile('Instancia','Modo','PROD');
       //if(Modo = 'PROD') then
@@ -833,7 +1057,7 @@ begin
 end;
 
 begin
-  NombreCampoCat := 'Cat'; // nombre del campo de categoría
+  NombreCampoCat := CAMPO_CATEGORIA_PUBLICACION; // nombre del campo de categoría
 
   List := TStringList.Create;
   Conteo := TStringList.Create;
@@ -958,7 +1182,7 @@ begin
       end;
 
       for i := 0 to Dataset.FieldCount - 1 do
-        if Dataset.Fields[i].Visible and not SameText(Dataset.Fields[i].FieldName, NombreCampoCat) then
+        if EsColumnaPublicable(Dataset.Fields[i]) then
           Fila := Fila + '<td>' + Dataset.Fields[i].AsString + '</td>';
       Fila := Fila + '</tr>';
       List.Add(Fila);
