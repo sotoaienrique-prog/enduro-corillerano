@@ -2979,11 +2979,11 @@ object ConnectionModule: TConnectionModule
       'INSERT INTO recargo_toma_tiempo_evento'
       
         '    (toma_tiempo_evento_oid, piloto_oid, tipo_categoria_oid, seg' +
-        'undos_recargo, tipo_recargo)'
+        'undos_recargo, tipo_recargo, descripcion)'
       'VALUES'
       
         '    (:toma_tiempo_evento_oid, :piloto_oid, :tipo_categoria_oid, ' +
-        ':segundos_recargo, :tipo_recargo)')
+        ':segundos_recargo, :tipo_recargo, :descripcion)')
     Params = <
       item
         DataType = ftInteger
@@ -3009,6 +3009,11 @@ object ConnectionModule: TConnectionModule
         DataType = ftInteger
         Name = 'tipo_recargo'
         ParamType = ptInput
+      end
+      item
+        DataType = ftUnknown
+        Name = 'descripcion'
+        ParamType = ptUnknown
       end>
     Left = 800
     Top = 496
@@ -3037,6 +3042,11 @@ object ConnectionModule: TConnectionModule
         DataType = ftInteger
         Name = 'tipo_recargo'
         ParamType = ptInput
+      end
+      item
+        DataType = ftUnknown
+        Name = 'descripcion'
+        ParamType = ptUnknown
       end>
   end
   object ZDeleteRecargoTomaTiempoEvento: TZQuery

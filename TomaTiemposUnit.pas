@@ -156,6 +156,8 @@ type
     lblCantExedidos: TLabel;
     lblCantExcedidosValue: TLabel;
     ZQRCantPilotoExcedido: TZReadOnlyQuery;
+    addRegargo: TAeroButton;
+    ZROQTomaTiempospiloto_oid: TLargeintField;
     procedure FormCreate(Sender: TObject);
     procedure btnStartClick(Sender: TObject);
     procedure btnStartHoleshot;
@@ -196,6 +198,7 @@ type
     procedure FormMouseWheelUp(Sender: TObject; Shift: TShiftState;
       MousePos: TPoint; var Handled: Boolean);
     procedure btnAgregarTiempoSinPilotoClick(Sender: TObject);
+    procedure addRegargoClick(Sender: TObject);
   private
     procedure RefreshTomaTiempo;
     procedure RefreshPosiciones;
@@ -731,6 +734,43 @@ begin
   Result:= sqlStringPrefix + sqlStringSufix;
 end;
 
+procedure TTomaTiempos.addRegargoClick(Sender: TObject);
+var
+ RecargoTomaTiempoEvento: TRecargoTomaTiempoEvento;
+ tipoCategoriaOID, tomaTiempoEventoOID, pilotoOID: Integer;
+begin
+  RecargoTomaTiempoEvento:= TRecargoTomaTiempoEvento.Create(nil);
+  // 1) Tipo de toma: CARRERA (recarga ZTomaTiempoEvento)
+  RecargoTomaTiempoEvento.cmbTipoToma.ItemIndex := RecargoTomaTiempoEvento.cmbTipoToma.Items.IndexOf('CARRERA');
+  RecargoTomaTiempoEvento.cmbTipoTomaCloseUp(RecargoTomaTiempoEvento.cmbTipoToma);
+
+  tomaTiempoEventoOID:= ZGetTomaTiempo.FieldByName('toma_tiempo_evento_oid').AsInteger;
+  // 2) Toma de tiempo: se posiciona el dataset porque el CloseUp lee el registro actual
+  if RecargoTomaTiempoEvento.ZTomaTiempoEvento.Locate('oid', tomaTiempoEventoOID, []) then
+    RecargoTomaTiempoEvento.cmbTomaTiempoEvento.KeyValue := tomaTiempoEventoOID;
+
+  tipoCategoriaOID:= TBussinessDataSubsystemFacade
+    .getInstance.getTipoCategoraOIDByEventoAndNroVuelta(tomaTiempoEventoOID);
+  // En el caso que NO haya grilla de partida, establecemos por defecto en 1
+  if (tipoCategoriaOID = 0) then
+    tipoCategoriaOID := 1;
+
+  // 3) Tipo de categoría: mismo motivo
+  if RecargoTomaTiempoEvento.ZTipoCategoria.Locate('oid', tipoCategoriaOID, []) then
+    RecargoTomaTiempoEvento.cmbTipoCategoria.KeyValue := tipoCategoriaOID;
+
+  // 4) Recarga la lista de pilotos con los datasets ya posicionados
+  RecargoTomaTiempoEvento.cmbTomaTiempoEventoCloseUp(nil);
+
+  pilotoOID:= ZROQTomaTiempos.FieldByName('piloto_oid').AsInteger;
+  // 5) Piloto
+  //if ZFilterPiloto.Locate('oid', pilotoOID, []) then
+  RecargoTomaTiempoEvento.cmbFilterPiloto.KeyValue := pilotoOID;
+
+  RecargoTomaTiempoEvento.ShowModal;
+  RecargoTomaTiempoEvento.Free;
+end;
+
 procedure TTomaTiempos.addTomaTiempo;
 begin
   if (isRaceStarted) then
@@ -760,6 +800,8 @@ begin
   btnContinuarTomaTiempo.Enabled:= not state;
 
   btnGenerarGrillaPartida.Enabled:= not state;
+
+  addRegargo.Enabled:= state;
 
   isRaceStarted:= state;
 end;

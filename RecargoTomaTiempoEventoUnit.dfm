@@ -3,7 +3,7 @@ object RecargoTomaTiempoEvento: TRecargoTomaTiempoEvento
   Top = 0
   Caption = 'Recargo en Toma Tiempo'
   ClientHeight = 530
-  ClientWidth = 914
+  ClientWidth = 903
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -31,20 +31,20 @@ object RecargoTomaTiempoEvento: TRecargoTomaTiempoEvento
   object mainPanel: TPanel
     Left = 299
     Top = 0
-    Width = 615
+    Width = 604
     Height = 530
     Align = alClient
     TabOrder = 0
     object topPanel: TPanel
       Left = 1
       Top = 1
-      Width = 613
-      Height = 184
+      Width = 602
+      Height = 216
       Align = alTop
       TabOrder = 0
       DesignSize = (
-        613
-        184)
+        602
+        216)
       object cxLabel1: TcxLabel
         Left = 19
         Top = 38
@@ -60,7 +60,7 @@ object RecargoTomaTiempoEvento: TRecargoTomaTiempoEvento
       object cmbTomaTiempoEvento: TDBLookupComboBox
         Left = 96
         Top = 38
-        Width = 490
+        Width = 479
         Height = 21
         Anchors = [akLeft, akTop, akRight]
         DropDownRows = 12
@@ -79,7 +79,7 @@ object RecargoTomaTiempoEvento: TRecargoTomaTiempoEvento
       object cmbFilterPiloto: TDBLookupComboBox
         Left = 96
         Top = 92
-        Width = 490
+        Width = 479
         Height = 21
         Anchors = [akLeft, akTop, akRight]
         Font.Charset = DEFAULT_CHARSET
@@ -122,7 +122,7 @@ object RecargoTomaTiempoEvento: TRecargoTomaTiempoEvento
       object cmbTipoRecargo: TDBLookupComboBox
         Left = 96
         Top = 119
-        Width = 490
+        Width = 479
         Height = 21
         Anchors = [akLeft, akTop, akRight]
         DropDownRows = 15
@@ -140,7 +140,7 @@ object RecargoTomaTiempoEvento: TRecargoTomaTiempoEvento
       end
       object lblRecargo: TcxLabel
         Left = 42
-        Top = 146
+        Top = 175
         Caption = 'Recargo:'
         ParentFont = False
         Style.Font.Charset = DEFAULT_CHARSET
@@ -152,7 +152,7 @@ object RecargoTomaTiempoEvento: TRecargoTomaTiempoEvento
       end
       object txtSegundos: TcxCurrencyEdit
         Left = 96
-        Top = 146
+        Top = 175
         ParentFont = False
         Properties.DecimalPlaces = 0
         Properties.DisplayFormat = '0;'
@@ -167,7 +167,7 @@ object RecargoTomaTiempoEvento: TRecargoTomaTiempoEvento
       end
       object lblSegs: TcxLabel
         Left = 193
-        Top = 146
+        Top = 175
         Caption = 'segs.'
         ParentFont = False
         Style.Font.Charset = DEFAULT_CHARSET
@@ -179,8 +179,8 @@ object RecargoTomaTiempoEvento: TRecargoTomaTiempoEvento
       end
       object btnNew: TAeroButton
         AlignWithMargins = True
-        Left = 404
-        Top = 143
+        Left = 393
+        Top = 175
         Width = 91
         Height = 35
         ImageIndex = 2
@@ -194,8 +194,8 @@ object RecargoTomaTiempoEvento: TRecargoTomaTiempoEvento
       end
       object btnRecargoTiempo: TAeroButton
         AlignWithMargins = True
-        Left = 495
-        Top = 143
+        Left = 484
+        Top = 175
         Width = 91
         Height = 35
         ImageIndex = 3
@@ -222,7 +222,7 @@ object RecargoTomaTiempoEvento: TRecargoTomaTiempoEvento
       object cmbTipoCategoria: TDBLookupComboBox
         Left = 96
         Top = 65
-        Width = 490
+        Width = 479
         Height = 21
         Anchors = [akLeft, akTop, akRight]
         Font.Charset = DEFAULT_CHARSET
@@ -238,8 +238,8 @@ object RecargoTomaTiempoEvento: TRecargoTomaTiempoEvento
         OnCloseUp = cmbTomaTiempoEventoCloseUp
       end
       object cxLabel3: TcxLabel
-        Left = 29
-        Top = 10
+        Left = 33
+        Top = 15
         Caption = 'Tipo Toma:'
         ParentFont = False
         Style.Font.Charset = DEFAULT_CHARSET
@@ -252,7 +252,7 @@ object RecargoTomaTiempoEvento: TRecargoTomaTiempoEvento
       object cmbTipoToma: TComboBox
         Left = 96
         Top = 11
-        Width = 670
+        Width = 478
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
@@ -262,20 +262,39 @@ object RecargoTomaTiempoEvento: TRecargoTomaTiempoEvento
           'RECONOCIMIENTO'
           'CARRERA')
       end
+      object lblDescripcion: TcxLabel
+        Left = 28
+        Top = 146
+        Caption = 'Descripci'#243'n:'
+        ParentFont = False
+        Style.Font.Charset = DEFAULT_CHARSET
+        Style.Font.Color = clWindowText
+        Style.Font.Height = -11
+        Style.Font.Name = 'Tahoma'
+        Style.Font.Style = []
+        Style.TextColor = clNone
+        Style.IsFontAssigned = True
+      end
+      object txtDescripcion: TcxTextEdit
+        Left = 96
+        Top = 146
+        TabOrder = 16
+        Width = 481
+      end
     end
     object panelInferior: TPanel
       Left = 1
       Top = 491
-      Width = 613
+      Width = 602
       Height = 38
       Align = alBottom
       TabOrder = 1
       DesignSize = (
-        613
+        602
         38)
       object btnAccept: TAeroButton
         AlignWithMargins = True
-        Left = 507
+        Left = 496
         Top = 0
         Width = 100
         Height = 35
@@ -306,7 +325,7 @@ object RecargoTomaTiempoEvento: TRecargoTomaTiempoEvento
     object validationPanel: TPanel
       Left = 1
       Top = 448
-      Width = 613
+      Width = 602
       Height = 43
       Align = alBottom
       BevelOuter = bvNone
@@ -315,7 +334,7 @@ object RecargoTomaTiempoEvento: TRecargoTomaTiempoEvento
       object errorListView: TcxListView
         Left = 0
         Top = 0
-        Width = 613
+        Width = 602
         Height = 43
         TabStop = False
         Align = alClient
@@ -333,9 +352,9 @@ object RecargoTomaTiempoEvento: TRecargoTomaTiempoEvento
     end
     object cxGrid: TcxGrid
       Left = 1
-      Top = 185
-      Width = 613
-      Height = 263
+      Top = 217
+      Width = 602
+      Height = 231
       Align = alClient
       TabOrder = 3
       object cxGridDBTableView: TcxGridDBTableView
@@ -350,27 +369,32 @@ object RecargoTomaTiempoEvento: TRecargoTomaTiempoEvento
         object cxGridDBTableViewtoma_tiempo_evento: TcxGridDBColumn
           Caption = 'Toma Tiempo Evento'
           DataBinding.FieldName = 'toma_tiempo_evento'
-          Width = 129
+          Width = 115
         end
         object cxGridDBTableViewtipo_recargo: TcxGridDBColumn
           Caption = 'Tipo Recargo'
           DataBinding.FieldName = 'tipo_recargo'
-          Width = 89
+          Width = 79
         end
         object cxGridDBTableViewColumn1: TcxGridDBColumn
           Caption = 'Nro. Moto'
           DataBinding.FieldName = 'nro_moto'
-          Width = 61
+          Width = 54
         end
         object cxGridDBTableViewpiloto: TcxGridDBColumn
           Caption = 'Piloto'
           DataBinding.FieldName = 'piloto'
-          Width = 190
+          Width = 169
         end
         object cxGridDBTableViewsegundos_recargo: TcxGridDBColumn
           Caption = 'Segundos'
           DataBinding.FieldName = 'segundos_recargo'
-          Width = 142
+          Width = 71
+        end
+        object cxGridDBTableViewDesc: TcxGridDBColumn
+          Caption = 'Descripcion'
+          DataBinding.FieldName = 'descripcion'
+          Width = 112
         end
       end
       object cxGridLevel: TcxGridLevel
@@ -956,7 +980,8 @@ object RecargoTomaTiempoEvento: TRecargoTomaTiempoEvento
         'argo,'
       
         'sel_nro_moto_by_evento_and_tipo_categoria(rtte.tipo_categoria_oi' +
-        'd, tte.evento_oid, p.oid) nro_moto'
+        'd, tte.evento_oid, p.oid) nro_moto,'
+      'rtte.descripcion'
       'from recargo_toma_tiempo_evento rtte'
       
         '     inner join toma_tiempo_evento tte on rtte.toma_tiempo_event' +
