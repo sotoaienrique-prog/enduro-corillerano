@@ -90,6 +90,8 @@ type
     SaveDialog1: TSaveDialog;
     btnimportarFile: TAeroButton;
     OpenDialog1: TOpenDialog;
+    btnAddAllTomaTiempo: TAeroButton;
+    btnDeleteAllTomaTiempo: TAeroButton;
     procedure btnAcceptClick(Sender: TObject);
     procedure btnAddTomaTiempoClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -100,6 +102,8 @@ type
     procedure JvReportTimerTimer(Sender: TObject);
     procedure btnExportarFileClick(Sender: TObject);
     procedure btnimportarFileClick(Sender: TObject);
+    procedure btnAddAllTomaTiempoClick(Sender: TObject);
+    procedure btnDeleteAllTomaTiempoClick(Sender: TObject);
   private
     { Private declarations }
     procedure selectCombosByDate;
@@ -234,6 +238,126 @@ begin
           Open;
         end;
   end;
+end;
+
+procedure TEdicionAgrupacion.btnAddAllTomaTiempoClick(Sender: TObject);
+var
+  Existentes: TStringList;
+  Agregadas: Integer;
+begin
+  if not (cmbEvento.KeyValue > 0) then
+  begin
+    TF_EE_Message.ShowMessage(TComponent(Self), '¡Seleccione el Evento!',
+      'Debe seleccionar el Evento cuyas tomas desea agregar.', TF_EE_Message.WARNING, True);
+    Exit;
+  end;
+
+  // ZTomaTiempoEvento es detalle de ZEvento: se asegura que liste las tomas del evento elegido
+  ZEvento.Locate('oid', cmbEvento.KeyValue, []);
+
+  Agregadas := 0;
+  Existentes := TStringList.Create;
+  try
+    // Tomas que ya están en la agrupación
+    ZTomaTiempos.DisableControls;
+    try
+      ZTomaTiempos.First;
+      while not ZTomaTiempos.Eof do
+      begin
+        Existentes.Add(ZTomaTiempos.FieldByName('oid').AsString);
+        ZTomaTiempos.Next;
+      end;
+    finally
+      ZTomaTiempos.EnableControls;
+    end;
+
+    // Mismas tomas que lista el combo "Toma Tiempo"
+    ZTomaTiempoEvento.DisableControls;
+    try
+      ZTomaTiempoEvento.First;
+      while not ZTomaTiempoEvento.Eof do
+      begin
+        if Existentes.IndexOf(ZTomaTiempoEvento.FieldByName('oid').AsString) < 0 then
+        begin
+          with ZAddAgrupacoinTomaTiempo do
+          begin
+            Close;
+            ParamByName('toma_tiempo_agrupacion_oid').AsInteger:= agrupacionTomaTiempoOID;
+            ParamByName('toma_tiempo_oid').AsInteger:= ZTomaTiempoEvento.FieldByName('oid').AsInteger;
+            ExecSQL;
+          end;
+          Inc(Agregadas);
+        end;
+        ZTomaTiempoEvento.Next;
+      end;
+    finally
+      ZTomaTiempoEvento.EnableControls;
+    end;
+  finally
+    Existentes.Free;
+  end;
+
+  with ZTomaTiempos do
+    begin
+      Close;
+      ParamByName('toma_tiempo_agrupacion_oid').AsInteger:= agrupacionTomaTiempoOID;
+      Open;
+    end;
+
+  if Agregadas = 0 then
+    TF_EE_Message.ShowMessage(TComponent(Self), 'Agregar Todas',
+      'Todas las tomas del evento ya estaban en la agrupación.', TF_EE_Message.INFORMATION, True)
+  else
+    TF_EE_Message.ShowMessage(TComponent(Self), 'Agregar Todas',
+      Format('Se agregaron %d tomas de tiempo a la agrupación.', [Agregadas]), TF_EE_Message.INFORMATION, True);
+end;
+
+procedure TEdicionAgrupacion.btnDeleteAllTomaTiempoClick(Sender: TObject);
+var
+  OIDs: TStringList;
+  i: Integer;
+begin
+  if ZTomaTiempos.IsEmpty then
+    Exit;
+
+  if (TF_EE_Message.ShowMessage(TComponent(Self), 'Confirmación de eliminación de Elementos',
+    Format('¿Está seguro que desea quitar las %d tomas de tiempo de la agrupación?<br>' +
+      'Las tomas no se borran, solo dejan de formar parte de la agrupación.', [ZTomaTiempos.RecordCount]),
+    TF_EE_Message.QUESTION, False) <> mrOk) then
+    Exit;
+
+  OIDs := TStringList.Create;
+  try
+    ZTomaTiempos.DisableControls;
+    try
+      ZTomaTiempos.First;
+      while not ZTomaTiempos.Eof do
+      begin
+        OIDs.Add(ZTomaTiempos.FieldByName('oid').AsString);
+        ZTomaTiempos.Next;
+      end;
+    finally
+      ZTomaTiempos.EnableControls;
+    end;
+
+    for i := 0 to OIDs.Count - 1 do
+      with ZDeleteAgrupacoinTomaTiempo do
+        begin
+          Close;
+          ParamByName('toma_tiempo_agrupacion_oid').AsInteger:= agrupacionTomaTiempoOID;
+          ParamByName('toma_tiempo_oid').AsInteger:= StrToInt(OIDs[i]);
+          ExecSQL;
+        end;
+  finally
+    OIDs.Free;
+  end;
+
+  with ZTomaTiempos do
+    begin
+      Close;
+      ParamByName('toma_tiempo_agrupacion_oid').AsInteger:= agrupacionTomaTiempoOID;
+      Open;
+    end;
 end;
 
 procedure TEdicionAgrupacion.btnExportarAgrupacionClick(Sender: TObject);
