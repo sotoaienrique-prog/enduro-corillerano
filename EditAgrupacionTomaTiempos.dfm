@@ -2,7 +2,7 @@ object EdicionAgrupacion: TEdicionAgrupacion
   Left = 0
   Top = 0
   Caption = 'Edici'#243'n de Agrupaci'#243'n'
-  ClientHeight = 539
+  ClientHeight = 609
   ClientWidth = 805
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -102,7 +102,7 @@ object EdicionAgrupacion: TEdicionAgrupacion
   end
   object buttonPanel: TPanel
     Left = 0
-    Top = 502
+    Top = 572
     Width = 805
     Height = 37
     Align = alBottom
@@ -146,7 +146,7 @@ object EdicionAgrupacion: TEdicionAgrupacion
     Left = 0
     Top = 105
     Width = 805
-    Height = 397
+    Height = 467
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 2
@@ -260,12 +260,12 @@ object EdicionAgrupacion: TEdicionAgrupacion
       Left = 648
       Top = 81
       Width = 157
-      Height = 316
+      Height = 386
       Align = alRight
       TabOrder = 1
       DesignSize = (
         157
-        316)
+        386)
       object btnAddTomaTiempo: TAeroButton
         AlignWithMargins = True
         Left = 6
@@ -299,7 +299,7 @@ object EdicionAgrupacion: TEdicionAgrupacion
       object btnExportarAgrupacion: TAeroButton
         AlignWithMargins = True
         Left = 5
-        Top = 275
+        Top = 345
         Width = 145
         Height = 35
         ImageIndex = 3
@@ -314,7 +314,7 @@ object EdicionAgrupacion: TEdicionAgrupacion
       object btnExportarAgrupacionPuntos: TAeroButton
         AlignWithMargins = True
         Left = 5
-        Top = 241
+        Top = 311
         Width = 145
         Height = 35
         ImageIndex = 3
@@ -324,12 +324,13 @@ object EdicionAgrupacion: TEdicionAgrupacion
         Anchors = [akRight, akBottom]
         Caption = 'Exp. Agrup. Puntos'
         TabOrder = 3
+        Visible = False
         OnClick = btnExportarAgrupacionPuntosClick
       end
       object btnexportarWEB: TAeroButton
         AlignWithMargins = True
         Left = 6
-        Top = 101
+        Top = 171
         Width = 145
         Height = 35
         ImageIndex = 4
@@ -344,7 +345,7 @@ object EdicionAgrupacion: TEdicionAgrupacion
       object btnExportarFile: TAeroButton
         AlignWithMargins = True
         Left = 5
-        Top = 142
+        Top = 220
         Width = 148
         Height = 35
         ImageIndex = 4
@@ -359,7 +360,7 @@ object EdicionAgrupacion: TEdicionAgrupacion
       object btnimportarFile: TAeroButton
         AlignWithMargins = True
         Left = 5
-        Top = 174
+        Top = 252
         Width = 148
         Height = 35
         ImageIndex = 4
@@ -371,19 +372,49 @@ object EdicionAgrupacion: TEdicionAgrupacion
         TabOrder = 6
         OnClick = btnimportarFileClick
       end
+      object btnAddAllTomaTiempo: TAeroButton
+        AlignWithMargins = True
+        Left = 6
+        Top = 84
+        Width = 146
+        Height = 35
+        ImageIndex = 2
+        Images = cxButtonImageList
+        Spacing = 10
+        Version = '1.0.0.1'
+        Anchors = [akTop, akRight]
+        Caption = 'Agregar Todas'
+        TabOrder = 7
+        OnClick = btnAddAllTomaTiempoClick
+      end
+      object btnDeleteAllTomaTiempo: TAeroButton
+        AlignWithMargins = True
+        Left = 6
+        Top = 118
+        Width = 146
+        Height = 36
+        ImageIndex = 1
+        Images = cxButtonImageList
+        Spacing = 10
+        Version = '1.0.0.1'
+        Anchors = [akTop, akRight]
+        Caption = 'Eliminar Todas'
+        TabOrder = 8
+        OnClick = btnDeleteAllTomaTiempoClick
+      end
     end
     object panelGridTT: TPanel
       Left = 0
       Top = 81
       Width = 648
-      Height = 316
+      Height = 386
       Align = alClient
       TabOrder = 2
       object cxGrid: TcxGrid
         Left = 1
         Top = 1
         Width = 646
-        Height = 314
+        Height = 384
         Align = alClient
         TabOrder = 0
         object cxGridDBTableView: TcxGridDBTableView
