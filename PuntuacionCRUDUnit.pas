@@ -112,9 +112,14 @@ type
 var
   PuntuacionCRUD: TPuntuacionCRUD;
   isGeneratingTable: Boolean;
+
 implementation
 
+uses
+  System.Win.ComObj;
+
 {$R *.dfm}
+
 procedure TPuntuacionCRUD.RefreshCRUDData;
 begin
   ZCategoria.Close;
@@ -269,85 +274,278 @@ begin
 end;
 
 procedure TPuntuacionCRUD.btnImportPilotosClick(Sender: TObject);
+type
+  TFilaPuntos = record
+    FilaExcel: Integer;
+    Categoria: string;
+    Puesto, NroMoto, CategoriaOID, TipoCategoriaOID, PilotoOID: Integer;
+  end;
+const
+  MAX_ERRORES_VISIBLES = 15;
 var
-  openDialog : TOpenDialog;
-  posicion, nro_moto, categoria : String;
-  categoriaOID, puntos, puntosExtra, pilotoOID: Integer;
-  categoriaObj : TCategoria;
-  eventoVO : TEvento;
+  OpenDialog: TOpenDialog;
+  ExcelApp, Libro, Rango, Datos: Variant;
+  Filas: array of TFilaPuntos;
+  Errores, Categorias: TStringList;
+  EventoVO: TEvento;
+  CategoriaActual, ListaCategorias, Mensaje: string;
+  FilaBase, TotalFilas, TotalCols, r, i, Puesto, NroMoto, Puntos, Importados: Integer;
 
-  i: Integer;
-  si: String;
-  Hoja: _WorkSheet;
-begin
-  if ((cmbEvento.KeyValue > 0)  and (cmbCategoria.KeyValue > 0)) then
+  function Celda(Fila, Columna: Integer): string;
+  var
+    Valor: Variant;
+  begin
+    Result := '';
+    if (Fila < 1) or (Fila > TotalFilas) or (Columna > TotalCols) then
+      Exit;
+    Valor := Datos[Fila, Columna];
+    if not (VarIsEmpty(Valor) or VarIsNull(Valor) or (VarType(Valor) = varError)) then
+      Result := Trim(VarToStr(Valor));
+  end;
+
+  function EsEncabezado(Fila: Integer): Boolean;
+  begin
+    // "Pos." / "Nro. Competidor" (Exportar Agrupación) o "Pos" / "Nro." (formato anterior)
+    Result := (SameText(Celda(Fila, 1), 'Pos.') or SameText(Celda(Fila, 1), 'Pos'))
+      and SameText(Copy(Celda(Fila, 2), 1, 3), 'Nro');
+  end;
+
+  procedure AgregarError(const Texto: string);
+  begin
+    if Errores.IndexOf(Texto) < 0 then
+      Errores.Add(Texto);
+  end;
+
+  function BuscarCategoria(const Nombre: string): Boolean;
+  begin
+    // Deja ZCategoria posicionada en la categoría. La exportación recorta espacios
+    // y algunos nombres en la base los tienen al final (ej. 'MX 1 ').
+    Result := ZCategoria.Locate('nombre', Nombre, [loCaseInsensitive]);
+    if not Result then
     begin
-      // Create the open dialog object - assign to our open dialog variable
-      openDialog := TOpenDialog.Create(self);
+      ZCategoria.First;
+      while not (Result or ZCategoria.Eof) do
+        if SameText(Trim(ZCategoria.FieldByName('nombre').AsString), Nombre) then
+          Result := True
+        else
+          ZCategoria.Next;
+    end;
+  end;
 
-      // Set up the starting directory to be the current one
-      openDialog.InitialDir := GetCurrentDir;
+begin
+  if not (cmbEvento.KeyValue > 0) then
+  begin
+    TF_EE_Message.ShowMessage(TComponent(Self), '¡Seleccione el Evento!',
+      'Debe seleccionar el Evento', TF_EE_Message.INFORMATION, True);
+    Exit;
+  end;
 
-      // Only allow existing files to be selected
-      openDialog.Options := [ofFileMustExist];
+  // 1) Elegir archivo y leer la primera hoja completa de una vez (UsedRange.Value2)
+  OpenDialog := TOpenDialog.Create(Self);
+  try
+    OpenDialog.InitialDir := GetCurrentDir;
+    OpenDialog.Options := [ofFileMustExist];
+    OpenDialog.Filter := 'Archivos Excel (*.xls;*.xlsx)|*.xls;*.xlsx';
+    if not OpenDialog.Execute then
+      Exit;
 
-      // Allow only .dpr and .pas files to be selected
-      openDialog.Filter :=
-        'Excel File|*.xls|Excel File|*.xlsx';
+    try
+      ExcelApp := CreateOleObject('Excel.Application');
+    except
+      on E: Exception do
+      begin
+        TF_EE_Message.ShowMessage(TComponent(Self), 'No se pudo iniciar Excel',
+          'Verifique que Microsoft Excel esté instalado en este equipo.<br>' + E.Message,
+          TF_EE_Message.ERROR, True);
+        Exit;
+      end;
+    end;
 
-      // Display the open file dialog
-      if openDialog.Execute then
+    try
+      try
+        ExcelApp.DisplayAlerts := False;
+        Libro := ExcelApp.Workbooks.Open(OpenDialog.FileName, 0, True); // sin actualizar vínculos, solo lectura
+        Rango := Libro.Worksheets[1].UsedRange;
+        FilaBase := Rango.Row;
+        if Rango.Column = 1 then
+          Datos := Rango.Value2;
+        Libro.Close(False);
+      finally
+        Rango := Unassigned;
+        Libro := Unassigned;
+        ExcelApp.Quit;
+        ExcelApp := Unassigned;
+      end;
+    except
+      on E: Exception do
+      begin
+        TF_EE_Message.ShowMessage(TComponent(Self), 'Error al leer el archivo',
+          OpenDialog.FileName + '<br>' + E.Message, TF_EE_Message.ERROR, True);
+        Exit;
+      end;
+    end;
+  finally
+    OpenDialog.Free;
+  end;
+
+  if not VarIsArray(Datos) then
+  begin
+    TF_EE_Message.ShowMessage(TComponent(Self), 'Formato no reconocido',
+      'La primera hoja del archivo no tiene datos en la columna A (Pos.).', TF_EE_Message.WARNING, True);
+    Exit;
+  end;
+  TotalFilas := VarArrayHighBound(Datos, 1);
+  TotalCols := VarArrayHighBound(Datos, 2);
+
+  Errores := TStringList.Create;
+  Categorias := TStringList.Create;
+  EventoVO := nil;
+  try
+    // 2) Recorrer bloques: fila de categoría, encabezado Pos./Nro., filas de pilotos
+    CategoriaActual := '';
+    r := 1;
+    while r <= TotalFilas do
+    begin
+      if (Celda(r, 1) <> '') and EsEncabezado(r + 1) then
+      begin
+        CategoriaActual := Celda(r, 1);
+        Inc(r, 2);
+        Continue;
+      end;
+
+      if (CategoriaActual <> '') and TryStrToInt(Celda(r, 1), Puesto) then
+      begin
+        if TryStrToInt(Celda(r, 2), NroMoto) then
         begin
-          Excel.Workbooks.Open(openDialog.FileName,
-            EmptyParam, EmptyParam, EmptyParam, EmptyParam, EmptyParam,
-            EmptyParam, EmptyParam, EmptyParam, EmptyParam, EmptyParam,
-            EmptyParam, EmptyParam, EmptyParam, EmptyParam, 0 );
+          SetLength(Filas, Length(Filas) + 1);
+          Filas[High(Filas)].FilaExcel := FilaBase + r - 1;
+          Filas[High(Filas)].Categoria := CategoriaActual;
+          Filas[High(Filas)].Puesto := Puesto;
+          Filas[High(Filas)].NroMoto := NroMoto;
+          Filas[High(Filas)].CategoriaOID := 0;
+          Filas[High(Filas)].TipoCategoriaOID := 0;
+          Filas[High(Filas)].PilotoOID := 0;
+        end
+        else
+          AgregarError(Format('Fila %d (%s): Nro. de competidor inválido "%s".',
+            [FilaBase + r - 1, CategoriaActual, Celda(r, 2)]));
+      end;
+
+      Inc(r);
+    end;
+
+    if Length(Filas) = 0 then
+    begin
+      TF_EE_Message.ShowMessage(TComponent(Self), 'Formato no reconocido',
+        'No se encontraron categorías con pilotos en el archivo.<br>' +
+        'Use el Excel generado con "Exportar Agrupación".', TF_EE_Message.WARNING, True);
+      Exit;
+    end;
+
+    // 3) Resolver categoría y piloto de cada fila, sin modificar nada todavía.
+    //    No se usa getCategoriaByName porque crea la categoría si no existe.
+    Screen.Cursor := crHourGlass;
+    try
+      if not ZCategoria.Active then
+        ZCategoria.Open;
+
+      Importados := 0;
+      for i := 0 to High(Filas) do
+      begin
+        if BuscarCategoria(Filas[i].Categoria) then
+        begin
+          Filas[i].CategoriaOID := ZCategoria.FieldByName('oid').AsInteger;
+          Filas[i].TipoCategoriaOID := ZCategoria.FieldByName('tipo_categoria_oid').AsInteger;
+          Filas[i].PilotoOID := TBussinessDataSubsystemFacade.getInstance
+            .getPilotoOIDByNumMotoAndTipoCategoria(Filas[i].NroMoto, Filas[i].TipoCategoriaOID, cmbEvento.KeyValue);
+
+          if Filas[i].PilotoOID > 0 then
+          begin
+            Inc(Importados);
+            if Categorias.IndexOf(Filas[i].Categoria) < 0 then
+              Categorias.AddObject(Filas[i].Categoria, TObject(Filas[i].CategoriaOID));
+          end
+          else
+            AgregarError(Format('Fila %d (%s): el Nro. %d no corresponde a un piloto inscripto en el evento.',
+              [Filas[i].FilaExcel, Filas[i].Categoria, Filas[i].NroMoto]));
+        end
+        else
+          AgregarError(Format('Categoría "%s": no existe en el sistema; se omiten sus pilotos.',
+            [Filas[i].Categoria]));
+      end;
+    finally
+      Screen.Cursor := crDefault;
+    end;
+
+    // 4) Confirmación con resumen y filas omitidas
+    ListaCategorias := '';
+    for i := 0 to Categorias.Count - 1 do
+    begin
+      if ListaCategorias <> '' then
+        ListaCategorias := ListaCategorias + ', ';
+      ListaCategorias := ListaCategorias + Categorias[i];
+    end;
+
+    if Importados = 0 then
+      Mensaje := 'No hay pilotos válidos para importar.'
+    else
+      Mensaje := Format('Se reemplazarán los puntos del evento <b>%s</b> en %d categorías (%d pilotos):<br>%s',
+        [cmbEvento.Text, Categorias.Count, Importados, ListaCategorias]);
+
+    if Errores.Count > 0 then
+    begin
+      Mensaje := Mensaje + '<br><br><b>Se omitirán:</b>';
+      for i := 0 to Errores.Count - 1 do
+        if i < MAX_ERRORES_VISIBLES then
+          Mensaje := Mensaje + '<br>' + Errores[i];
+      if Errores.Count > MAX_ERRORES_VISIBLES then
+        Mensaje := Mensaje + Format('<br>... y %d más.', [Errores.Count - MAX_ERRORES_VISIBLES]);
+    end;
+
+    if Importados = 0 then
+    begin
+      TF_EE_Message.ShowMessage(TComponent(Self), 'Importación de Puntos', Mensaje,
+        TF_EE_Message.WARNING, True, True);
+      Exit;
+    end;
+
+    if TF_EE_Message.ShowMessage(TComponent(Self), 'Confirmar Importación de Puntos',
+      Mensaje + '<br><br>¿Desea continuar?', TF_EE_Message.QUESTION, False, True) <> mrOk then
+      Exit;
+
+    // 5) Grabar: primero borrar cada categoría del archivo, después insertar
+    Screen.Cursor := crHourGlass;
+    try
+      EventoVO := TBussinessDataSubsystemFacade.getInstance.getEvento(cmbEvento.KeyValue);
+
+      for i := 0 to Categorias.Count - 1 do
+        TBussinessDataSubsystemFacade.getInstance.deletePuntuacionByEventoOIDAndCategoriaOID(
+          cmbEvento.KeyValue, Integer(Categorias.Objects[i]));
+
+      for i := 0 to High(Filas) do
+        if (Filas[i].CategoriaOID > 0) and (Filas[i].PilotoOID > 0) then
+        begin
+          Puntos := TBussinessDataSubsystemFacade.getInstance.selPuntoByPuesto(IntToStr(Filas[i].Puesto));
+
+          // Punto EXTRA solo si el evento los usa
+          if EventoVO.UsaPuntosExtra then
+            Puntos := Puntos + getPuntosExtraByPuesto(Filas[i].Puesto);
+
+          TBussinessDataSubsystemFacade.getInstance.addPuntuacion(cmbEvento.KeyValue,
+            Filas[i].PilotoOID, Filas[i].CategoriaOID, Puntos, Filas[i].Puesto);
         end;
+    finally
+      Screen.Cursor := crDefault;
+    end;
 
-        Hoja := Excel.Worksheets.Item[1] as _WorkSheet;
-
-        TBussinessDataSubsystemFacade
-            .getInstance.deletePuntuacionByEventoOIDAndCategoriaOID(cmbEvento.KeyValue, cmbCategoria.KeyValue);
-
-        categoria:= Hoja.Range['A1','A1'].Value2;
-        categoriaOID:= TBussinessDataSubsystemFacade
-          .getInstance.getCategoriaByName(categoria);
-        i := 3;
-        si := IntToStr(i);
-        repeat
-          posicion:= Hoja.Range['A'+si,'A'+si].Value2;
-          nro_moto:= Hoja.Range['B'+si,'B'+si].Value2;
-
-          puntos:= TBussinessDataSubsystemFacade
-            .getInstance.selPuntoByPuesto(posicion);
-
-          // Establecemos el punto EXTRA solo si la categorìa usa los mismos
-          puntosExtra:= 0;
-
-          eventoVO:= TBussinessDataSubsystemFacade.getInstance.getEvento(cmbEvento.KeyValue);
-          if (eventoVO.UsaPuntosExtra) then
-            puntosExtra:= getPuntosExtraByPuesto(StrToInt(posicion));
-
-          categoriaObj := TBussinessDataSubsystemFacade
-            .getInstance.getCategoria(categoriaOID);
-
-          pilotoOID:= TBussinessDataSubsystemFacade.getInstance.
-            getPilotoOIDByNumMotoAndTipoCategoria(
-              StrToInt(nro_moto), categoriaObj.TipoCategoriaOID, cmbEvento.KeyValue);
-
-          TBussinessDataSubsystemFacade.getInstance
-            .addPuntuacion(cmbEvento.KeyValue, pilotoOID, categoriaOID, (puntos + puntosExtra), StrToInt(posicion));
-          Inc( i );
-          si := IntToStr( i );
-        until ( VarType( Excel.Range['A'+si,'A'+si].Value2 ) = VarEmpty );
-
-        TF_EE_Message.ShowMessage(TComponent(Self), 'Mensaje de Imporación Exitosa',
-          'La Imporación de Puntos para el Evento: <b>' + cmbEvento.Text + '</b>, Categoría: <b>' + cmbCategoria.Text + '</b> fue exitosa. ', TF_EE_Message.QUESTION, True);
-    end
-  else
-  TF_EE_Message.ShowMessage(TComponent(Self),'¡Seleccione el Evento!',
-    'Debe seleccionar el Evento y la Categoría', TF_EE_Message.INFORMATION, True);
-
+    TF_EE_Message.ShowMessage(TComponent(Self), 'Mensaje de Importación Exitosa',
+      Format('Se importaron los puntos de %d pilotos en %d categorías para el Evento: <b>%s</b>.',
+        [Importados, Categorias.Count, cmbEvento.Text]), TF_EE_Message.INFORMATION, True);
+  finally
+    EventoVO.Free;
+    Categorias.Free;
+    Errores.Free;
+  end;
 end;
 
 procedure TPuntuacionCRUD.btnImprTablaClick(Sender: TObject);
