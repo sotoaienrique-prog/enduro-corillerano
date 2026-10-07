@@ -1,7 +1,7 @@
 object Principal: TPrincipal
   Left = 0
   Top = 0
-  Caption = 'Enduro Cordillerano - 27.09.26'
+  Caption = 'Enduro Cordillerano - 07.10.26'
   ClientHeight = 486
   ClientWidth = 1026
   Color = clBtnFace
@@ -230,7 +230,7 @@ object Principal: TPrincipal
     Top = 0
     Width = 1026
     Height = 137
-    ActivePage = AdvPageTomaTiempos
+    ActivePage = AdvPageCompeticion
     AutoMDIButtons = True
     Caption.Caption = 'EAS software - ZZ Produciones'
     Caption.Height = 0
