@@ -131,6 +131,8 @@ type
     procedure addRecargoTomaTiempoEvento(recargoTomaTiempoEventoVO: TRecargoTomaTiempoEventoVO);
     procedure deleteRecargoTomaTiempoEvento(OID: Integer);
 
+    procedure updateDescripcionRecargoTomaTiempoEvento(OID: Integer; const Descripcion: String);
+
     function GetNroVuelta(pilotoOID, tomaTiempoEventoOID: Integer) : Integer;
     function GetNroVueltaAbastecimiento(pilotoImportadoOID, tomaTiempoAbastecimientoEventoOID: Integer) : Integer;
     function GetNroVueltaReconocimiento(pilotoOID, tomaTiempoEventoOID: Integer) : Integer;
@@ -153,6 +155,9 @@ type
   end;
 
 implementation
+
+uses
+  ZDataset;
 
 var
   Instance : TBussinessDataSubsystemFacade  = nil;
@@ -1764,6 +1769,23 @@ procedure TBussinessDataSubsystemFacade.deletePuntos(OID: Integer);
         ParamByName('oid').AsInteger:= OID;
         ExecSQL;
       end;
+  end;
+
+  procedure TBussinessDataSubsystemFacade.updateDescripcionRecargoTomaTiempoEvento(OID: Integer; const Descripcion: String);
+  var
+    Query: TZQuery;
+  begin
+    Query := TZQuery.Create(nil);
+    try
+      Query.Connection := ConnectionModule.ZConnection;
+      Query.SQL.Text :=
+        'UPDATE recargo_toma_tiempo_evento SET descripcion = :descripcion WHERE oid = :oid';
+      Query.ParamByName('descripcion').AsString := Descripcion;
+      Query.ParamByName('oid').AsInteger := OID;
+      Query.ExecSQL;
+    finally
+      Query.Free;
+    end;
   end;
 
   procedure TBussinessDataSubsystemFacade.modifyCampeonato(campeonatoVO: TCampeonato);
