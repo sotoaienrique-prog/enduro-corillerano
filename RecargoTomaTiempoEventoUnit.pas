@@ -87,6 +87,7 @@ type
     cxGridDBTableViewDesc: TcxGridDBColumn;
     lblDescripcion: TcxLabel;
     txtDescripcion: TcxTextEdit;
+    btnEditarDescripcion: TAeroButton;
     procedure FormCreate(Sender: TObject);
     procedure btnNewClick(Sender: TObject);
     procedure btnRecargoTiempoClick(Sender: TObject);
@@ -95,12 +96,17 @@ type
     procedure cmbTipoRecargoCloseUp(Sender: TObject);
     procedure btnExpXLSTTClick(Sender: TObject);
     procedure cmbTipoTomaCloseUp(Sender: TObject);
+    procedure btnEditarDescripcionClick(Sender: TObject);
+    procedure cxGridDBTableViewCellDblClick(Sender: TcxCustomGridTableView;
+      ACellViewInfo: TcxGridTableDataCellViewInfo; AButton: TMouseButton;
+      AShift: TShiftState; var AHandled: Boolean);
   private
     procedure setTListItemsByTStringList(errorListView : TcxListView; stringList : TStringList);
     function VarToIntDef(const V: Variant; const ADefault: Integer): Integer;
     procedure refreshGrid;
     procedure clearComponents;
     procedure selectCombosByDate;
+    procedure EditarDescripcionSeleccionada;
   public
     { Public declarations }
   end;
@@ -231,6 +237,14 @@ begin
     end;
 end;
 
+procedure TRecargoTomaTiempoEvento.cxGridDBTableViewCellDblClick(
+  Sender: TcxCustomGridTableView; ACellViewInfo: TcxGridTableDataCellViewInfo;
+  AButton: TMouseButton; AShift: TShiftState; var AHandled: Boolean);
+begin
+  EditarDescripcionSeleccionada;
+  AHandled := True;
+end;
+
 procedure TRecargoTomaTiempoEvento.btnRecargoTiempoClick(Sender: TObject);
 var
   selectedOID : Integer;
@@ -241,6 +255,51 @@ begin
     .deleteRecargoTomaTiempoEvento(selectedOID);
 
   refreshGrid;
+end;
+
+procedure TRecargoTomaTiempoEvento.btnEditarDescripcionClick(Sender: TObject);
+begin
+  EditarDescripcionSeleccionada;
+end;
+
+procedure TRecargoTomaTiempoEvento.EditarDescripcionSeleccionada;
+var
+  RecargoOID: Integer;
+  Descripcion: string;
+begin
+  if ZRecargo.IsEmpty then
+    Exit;
+
+  RecargoOID := ZRecargo.FieldByName('oid').AsInteger;
+  Descripcion := ZRecargo.FieldByName('descripcion').AsString;
+
+  if not InputQuery('Editar descripción del recargo',
+    Format('Motivo del recargo (Nro. %s - %s):',
+      [ZRecargo.FieldByName('nro_moto').AsString, ZRecargo.FieldByName('piloto').AsString]),
+    Descripcion) then
+    Exit;
+
+  try
+    TBussinessDataSubsystemFacade.getInstance
+      .updateDescripcionRecargoTomaTiempoEvento(RecargoOID, Trim(Descripcion));
+  except
+    on E: Exception do
+    begin
+      MessageDlg('No se pudo guardar la descripción del recargo.' + sLineBreak + E.Message,
+        mtError, [mbOK], 0);
+      Exit;
+    end;
+  end;
+
+  // Solo se refresca la grilla (refreshGrid también recarga el combo de tomas)
+  ZRecargo.DisableControls;
+  try
+    ZRecargo.Close;
+    ZRecargo.Open;
+    ZRecargo.Locate('oid', RecargoOID, []);
+  finally
+    ZRecargo.EnableControls;
+  end;
 end;
 
 procedure TRecargoTomaTiempoEvento.FormCreate(Sender: TObject);

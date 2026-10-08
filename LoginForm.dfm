@@ -84,7 +84,7 @@ object Login: TLogin
     object cxLabel2: TcxLabel
       Left = 61
       Top = 12
-      Caption = '07.10.26'
+      Caption = '08.10.26'
       ParentFont = False
       Style.Font.Charset = DEFAULT_CHARSET
       Style.Font.Color = clWindowText

@@ -1,7 +1,7 @@
 object Principal: TPrincipal
   Left = 0
   Top = 0
-  Caption = 'Enduro Cordillerano - 07.10.26'
+  Caption = 'Enduro Cordillerano - 08.10.26'
   ClientHeight = 486
   ClientWidth = 1026
   Color = clBtnFace

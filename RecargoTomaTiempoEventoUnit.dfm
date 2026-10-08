@@ -281,6 +281,24 @@ object RecargoTomaTiempoEvento: TRecargoTomaTiempoEvento
         TabOrder = 16
         Width = 481
       end
+      object btnEditarDescripcion: TAeroButton
+        AlignWithMargins = True
+        Left = 296
+        Top = 175
+        Width = 91
+        Height = 35
+        Hint = 'Editar la descripci'#243'n del recargo seleccionado'
+        ImageIndex = 2
+        Images = cxButtonImageList
+        Spacing = 10
+        Version = '1.0.0.1'
+        Anchors = [akTop, akRight]
+        Caption = 'Editar'
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 17
+        OnClick = btnEditarDescripcionClick
+      end
     end
     object panelInferior: TPanel
       Left = 1
@@ -358,6 +376,7 @@ object RecargoTomaTiempoEvento: TRecargoTomaTiempoEvento
       Align = alClient
       TabOrder = 3
       object cxGridDBTableView: TcxGridDBTableView
+        OnCellDblClick = cxGridDBTableViewCellDblClick
         DataController.DataSource = DSRecargo
         DataController.Summary.DefaultGroupSummaryItems = <>
         DataController.Summary.FooterSummaryItems = <>
@@ -1111,7 +1130,7 @@ object RecargoTomaTiempoEvento: TRecargoTomaTiempoEvento
     Height = 32
     Width = 32
     FormatVersion = 1
-    DesignInfo = 23724151
+    DesignInfo = 23724183
     ImageInfo = <
       item
         Image.Data = {
