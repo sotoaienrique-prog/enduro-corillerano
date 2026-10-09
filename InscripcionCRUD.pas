@@ -130,6 +130,7 @@ type
     procedure usgustaClick(Sender: TObject);
     procedure btnDesinscripcionMasivaClick(Sender: TObject);
   private
+    FEstiloSinNumero: TcxStyle;
     procedure initializeTables;
     procedure generateReport(Pilotos: TStringList; tipoCategoriaOID, eventoOID: Integer);
     procedure setTListItemsByString(errorListView : TcxListView; stringMessage: String);
@@ -137,6 +138,10 @@ type
     function getCategoria(tipoCategoriaOID : Integer; pilotoVO : TPiloto) : String;
     procedure selectCombosByDate;
     function getPilotDataSQL(Pilotos: TStringList): String;
+    function TieneNumeroCero(const NroMoto: string): Boolean;
+    function ContarInscriptosSinNumero: Integer;
+    procedure cxGridDBTableViewGetContentStyleSinNumero(Sender: TcxCustomGridTableView;
+      ARecord: TcxCustomGridRecord; AItem: TcxCustomGridTableItem; out AStyle: TcxStyle);
   protected
     persistentVO: TPersistentObject;
 
@@ -154,6 +159,9 @@ type
   end;
 
 implementation
+
+uses
+  System.Win.ComObj;
 
 {$R *.dfm}
 
@@ -268,119 +276,250 @@ begin
 end;
 
 procedure TInscripcionesCRUD.usgustaClick(Sender: TObject);
+const
+  MAX_ITEMS_VISIBLES = 15;
 var
-  openDialog : TOpenDialog;
-  Piloto : TPiloto;
-  nroDocumento, texoNroDocumento, categoria,
-    genero, distancia, edadStr, FechaNacimiento : String;
-  numMoto : Integer;
-  inscripcionVO, inscripcionEVO : TInscripcion;
-  eventoVO : TEvento;
+  OpenDialog: TOpenDialog;
+  ExcelApp, Libro, Rango, Datos, ValorFecha: Variant;
+  Piloto: TPiloto;
+  EventoVO: TEvento;
+  InscripcionVO, InscripcionEVO: TInscripcion;
+  SinNumero, NoEncontrados, Avisos: TStringList;
+  NroDocumento, Categoria, Fila, Mensaje: string;
+  FilaBase, TotalFilas, TotalCols, r, NumMoto, PilotoOID: Integer;
+  Inscriptos, YaInscriptos: Integer;
+  Fecha: TDateTime;
 
-  i, edad, pilotoOID, inscripcionOID: Integer;
-  si: String;
-  Hoja: _WorkSheet;
+  function Celda(F, C: Integer): Variant;
+  begin
+    Result := Unassigned;
+    if (F >= 1) and (F <= TotalFilas) and (C <= TotalCols) then
+      Result := Datos[F, C];
+  end;
+
+  function CeldaTexto(F, C: Integer): string;
+  var
+    Valor: Variant;
+  begin
+    Valor := Celda(F, C);
+    if VarIsEmpty(Valor) or VarIsNull(Valor) or (VarType(Valor) = varError) then
+      Result := ''
+    else
+      Result := Trim(VarToStr(Valor));
+  end;
+
+  procedure AgregarLista(Lista: TStringList; const Titulo: string);
+  var
+    k: Integer;
+  begin
+    if Lista.Count = 0 then
+      Exit;
+    Mensaje := Mensaje + '<br><br><b>' + Titulo + ' (' + IntToStr(Lista.Count) + '):</b>';
+    for k := 0 to Lista.Count - 1 do
+      if k < MAX_ITEMS_VISIBLES then
+        Mensaje := Mensaje + '<br>' + Lista[k];
+    if Lista.Count > MAX_ITEMS_VISIBLES then
+      Mensaje := Mensaje + Format('<br>... y %d más.', [Lista.Count - MAX_ITEMS_VISIBLES]);
+  end;
+
 begin
-    if ((cmbEvento.KeyValue > 0) and (cmbTipoCategoria.KeyValue > 0)) then
+  if not ((cmbEvento.KeyValue > 0) and (cmbTipoCategoria.KeyValue > 0)) then
+  begin
+    TF_EE_Message.ShowMessage(TComponent(Self), '¡Seleccione el Evento!',
+      'Debe seleccionar el Evento y el Tipo de Categoría', TF_EE_Message.INFORMATION, True);
+    Exit;
+  end;
+
+  // 1) Elegir archivo y leer la primera hoja completa de una vez
+  OpenDialog := TOpenDialog.Create(Self);
+  try
+    OpenDialog.InitialDir := GetCurrentDir;
+    OpenDialog.Options := [ofFileMustExist];
+    OpenDialog.Filter := 'Archivos Excel (*.xls;*.xlsx)|*.xls;*.xlsx';
+    if not OpenDialog.Execute then
+      Exit;
+
+    try
+      ExcelApp := CreateOleObject('Excel.Application');
+    except
+      on E: Exception do
+      begin
+        TF_EE_Message.ShowMessage(TComponent(Self), 'No se pudo iniciar Excel',
+          'Verifique que Microsoft Excel esté instalado en este equipo.<br>' + E.Message,
+          TF_EE_Message.ERROR, True);
+        Exit;
+      end;
+    end;
+
+    try
+      try
+        ExcelApp.DisplayAlerts := False;
+        Libro := ExcelApp.Workbooks.Open(OpenDialog.FileName, 0, True); // solo lectura
+        Rango := Libro.Worksheets[1].UsedRange;
+        FilaBase := Rango.Row;
+        if Rango.Column = 1 then
+          Datos := Rango.Value2;
+        Libro.Close(False);
+      finally
+        Rango := Unassigned;
+        Libro := Unassigned;
+        ExcelApp.Quit;
+        ExcelApp := Unassigned;
+      end;
+    except
+      on E: Exception do
+      begin
+        TF_EE_Message.ShowMessage(TComponent(Self), 'Error al leer el archivo',
+          OpenDialog.FileName + '<br>' + E.Message, TF_EE_Message.ERROR, True);
+        Exit;
+      end;
+    end;
+  finally
+    OpenDialog.Free;
+  end;
+
+  if not VarIsArray(Datos) then
+  begin
+    TF_EE_Message.ShowMessage(TComponent(Self), 'Formato no reconocido',
+      'La primera hoja del archivo no tiene DNI en la columna A.', TF_EE_Message.WARNING, True);
+    Exit;
+  end;
+  TotalFilas := VarArrayHighBound(Datos, 1);
+  TotalCols := VarArrayHighBound(Datos, 2);
+
+  SinNumero := TStringList.Create;
+  NoEncontrados := TStringList.Create;
+  Avisos := TStringList.Create;
+  EventoVO := TBussinessDataSubsystemFacade.getInstance.getEvento(cmbEvento.KeyValue);
+  Inscriptos := 0;
+  YaInscriptos := 0;
+  if not ZCategoria.Active then
+    ZCategoria.Open;
+  Screen.Cursor := crHourGlass;
+  try
+    // 2) Fila 1 de la hoja = encabezados; los datos empiezan en la fila 2
+    for r := 1 to TotalFilas do
     begin
-      // Create the open dialog object - assign to our open dialog variable
-      openDialog := TOpenDialog.Create(self);
+      if FilaBase + r - 1 < 2 then
+        Continue;
 
-      // Set up the starting directory to be the current one
-      openDialog.InitialDir := GetCurrentDir;
+      Fila := 'Fila ' + IntToStr(FilaBase + r - 1);
+      NroDocumento := StringReplace(CeldaTexto(r, 1), '.', '', [rfReplaceAll]);
+      NroDocumento := StringReplace(NroDocumento, ' ', '', [rfReplaceAll]);
+      if NroDocumento = '' then
+        Continue;
 
-      // Only allow existing files to be selected
-      openDialog.Options := [ofFileMustExist];
+      PilotoOID := TBussinessDataSubsystemFacade.getInstance.getPilotoOIDByDNI(NroDocumento);
+      Piloto := TBussinessDataSubsystemFacade.getInstance.getPiloto(PilotoOID);
+      if Piloto = nil then
+      begin
+        NoEncontrados.Add(Fila + ': DNI ' + NroDocumento);
+        Continue;
+      end;
 
-      // Allow only .dpr and .pas files to be selected
-      openDialog.Filter :=
-        'Excel File|*.xls|Excel File|*.xlsx';
+      try
+        Piloto.ValidacionNumericaCategoria := False;
+        // Con esto no se valida la numeracion en categoria ni TAGS
+        Piloto.ValidacionNumericaEnCategoria := TBussinessDataSubsystemFacade
+          .getInstance.getInscripcionByPilotoOIDAndCampeonatoOID(PilotoOID, EventoVO.CampeonatoOID);
 
-      // Display the open file dialog
-      if openDialog.Execute then
+        // Col. B: categoría (solo si existe; no se crean categorías nuevas)
+        Categoria := CeldaTexto(r, 2);
+        if Categoria <> '' then
         begin
-          Excel.Workbooks.Open(openDialog.FileName,
-            EmptyParam, EmptyParam, EmptyParam, EmptyParam, EmptyParam,
-            EmptyParam, EmptyParam, EmptyParam, EmptyParam, EmptyParam,
-            EmptyParam, EmptyParam, EmptyParam, EmptyParam, 0 );
+          if ZCategoria.Locate('nombre', Categoria, [loCaseInsensitive]) then
+            Piloto.CategoriaOID := ZCategoria.FieldByName('oid').AsInteger
+          else
+            Avisos.Add(Format('%s (%s): la categoría "%s" no existe; se mantiene la del piloto.',
+              [Fila, Piloto.getNombreCompleto, Categoria]));
         end;
 
-        Hoja := Excel.Worksheets.Item[1] as _WorkSheet;
-
-        i := 2;
-        si := IntToStr(i);
-        repeat
-
-          nroDocumento:= StringReplace(Hoja.Range['A'+si,'A'+si].Value2, '.', '', [rfReplaceAll, rfIgnoreCase]);
-          nroDocumento:= StringReplace(nroDocumento, ' ', '', [rfReplaceAll, rfIgnoreCase]);
-          texoNroDocumento:= FormatFloat('###,###,##0', strToFloat(nroDocumento));
-
-          pilotoOID:= TBussinessDataSubsystemFacade.getInstance.getPilotoOIDByDNI(nroDocumento);
-
-          Piloto:= TBussinessDataSubsystemFacade.getInstance.getPiloto(pilotoOID);
-
-          eventoVO:= TBussinessDataSubsystemFacade.getInstance.getEvento(cmbEvento.KeyValue);
-
-          if (Piloto <> nil) then
-          begin
-            Piloto.ValidacionNumericaCategoria:= False;
-            // Con esto no se valida la numeracion en categoria ni TAGS
-            Piloto.ValidacionNumericaEnCategoria:= TBussinessDataSubsystemFacade.
-              getInstance.getInscripcionByPilotoOIDAndCampeonatoOID(pilotoOID, eventoVO.CampeonatoOID);
-            categoria:= Hoja.Range['B'+si,'B'+si].Value2;
-            if (categoria <> '') then
-              Piloto.CategoriaOID:= TBussinessDataSubsystemFacade
-                .getInstance.getCategoriaByName(categoria);
-
-            FechaNacimiento:= Hoja.Range['C'+si,'C'+si].Value2;
-            if (FechaNacimiento <> '') then
-              Piloto.FechaNacimiento:= StrToDateTime(FechaNacimiento);
-
-            numMoto:= Hoja.Range['D'+si,'D'+si].Value2;
-            if (numMoto > 0) then
-              Piloto.NumMoto:= numMoto;
-
-            if (Piloto.isValidObject) then
-              TBussinessDataSubsystemFacade.getInstance.savePiloto(Piloto)
-            else
-              TF_EE_Message.ShowMessage(TComponent(Self),'¡Piloto con datos insuficientes!',
-                  'Se debe completar los datos de la persona <b>'+ Piloto.Apellido + ', ' + Piloto.Nombre +
-                    '</b> <br> Mensaje: ' + Piloto.getValidationResult().CommaText, TF_EE_Message.WARNING, False);
-
-            inscripcionVO:= TInscripcion.Create;
-            inscripcionVO.EventoOID:= cmbEvento.KeyValue;
-            inscripcionVO.PilotoOID:= pilotoOID;
-            inscripcionVO.DiaInscripcionIndex:= cmbDiaInscripcion.ItemIndex;
-            inscripcionVO.TipoCategoriaOID:= cmbTipoCategoria.KeyValue;
-
-            inscripcionOID:= TBussinessDataSubsystemFacade.getInstance.getInscripcionByPilotoOIDAndEventoOID(pilotoOID, inscripcionVO.EventoOID);
-            if (inscripcionOID < 1) then
-            begin
-              TBussinessDataSubsystemFacade.getInstance.addInscripcion(TInscripcion(inscripcionVO));
-
-              if ((piloto.NumExterno > 0) and (TInscripcion(persistentVO).TipoCategoriaOID <> 4)) then
-                begin
-                  inscripcionEVO:= TInscripcion.Create;
-                  inscripcionEVO.EventoOID:= cmbEvento.KeyValue;
-                  inscripcionEVO.PilotoOID:= pilotoOID;
-                  inscripcionEVO.DiaInscripcionIndex:= cmbDiaInscripcion.ItemIndex;
-                  inscripcionEVO.TipoCategoriaOID:= 4;
-
-                  TBussinessDataSubsystemFacade.getInstance.addInscripcion(inscripcionEVO);
-                end;
-            end;
-          end
+        // Col. C: fecha de nacimiento (fecha de Excel o texto dd/mm/aaaa)
+        ValorFecha := Celda(r, 3);
+        if VarType(ValorFecha) = varDouble then
+          Piloto.FechaNacimiento := TDateTime(Double(ValorFecha))
+        else if CeldaTexto(r, 3) <> '' then
+        begin
+          if TryStrToDate(CeldaTexto(r, 3), Fecha) then
+            Piloto.FechaNacimiento := Fecha
           else
-              TF_EE_Message.ShowMessage(TComponent(Self),'¡Piloto con datos insuficientes!',
-                  'El piloto no se encuentra en la base de datos. DNI: <b>'+ nroDocumento, TF_EE_Message.WARNING, False);
+            Avisos.Add(Format('%s (%s): fecha de nacimiento inválida "%s".',
+              [Fila, Piloto.getNombreCompleto, CeldaTexto(r, 3)]));
+        end;
 
-          Inc( i );
-          si := IntToStr( i );
-        until ( VarType( Excel.Range['A'+si,'A'+si].Value2 ) = VarEmpty );
+        // Col. D: número de moto (opcional; vacío o texto = queda como está)
+        if TryStrToInt(CeldaTexto(r, 4), NumMoto) and (NumMoto > 0) then
+          Piloto.NumMoto := NumMoto;
 
-        TF_EE_Message.ShowMessage(TComponent(Self),'Generación de Inscripción Masiva exitosa',
-          'Se ha generado la inscripción masiva de manera exitosa.', TF_EE_Message.INFORMATION, True);
+        if Piloto.isValidObject then
+          TBussinessDataSubsystemFacade.getInstance.savePiloto(Piloto)
+        else
+          Avisos.Add(Format('%s (%s): datos del piloto sin guardar - %s',
+            [Fila, Piloto.getNombreCompleto, Piloto.getValidationResult().CommaText]));
+
+        // Inscripción (aunque no tenga número: se asigna a mano desde la grilla)
+        if TBussinessDataSubsystemFacade.getInstance
+             .getInscripcionByPilotoOIDAndEventoOID(PilotoOID, cmbEvento.KeyValue) < 1 then
+        begin
+          InscripcionVO := TInscripcion.Create;
+          try
+            InscripcionVO.EventoOID := cmbEvento.KeyValue;
+            InscripcionVO.PilotoOID := PilotoOID;
+            InscripcionVO.DiaInscripcionIndex := cmbDiaInscripcion.ItemIndex;
+            InscripcionVO.TipoCategoriaOID := cmbTipoCategoria.KeyValue;
+            TBussinessDataSubsystemFacade.getInstance.addInscripcion(InscripcionVO);
+            Inc(Inscriptos);
+
+            if (Piloto.NumExterno > 0) and (InscripcionVO.TipoCategoriaOID <> 4) then
+            begin
+              InscripcionEVO := TInscripcion.Create;
+              try
+                InscripcionEVO.EventoOID := cmbEvento.KeyValue;
+                InscripcionEVO.PilotoOID := PilotoOID;
+                InscripcionEVO.DiaInscripcionIndex := cmbDiaInscripcion.ItemIndex;
+                InscripcionEVO.TipoCategoriaOID := 4;
+                TBussinessDataSubsystemFacade.getInstance.addInscripcion(InscripcionEVO);
+              finally
+                InscripcionEVO.Free;
+              end;
+            end;
+          finally
+            InscripcionVO.Free;
+          end;
+        end
+        else
+          Inc(YaInscriptos);
+
+        if (getNroMoto(cmbTipoCategoria.KeyValue, Piloto) = '0') or
+           (getNroMoto(cmbTipoCategoria.KeyValue, Piloto) = '') then
+          SinNumero.Add(Format('%s: %s (DNI %s)', [Fila, Piloto.getNombreCompleto, NroDocumento]));
+      finally
+        Piloto.Free;
+      end;
     end;
+
+    // 3) Refrescar la grilla con el filtro actual
+    btnFilterClick(Self);
+  finally
+    Screen.Cursor := crDefault;
+  end;
+
+  // 4) Resumen
+  Mensaje := Format('Evento: <b>%s</b><br>Inscriptos nuevos: <b>%d</b><br>Ya estaban inscriptos: <b>%d</b>',
+    [cmbEvento.Text, Inscriptos, YaInscriptos]);
+  AgregarLista(SinNumero, '<font color="#c00000">SIN NÚMERO - asignar desde la grilla (doble clic)</font>');
+  AgregarLista(NoEncontrados, 'No están en la base de datos');
+  AgregarLista(Avisos, 'Avisos');
+
+  try
+    TF_EE_Message.ShowMessage(TComponent(Self), 'Resultado de Inscripción por XLS', Mensaje,
+      TF_EE_Message.INFORMATION, True, True);
+  finally
+    EventoVO.Free;
+    Avisos.Free;
+    NoEncontrados.Free;
+    SinNumero.Free;
+  end;
 end;
 
 procedure TInscripcionesCRUD.btnInscriptosClick(Sender: TObject);
@@ -825,6 +964,11 @@ begin
 
   pilotoVO:= TPiloto.Create;
   abstractEdit:= TPilotEditor.Create(self, pilotoVO);
+                                                                       // Resaltar inscriptos sin número (Nro. 0) para asignarlo a mano
+  FEstiloSinNumero := TcxStyle.Create(Self);
+  FEstiloSinNumero.Color := RGB(255, 199, 206);
+  FEstiloSinNumero.TextColor := RGB(156, 0, 6);
+  cxGridDBTableView.Styles.OnGetContentStyle := cxGridDBTableViewGetContentStyleSinNumero;
 end;
 
 procedure TInscripcionesCRUD.cxGridDBTableViewTcxGridDBDataControllerTcxDataSummaryFooterSummaryItems0GetText(
@@ -833,6 +977,8 @@ procedure TInscripcionesCRUD.cxGridDBTableViewTcxGridDBDataControllerTcxDataSumm
 begin
   inherited;
   AText:= 'Cantidad de Inscriptos: ' + VarToStr(AValue);
+  if ContarInscriptosSinNumero > 0 then
+    AText:= AText + '   -   Sin número: ' + IntToStr(ContarInscriptosSinNumero);
 end;
 
 procedure TInscripcionesCRUD.initializeTables;
@@ -1031,4 +1177,43 @@ begin
   Result:= sqlString;
 end;
 
+function TInscripcionesCRUD.TieneNumeroCero(const NroMoto: string): Boolean;
+var
+  Partes: TStringList;
+  i: Integer;
+begin
+  // nro_moto viene como '12', '0' o '12 / 0' (un valor por tipo de categoría)
+  Result := False;
+  Partes := TStringList.Create;
+  try
+    Partes.Delimiter := '/';
+    Partes.StrictDelimiter := True;
+    Partes.DelimitedText := NroMoto;
+    for i := 0 to Partes.Count - 1 do
+      if (Trim(Partes[i]) = '') or (Trim(Partes[i]) = '0') then
+        Result := True;
+  finally
+    Partes.Free;
+  end;
+end;
+
+function TInscripcionesCRUD.ContarInscriptosSinNumero: Integer;
+var
+  i: Integer;
+begin
+  Result := 0;
+  with cxGridDBTableView.DataController do
+    for i := 0 to RecordCount - 1 do
+      if TieneNumeroCero(VarToStr(Values[i, cxGridDBTableViewNroMoto.Index])) then
+        Inc(Result);
+end;
+
+procedure TInscripcionesCRUD.cxGridDBTableViewGetContentStyleSinNumero(Sender: TcxCustomGridTableView;
+  ARecord: TcxCustomGridRecord; AItem: TcxCustomGridTableItem; out AStyle: TcxStyle);
+begin
+  AStyle := nil;
+  if Assigned(ARecord) and
+     TieneNumeroCero(VarToStr(ARecord.Values[cxGridDBTableViewNroMoto.Index])) then
+    AStyle := FEstiloSinNumero;
+end;
 end.
