@@ -576,8 +576,8 @@ begin
       sqlString := sqlString + 'sel_pos_dinamic_total_time(' + FieldByName('oid').AsString +
                    ', piloto_oid, categoria_oid) as `' + aliasPos + '`, ';
 
-      sqlString := sqlString + 'CONCAT(sel_formatted_lap_time(sel_total_time(' + FieldByName('oid').AsString +
-                   ', piloto_oid)), ' + QuotedStr('') + ') as `' + aliasTot + '`, ';
+      sqlString := sqlString + 'CONCAT(sel_formatted_lap_time(MAX(CASE WHEN ranking.oid = ' + FieldByName('oid').AsString +
+                   ' THEN ranking.tiempo_total END)), ' + QuotedStr('') + ') as `' + aliasTot + '`, ';
 
       Inc(i);
       Next;
@@ -601,7 +601,9 @@ begin
        ' sel_recargo_by_toma_tiempo_agrup_and_piloto_and_tipo_categoria(:toma_tiempo_agrupacion_oid, ipe.tipo_categoria_oid, ipe.piloto_oid) Recargo, ' +
        ' sel_rec_desc_by_toma_tiempo_agrup_and_piloto_and_tipo_categoria(:toma_tiempo_agrupacion_oid, ipe.tipo_categoria_oid, ipe.piloto_oid) DescripcionRecargo, ' +
        ' p.oid as piloto_oid ' +
-       ' FROM toma_tiempos tt ' +
+       ' FROM (SELECT DISTINCT toma_tiempo_evento_oid, piloto_oid FROM toma_tiempos ' +
+       '       WHERE toma_tiempo_evento_oid IN (SELECT toma_tiempo_oid FROM toma_tiempo_agrupacion_tt ' +
+       '                                        WHERE toma_tiempo_agrupacion_oid = :toma_tiempo_agrupacion_oid)) tt ' +
        '      JOIN toma_tiempo_evento tte ON tt.toma_tiempo_evento_oid = tte.oid ' +
        '      JOIN piloto p ON tt.piloto_oid = p.oid ' +
        '      JOIN inscripcion_piloto_evento ipe ON (ipe.evento_oid = tte.evento_oid AND ipe.piloto_oid = tt.piloto_oid)' +
