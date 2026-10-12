@@ -153,6 +153,7 @@ var
 
   configurationFrame: TFrame;
 implementation
+  uses ConfigureFilesUtilities;
 
 {$R *.dfm}
 
@@ -479,10 +480,9 @@ end;
 
 procedure TPrincipal.FormCreate(Sender: TObject);
 begin
+  Caption:= 'Enduro Cordillerano - ' + VersionAplicacion;
   AdvToolBarPager.ActivePageIndex:= 0;
 
-  //Registrar Previsualizador
-//  RegisterPreviewClass(TQRCustomPreviewInterface);
   RegisterPreviewClass(TQRSimplePreviewInterface);
 
   createAndShowLoginForm;

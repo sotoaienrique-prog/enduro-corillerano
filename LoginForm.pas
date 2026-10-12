@@ -67,7 +67,7 @@ implementation
 
 {$R *.dfm}
 
-uses Unit1;
+uses Unit1, ConfigureFilesUtilities;
 
 procedure TLogin.CreateParams(var Params: TCreateParams);
 begin
@@ -89,6 +89,7 @@ constructor TLogin.Create(owner: TComponent; persistentVO: TPersistentObject);
 begin
   inherited Create(owner);
   self.persistentVO:= persistentVO;
+  cxLabel2.Caption:= VersionAplicacion;
   InitializeBinding;
 end;
 
