@@ -9,6 +9,7 @@ uses
   function ReadStringFromIniFile(Seccion, Identificador, Default: String):String;
   function ReadIntegerFromIniFile(Seccion, Identificador: String; Default: Integer):Integer;
   function ExtractRutaLibrary: String;
+  function VersionAplicacion: String;
 implementation
 
 function ExtractRutaConfiguracion:string;
@@ -50,6 +51,17 @@ end;
 function ExtractRutaLibrary: String;
 begin
   Result:= ExtractFileDir (paramstr(0))+'\libmysql55.dll';
+end;
+
+function VersionAplicacion: String;
+var
+  FechaExe: TDateTime;
+begin
+  // La versión es la fecha en que se generó el .exe (última escritura al compilar)
+  if FileAge(ParamStr(0), FechaExe) then
+    Result:= FormatDateTime('dd.mm.yy', FechaExe)
+  else
+    Result:= '';
 end;
 
 end.
