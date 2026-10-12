@@ -147,8 +147,8 @@ end;
 procedure TGrillaReconocimientoForm.btnStopClick(Sender: TObject);
 begin
   JvTimer.Enabled:= False;
-  JvTimerCount.Enabled:= True;
-  JvTimerCategorias.Enabled:= True;
+  JvTimerCount.Enabled:= False;
+  JvTimerCategorias.Enabled:= False;
   btnStart.Enabled:= True;
   btnStop.Enabled:= False;
 

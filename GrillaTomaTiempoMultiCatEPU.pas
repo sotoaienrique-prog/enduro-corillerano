@@ -284,7 +284,7 @@ end;
 procedure TGrillaTomaTiempoMultiCatEPUForm.btnStopClick(Sender: TObject);
 begin
   JvTimer.Enabled:= False;
-  JvTimerCount.Enabled:= True;
+  JvTimerCount.Enabled:= False;
 
   btnStart.Enabled:= True;
   btnStop.Enabled:= False;

@@ -1969,6 +1969,7 @@ end;
 constructor TCommThread.Create;
 begin
   inherited Create(True);
+  fOwner := AOwner;
   fMemo := Memo;
 end;
 
