@@ -82,12 +82,13 @@ implementation
 
 procedure TFGrillaTiempoEspera.btnEliminarEsperasEventoClick(Sender: TObject);
 begin
-  with ConnectionModule.ZDeleteParadaPilotoEvento do
-    begin
-      Close;
-      ParamByName('evento_oid').AsInteger:= cmbFilterEvento.KeyValue;
-      ExecSQL;
-    end;
+  if VarIsNull(cmbFilterEvento.KeyValue) then Exit;
+    with ConnectionModule.ZDeleteParadaPilotoEvento do
+      begin
+        Close;
+        ParamByName('evento_oid').AsInteger:= cmbFilterEvento.KeyValue;
+        ExecSQL;
+      end;
 end;
 
 procedure TFGrillaTiempoEspera.btnInscriptosClick(Sender: TObject);

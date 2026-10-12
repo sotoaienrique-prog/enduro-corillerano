@@ -49,6 +49,7 @@ type
 
     procedure addInscripcion(inscripcionVO: TInscripcion);
     procedure deleteInscripcion(OID: Integer);
+    function deleteGrillaPartidaSinInscripcion(EventoOID: Integer): Integer;
     function getInscripcion(OID: Integer): TInscripcion;
     function getInscripcionByPilotoOIDAndCampeonatoOID(PilotoOID, CampeonatoOID: Integer): Boolean;
     function getInscripcionByPilotoOIDAndEventoOID(PilotoOID, EventoOID: Integer): Integer;
@@ -211,6 +212,7 @@ var
       ConnectionModule.ZConnection.Commit;
     except
       ConnectionModule.ZConnection.Rollback;
+      raise;
     end;
   end;
 
@@ -245,6 +247,7 @@ var
       ConnectionModule.ZConnection.Commit;
     except
       ConnectionModule.ZConnection.Rollback;
+      raise;
     end;
   end;
 
@@ -592,6 +595,7 @@ var
       ConnectionModule.ZConnection.Commit;
     except
       ConnectionModule.ZConnection.Rollback;
+      raise;
     end;
   end;
 
@@ -664,6 +668,7 @@ begin
       ConnectionModule.ZConnection.Commit;
     except
       ConnectionModule.ZConnection.Rollback;
+      raise;
     end;
   end;
 
@@ -704,6 +709,7 @@ begin
       ConnectionModule.ZConnection.Commit;
     except
       ConnectionModule.ZConnection.Rollback;
+      raise;
     end;
     end;
 
@@ -925,6 +931,10 @@ begin
 
           ExecSQL;
         end;
+
+      ConnectionModule.ZSelLastInsOID.Close;
+      ConnectionModule.ZSelLastInsOID.Open;
+      eventVO.OID := ConnectionModule.ZSelLastInsOID.FieldByName('OID').AsInteger;
 
       for eventoCategoriaNumeracionVO in eventVO.VueltasCategoria do
       with ConnectionModule.ZAddVueltasPorCategoria do
@@ -1224,13 +1234,63 @@ begin
   end;
 
   procedure TBussinessDataSubsystemFacade.deleteInscripcion(OID: Integer);
+  var
+    Query: TZQuery;
+    EventoOID: Integer;
   begin
+    // Evento de la inscripción, antes de borrarla, para limpiar su grilla de largada
+    EventoOID := 0;
+    Query := TZQuery.Create(nil);
+    try
+      Query.Connection := ConnectionModule.ZConnection;
+      Query.SQL.Text :=
+        'SELECT evento_oid FROM inscripcion_piloto_evento WHERE oid = :oid';
+      Query.ParamByName('oid').AsInteger := OID;
+      Query.Open;
+      if not Query.IsEmpty then
+        EventoOID := Query.FieldByName('evento_oid').AsInteger;
+    finally
+      Query.Free;
+    end;
+
     with ConnectionModule.ZDeleteInscripcion do
       begin
         Close;
         ParamByName('oid').AsInteger:= OID;
         ExecSQL;
       end;
+
+    if EventoOID > 0 then
+      deleteGrillaPartidaSinInscripcion(EventoOID);
+  end;
+
+  // Borra de la grilla de largada del evento a los pilotos que ya no tienen
+  // inscripción en esa categoría (inscripción eliminada o cambio de categoría).
+  // Devuelve la cantidad de filas borradas.
+  function TBussinessDataSubsystemFacade.deleteGrillaPartidaSinInscripcion(EventoOID: Integer): Integer;
+  var
+    Query: TZQuery;
+  begin
+    Query := TZQuery.Create(nil);
+    try
+      Query.Connection := ConnectionModule.ZConnection;
+      Query.SQL.Text :=
+        'DELETE gp FROM grilla_de_partida gp ' +
+        '  JOIN grilla_de_partida_categorias gpc ' +
+        '    ON gpc.oid = gp.grilla_de_partida_categoria_oid ' +
+        'WHERE gpc.evento_oid = :evento_oid ' +
+        '  AND NOT EXISTS (SELECT 1 ' +
+        '                  FROM inscripcion_piloto_evento ipe ' +
+        '                  WHERE ipe.evento_oid = gpc.evento_oid ' +
+        '                    AND ipe.piloto_oid = gp.piloto_oid ' +
+        '                    AND sel_categoria_oid_by_evento_and_tipo_categoria(' +
+        '                          ipe.tipo_categoria_oid, ipe.evento_oid, ipe.piloto_oid) = gp.categoria_oid)';
+      Query.ParamByName('evento_oid').AsInteger := EventoOID;
+      Query.ExecSQL;
+      Result := Query.RowsAffected;
+    finally
+      Query.Free;
+    end;
   end;
 
   procedure TBussinessDataSubsystemFacade.deletePuntuacionByEventoOIDAndCategoriaOID(EventoOID, CategoriaOID: Integer);
@@ -1506,7 +1566,7 @@ end;
     ConnectionModule.ZConnection.StartTransaction;
     try
 
-      with ConnectionModule.ZAddHandicup do
+      with ConnectionModule.ZAddPuntos do
         begin
           Close;
 
@@ -2130,7 +2190,10 @@ begin
       ParamByName('piloto_oid').AsInteger:= pilotoOID;
       ParamByName('toma_tiempo_evento_oid').AsInteger:= tomaTiempoEventoOID;
       ParamByName('nro_vuelta').AsSmallInt:= nroVuelta;
-      ParamByName('toma_tiempo_importada').AsSmallInt:= nroVuelta;
+      if importada then
+        ParamByName('toma_tiempo_importada').AsSmallInt:= 1
+      else
+        ParamByName('toma_tiempo_importada').AsSmallInt:= 0;
       //ReplaceDate(tiempoPasada, Date);
       //ParamByName('tiempo_pasada').AsDateTime:= tiempoPasada;
 

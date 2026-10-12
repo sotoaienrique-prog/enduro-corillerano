@@ -37,7 +37,6 @@ object GrillaTomaTiempoMultiCatEPUForm: TGrillaTomaTiempoMultiCatEPUForm
     Height = 129
     Align = alTop
     TabOrder = 0
-    ExplicitTop = 4
     DesignSize = (
       1362
       129)

@@ -168,96 +168,97 @@ procedure TPilotCRUD.btnImportPilotosClick(Sender: TObject);
 var
   openDialog : TOpenDialog;
   Piloto : TPiloto;
-  nroDocumento, categoria, genero, distancia, edadStr : String;
-
-  i, edad: Integer;
+  nroDocumento, categoria : String;
+  i: Integer;
   si: String;
+  Libro: _Workbook;
   Hoja: _WorkSheet;
 begin
-  // Create the open dialog object - assign to our open dialog variable
   openDialog := TOpenDialog.Create(self);
+  try
+    openDialog.InitialDir := GetCurrentDir;
+    openDialog.Options := [ofFileMustExist];
+    openDialog.Filter := 'Excel File|*.xls|Excel File|*.xlsx';
 
-  // Set up the starting directory to be the current one
-  openDialog.InitialDir := GetCurrentDir;
+    // Si el usuario cancela, no se hace nada
+    if not openDialog.Execute then
+      Exit;
 
-  // Only allow existing files to be selected
-  openDialog.Options := [ofFileMustExist];
+    Libro := Excel.Workbooks.Open(openDialog.FileName,
+      EmptyParam, EmptyParam, EmptyParam, EmptyParam, EmptyParam,
+      EmptyParam, EmptyParam, EmptyParam, EmptyParam, EmptyParam,
+      EmptyParam, EmptyParam, EmptyParam, EmptyParam, 0 );
+    try
+      // La hoja del libro recién abierto, no la del libro activo
+      Hoja := Libro.Worksheets.Item[1] as _WorkSheet;
 
-  // Allow only .dpr and .pas files to be selected
-  openDialog.Filter :=
-    'Excel File|*.xls|Excel File|*.xlsx';
+      i := 2;
+      si := IntToStr(i);
+      try
+        while ( VarType( Hoja.Range['A'+si,'A'+si].Value2 ) <> VarEmpty ) do
+          begin
+            Piloto:= TPiloto.Create;
+            try
+              Piloto.ValidacionNumericaCategoria:= False;
 
-  // Display the open file dialog
-  if openDialog.Execute then
-    begin
-      Excel.Workbooks.Open(openDialog.FileName,
-        EmptyParam, EmptyParam, EmptyParam, EmptyParam, EmptyParam,
-        EmptyParam, EmptyParam, EmptyParam, EmptyParam, EmptyParam,
-        EmptyParam, EmptyParam, EmptyParam, EmptyParam, 0 );
+              Piloto.Nombre:= Trim(Hoja.Range['A'+si,'A'+si].Value2);
+              Piloto.Apellido:= Trim(Hoja.Range['B'+si,'B'+si].Value2);
+              nroDocumento:= StringReplace(Hoja.Range['C'+si,'C'+si].Value2, '.', '', [rfReplaceAll, rfIgnoreCase]);
+              nroDocumento:= StringReplace(nroDocumento, ' ', '', [rfReplaceAll, rfIgnoreCase]);
+              Piloto.NroDocumento:= FormatFloat('###,###,##0', strToFloat(nroDocumento));
+              Piloto.FechaNacimiento:= StrToDateTime(Hoja.Range['Q'+si,'Q'+si].Value2);
+              Piloto.Mail:= Hoja.Range['H'+si,'H'+si].Value2;
+              Piloto.Telefono:= Hoja.Range['I'+si,'I'+si].Value2;
+              Piloto.Direccion:= Hoja.Range['E'+si,'E'+si].Value2;
+
+              Piloto.MotoOID:= TBussinessDataSubsystemFacade.getInstance
+                .getModeloMotoByNombre(Hoja.Range['G'+si,'G'+si].Value2);
+
+              categoria:= Hoja.Range['F'+si,'F'+si].Value2;
+              Piloto.CategoriaOID:= TBussinessDataSubsystemFacade
+                .getInstance.getCategoriaByName(categoria);
+
+              Piloto.NumMoto:= Hoja.Range['O'+si,'O'+si].Value2;
+              Piloto.NumExterno:= Hoja.Range['P'+si,'P'+si].Value2;
+
+              Piloto.LocalidadOID:= TBussinessDataSubsystemFacade.getInstance
+                .getLocalidadOID(Hoja.Range['K'+si,'K'+si].Value2, Hoja.Range['J'+si,'J'+si].Value2);
+
+              Piloto.TagID:= Hoja.Range['R'+si,'R'+si].Value2;
+
+              if (Piloto.isValidObject) then
+                TBussinessDataSubsystemFacade.getInstance.addPiloto(Piloto)
+              else
+                TF_EE_Message.ShowMessage(TComponent(Self),'¡Piloto con datos insuficientes!',
+                    'Se debe completar los datos de la persona <b>'+ Piloto.Apellido + ', ' + Piloto.Nombre +
+                    '</b> <br> Mensaje: ' + Piloto.getValidationResult().CommaText, TF_EE_Message.WARNING, False);
+            finally
+              Piloto.Free;
+            end;
+
+            Inc( i );
+            si := IntToStr( i );
+          end;
+      except
+        on E: Exception do
+          TF_EE_Message.ShowMessage(TComponent(Self), 'Error al importar pilotos',
+            'Se detuvo la importación en la <b>fila ' + si + '</b> del archivo.<br>' +
+            'Las filas anteriores ya quedaron grabadas.<br>Mensaje: ' + E.Message,
+            TF_EE_Message.ERROR, True);
+      end;
+    finally
+      // Cerrar el libro sin guardar y liberar Excel, aunque haya habido error
+      Hoja := nil;
+      Libro.Close(False, EmptyParam, EmptyParam, 0);
+      Libro := nil;
+      // Solo cerrar Excel si no quedó otro libro abierto (puede ser un Excel del usuario)
+      if Excel.Workbooks.Count = 0 then
+        Excel.Quit;
+      Excel.Disconnect;
     end;
-
-    Hoja := Excel.Worksheets.Item[1] as _WorkSheet;
-
-    i := 2;
-    si := IntToStr(i);
-    repeat
-      Piloto:= TPiloto.Create;
-
-      Piloto.ValidacionNumericaCategoria:= False;
-
-      Piloto.Nombre:= Trim(Hoja.Range['A'+si,'A'+si].Value2);
-      Piloto.Apellido:= Trim(Hoja.Range['B'+si,'B'+si].Value2);
-      nroDocumento:= StringReplace(Hoja.Range['C'+si,'C'+si].Value2, '.', '', [rfReplaceAll, rfIgnoreCase]);
-      nroDocumento:= StringReplace(nroDocumento, ' ', '', [rfReplaceAll, rfIgnoreCase]);
-      Piloto.NroDocumento:= FormatFloat('###,###,##0', strToFloat(nroDocumento));
-      Piloto.FechaNacimiento:= StrToDateTime(Hoja.Range['Q'+si,'Q'+si].Value2);
-      Piloto.Mail:= Hoja.Range['H'+si,'H'+si].Value2;
-      Piloto.Telefono:= Hoja.Range['I'+si,'I'+si].Value2;
-      Piloto.Direccion:= Hoja.Range['E'+si,'E'+si].Value2;
-
-      Piloto.MotoOID:= TBussinessDataSubsystemFacade.getInstance
-        .getModeloMotoByNombre(Hoja.Range['G'+si,'G'+si].Value2);
-
-      // Comento ya que es el calculo de categoría para EPUMAHUIDA
-      {distancia:= Hoja.Range['T'+si,'T'+si].Value2;
-      genero:= Hoja.Range['U'+si,'U'+si].Value2;
-      edad:= GetAge(Piloto.FechaNacimiento, Now);
-
-      if ((edad > 16) and (edad < 30)) then
-        edadStr:= '17-29'
-      else if ((edad >= 30) and (edad < 40)) then
-        edadStr:= '30-39'
-      else if ((edad >= 40) and (edad < 50)) then
-        edadStr:= '40-49'
-      else if ((edad >= 50) and (edad < 60)) then
-        edadStr:= '50-59'
-      else if (edad >= 60) then
-        edadStr:= '+60';
-
-      categoria:= genero + ' ' + distancia + ' ' + edadStr;}
-
-      categoria:= Hoja.Range['F'+si,'F'+si].Value2;
-      Piloto.CategoriaOID:= TBussinessDataSubsystemFacade
-        .getInstance.getCategoriaByName(categoria);
-
-      Piloto.NumMoto:= Hoja.Range['O'+si,'O'+si].Value2;
-      //Piloto.NumMotoCross:= Hoja.Range['O'+si,'O'+si].Value2;
-      Piloto.NumExterno:= Hoja.Range['P'+si,'P'+si].Value2;
-
-      Piloto.LocalidadOID:= TBussinessDataSubsystemFacade.getInstance
-        .getLocalidadOID(Hoja.Range['K'+si,'K'+si].Value2, Hoja.Range['J'+si,'J'+si].Value2);
-
-      Piloto.TagID:= Hoja.Range['R'+si,'R'+si].Value2;
-
-      if (Piloto.isValidObject) then
-        TBussinessDataSubsystemFacade.getInstance.addPiloto(Piloto)
-      else
-        TF_EE_Message.ShowMessage(TComponent(Self),'¡Piloto con datos insuficientes!',
-            'Se debe completar los datos de la persona <b>'+ Piloto.Apellido + ', ' + Piloto.Nombre +
-            '</b> <br> Mensaje: ' + Piloto.getValidationResult().CommaText, TF_EE_Message.WARNING, False);
-      Inc( i );
-      si := IntToStr( i );
-    until ( VarType( Excel.Range['A'+si,'A'+si].Value2 ) = VarEmpty );
+  finally
+    openDialog.Free;
+  end;
 end;
 
 function TPilotCRUD.GetAge(const BirthDate, CurrentDate: TDateTime): Integer;

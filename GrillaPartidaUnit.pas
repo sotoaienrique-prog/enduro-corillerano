@@ -414,9 +414,14 @@ procedure TGrillaPartida.btnGeneratePilotListClick(Sender: TObject);
 var
   categoriaOIDAnt : Integer;
   nroOrden : Integer;
+  cantQuitados : Integer;
 begin
     categoriaOIDAnt:= 0;
     nroOrden:= 0;
+
+    // Quitar de la grilla a los pilotos sin inscripción (eliminados o con cambio de categoría)
+    cantQuitados:= TBussinessDataSubsystemFacade.getInstance
+      .deleteGrillaPartidaSinInscripcion(self.eventoOID);
 
     if (not chkInvertirP10.Checked) and (not chkInvertirP5.Checked) then
       begin
@@ -493,6 +498,12 @@ begin
 
     QueryPilotos.Close;
     QueryPilotos.Open;
+
+    if cantQuitados > 0 then
+      TF_EE_Message.ShowMessage(TComponent(Self), 'Grilla actualizada',
+        'Se quitaron <b>' + IntToStr(cantQuitados) + '</b> piloto(s) que ya no están inscriptos ' +
+        'en esa categoría.<br>Si ya se generó la toma de tiempos inicial, volvé a generarla ' +
+        'con <b>Aceptar</b> u <b>Holeshot</b>.', TF_EE_Message.INFORMATION, True);
 end;
 
 procedure TGrillaPartida.btnHoleshotClick(Sender: TObject);
