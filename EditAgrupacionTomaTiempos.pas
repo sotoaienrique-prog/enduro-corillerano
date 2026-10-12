@@ -112,6 +112,8 @@ type
     procedure OcultarCamposExportacion(Dataset: TDataSet; const NombresCampos: array of string);
     procedure ExportarAHTML(Dataset: TDataSet);
     procedure SubirAWorker(const HTMLContent: string);
+    procedure SubirArchivoAWorker(const Contenido, NombreArchivo, ContentType, Ruta: string);
+    function GenerarJSONResultados(Dataset: TDataSet): string;
     procedure DiagnosticoSSL;
     procedure ExportarExcelYPDF(Dataset: TDataSet; const Instancia: string);
     procedure AbrirConsultaPublicacion(Query: TZReadOnlyQuery);
@@ -135,6 +137,7 @@ uses
 
 const
   CAMPO_CATEGORIA_PUBLICACION = 'Cat';
+  URL_WORKER = 'https://resultados-carrera.sotoaienrique.workers.dev';
   // Formato Texto de Excel. Debe ser string tipado: el literal '@' es un Char y por OLE
   // viaja como el ordinal 64, y Excel recibe el formato "64" en lugar de Texto.
   FORMATO_TEXTO_EXCEL: WideString = '@';
@@ -539,6 +542,9 @@ begin
     // Columnas fijas finales
     't.`Tiempo Total`, ' +
     't.Vueltas, ' +
+    't.tiempo_total_raw, ' +
+    't.tiempo_min_raw, ' +
+    't.cat_orden, ' +
 
     't.categoria_oid, ' +
     't.piloto_oid, ' +
@@ -588,6 +594,8 @@ begin
              'CONCAT(sel_formatted_total_time(SUM(tiempo_total)), ' + QuotedStr('') + ') AS `Tiempo Total`, ' +
              'SUM(tiempo_total) AS tiempo_total_raw, ' +
              'SUM(ranking.Vueltas) AS Vueltas, ' +
+             'MIN(ranking.tiempo_total) AS tiempo_min_raw, ' +
+             'MIN(ranking.orden) AS cat_orden, ' +
              'categoria_oid, piloto_oid, Recargo, DescripcionRecargo ';
 
   sqlString := sqlString +
@@ -731,7 +739,7 @@ begin
   end;
 
   // Columnas internas que no se publican
-  OcultarCamposExportacion(Query, ['Posicion', 'categoria_oid', 'piloto_oid', 'Categoria_Control', '_p', '_a', '_vp', '_va', 'tiempo_total_raw']);
+  OcultarCamposExportacion(Query, ['Posicion', 'categoria_oid', 'piloto_oid', 'Categoria_Control', '_p', '_a', '_vp', '_va', 'tiempo_total_raw', 'tiempo_min_raw', 'cat_orden']);
 end;
 
 procedure TEdicionAgrupacion.ExportarAExcel(Dataset: TDataSet);
@@ -970,12 +978,12 @@ var
 begin
       AbrirConsultaPublicacion(zExportarAgrupacion);
       ExportarAHTML(zExportarAgrupacion);
-      //Modo:= ReadStringFromIniFile('Instancia','Modo','PROD');
-      //if(Modo = 'PROD') then
-
-      // Si en algún momento se retoma Excel/PDF:
-      // if Modo = 'LEGACY' then
-      //   ExportarExcelYPDF(zExportarAgrupacion, Instancia);
+      try
+        SubirArchivoAWorker(GenerarJSONResultados(zExportarAgrupacion),
+          'datos_temp.json', 'application/json; charset=utf-8', '/datos');
+      except
+        // Sin mensaje: si falla la red, ExportarAHTML ya avisó en este mismo ciclo.
+      end;
 end;
 
 procedure TEdicionAgrupacion.ExportarExcelYPDF(Dataset: TDataSet; const Instancia: string);
@@ -1095,32 +1103,147 @@ begin
   end;
 end;
 
-procedure TEdicionAgrupacion.SubirAWorker(const HTMLContent: string);
+function JSONTexto(const S: string): string;
 var
-  RutaTemp, CmdLine, Salida, IdInstancia: string;
+  i: Integer;
+begin
+  Result := '"';
+  for i := 1 to Length(S) do
+    case S[i] of
+      '"': Result := Result + '\"';
+      '\': Result := Result + '\\';
+      #9:  Result := Result + '\t';
+      #10: Result := Result + '\n';
+      #13: Result := Result + '\r';
+    else
+      if S[i] < #32 then
+        Result := Result + '\u' + IntToHex(Ord(S[i]), 4)
+      else
+        Result := Result + S[i];
+    end;
+  Result := Result + '"';
+end;
+
+function TEdicionAgrupacion.GenerarJSONResultados(Dataset: TDataSet): string;
+const
+  PREFIJO_POS = 'P. ';
+var
+  SB: TStringBuilder;
+  FS: TFormatSettings;
+  Tomas: TStringList;
+  i: Integer;
+  PrimerPiloto: Boolean;
+begin
+  // Punto decimal fijo: con la configuración regional argentina FloatToStr usa coma
+  FS := TFormatSettings.Create;
+  FS.DecimalSeparator := '.';
+
+  Tomas := TStringList.Create;
+  SB := TStringBuilder.Create;
+  try
+    // Las tomas de este servidor salen de las columnas "P. <toma>"
+    for i := 0 to Dataset.FieldCount - 1 do
+      if Copy(Dataset.Fields[i].FieldName, 1, Length(PREFIJO_POS)) = PREFIJO_POS then
+        Tomas.Add(Copy(Dataset.Fields[i].FieldName, Length(PREFIJO_POS) + 1, MaxInt));
+
+    SB.Append('{"instancia":').Append(JSONTexto(ReadStringFromIniFile('Instancia', 'Nombre', '')));
+    SB.Append(',"generado":').Append(JSONTexto(FormatDateTime('yyyy-mm-dd hh:nn:ss', Now)));
+    SB.Append(',"tomas":[');
+    for i := 0 to Tomas.Count - 1 do
+    begin
+      if i > 0 then
+        SB.Append(',');
+      SB.Append(JSONTexto(Tomas[i]));
+    end;
+    SB.Append('],"pilotos":[');
+
+    PrimerPiloto := True;
+    Dataset.DisableControls;
+    try
+      Dataset.First;
+      while not Dataset.Eof do
+      begin
+        if not PrimerPiloto then
+          SB.Append(',');
+        PrimerPiloto := False;
+
+        SB.Append('{"nro":').Append(JSONTexto(Trim(Dataset.FieldByName('Nro. Competidor').AsString)));
+        SB.Append(',"nombre":').Append(JSONTexto(Dataset.FieldByName('Competidor').AsString));
+        SB.Append(',"cat":').Append(JSONTexto(Trim(Dataset.FieldByName(CAMPO_CATEGORIA_PUBLICACION).AsString)));
+        if Dataset.FieldByName('cat_orden').IsNull then
+          SB.Append(',"catOrden":null')
+        else
+          SB.Append(',"catOrden":').Append(Dataset.FieldByName('cat_orden').AsInteger);
+        SB.Append(',"tiempo":').Append(FormatFloat('0.000', Dataset.FieldByName('tiempo_total_raw').AsFloat, FS));
+        SB.Append(',"vueltas":').Append(Round(Dataset.FieldByName('Vueltas').AsFloat));
+        if Dataset.FieldByName('tiempo_min_raw').AsFloat < 0 then
+          SB.Append(',"desc":true')
+        else
+          SB.Append(',"desc":false');
+        SB.Append(',"recargo":').Append(Dataset.FieldByName('Recargo').AsInteger);
+        SB.Append(',"recargoDesc":').Append(JSONTexto(Dataset.FieldByName('Descripcion').AsString));
+
+        SB.Append(',"tomas":{');
+        for i := 0 to Tomas.Count - 1 do
+        begin
+          if i > 0 then
+            SB.Append(',');
+          SB.Append(JSONTexto(Tomas[i]));
+          SB.Append(':{"pos":').Append(JSONTexto(Dataset.FieldByName(PREFIJO_POS + Tomas[i]).AsString));
+          SB.Append(',"tiempo":').Append(JSONTexto(Dataset.FieldByName('T. ' + Tomas[i]).AsString));
+          SB.Append('}');
+        end;
+        SB.Append('}}');
+
+        Dataset.Next;
+      end;
+    finally
+      Dataset.EnableControls;
+    end;
+
+    SB.Append(']}');
+    Result := SB.ToString;
+  finally
+    SB.Free;
+    Tomas.Free;
+  end;
+end;
+
+procedure TEdicionAgrupacion.SubirArchivoAWorker(const Contenido, NombreArchivo, ContentType, Ruta: string);
+var
+  RutaTemp, CmdLine, Salida, IdInstancia, Token: string;
   SL: TStringList;
 begin
-  IdInstancia:= ReadStringFromIniFile('Instancia','Nombre','');
+  IdInstancia := ReadStringFromIniFile('Instancia', 'Nombre', '');
+  Token := ReadStringFromIniFile('Instancia', 'Token', '');
 
-  RutaTemp := ExtractFilePath(ParamStr(0)) + 'posiciones_temp.html';
+  RutaTemp := ExtractFilePath(ParamStr(0)) + NombreArchivo;
 
   SL := TStringList.Create;
   try
-    SL.Text := HTMLContent;
+    SL.Text := Contenido;
     SL.SaveToFile(RutaTemp, TEncoding.UTF8);
   finally
     SL.Free;
   end;
 
+  // -f: si el Worker responde 4xx/5xx (token inválido, JSON mal formado) curl
+  // devuelve error y no se da por subido en silencio.
   CmdLine := Format(
-    '"%scurl.exe" -s -X POST -H "Authorization: Bearer K7pQ2xR9mT4vB8nL1cW6yH3jF5sD0aZ8" ' +
-    '-H "Content-Type: text/html; charset=utf-8" --data-binary "@%s" ' +
-    '"https://resultados-carrera.sotoaienrique.workers.dev/?id=%s"',
-    [ExtractFilePath(ParamStr(0)), RutaTemp, IdInstancia]);
+    '"%scurl.exe" -s -f -X POST -H "Authorization: Bearer %s" ' +
+    '-H "Content-Type: %s" --data-binary "@%s" ' +
+    '"%s%s?id=%s"',
+    [ExtractFilePath(ParamStr(0)), Token, ContentType, RutaTemp, URL_WORKER, Ruta, IdInstancia]);
 
   if not EjecutarComando(CmdLine, Salida) then
     raise Exception.Create('Fallo al subir con curl: ' + Salida);
 end;
+
+procedure TEdicionAgrupacion.SubirAWorker(const HTMLContent: string);
+begin
+  SubirArchivoAWorker(HTMLContent, 'posiciones_temp.html', 'text/html; charset=utf-8', '/');
+end;
+
 
 procedure TEdicionAgrupacion.ExportarAHTML(Dataset: TDataSet);
 var
