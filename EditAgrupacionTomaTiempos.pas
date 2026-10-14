@@ -128,6 +128,7 @@ var
   isAdding : Boolean;
   agrupacionTomaTiempoOID: Integer;
   tipoTomaTiempo: String;
+  procedure PublicarEnWorker(const Contenido, NombreArchivo, ContentType, Ruta, IdDestino: string);
 implementation
 
 uses
@@ -1209,12 +1210,11 @@ begin
   end;
 end;
 
-procedure TEdicionAgrupacion.SubirArchivoAWorker(const Contenido, NombreArchivo, ContentType, Ruta: string);
+procedure PublicarEnWorker(const Contenido, NombreArchivo, ContentType, Ruta, IdDestino: string);
 var
-  RutaTemp, CmdLine, Salida, IdInstancia, Token: string;
+  RutaTemp, CmdLine, Salida, Token: string;
   SL: TStringList;
 begin
-  IdInstancia := ReadStringFromIniFile('Instancia', 'Nombre', '');
   Token := ReadStringFromIniFile('Instancia', 'Token', '');
 
   RutaTemp := ExtractFilePath(ParamStr(0)) + NombreArchivo;
@@ -1233,10 +1233,16 @@ begin
     '"%scurl.exe" -s -f -X POST -H "Authorization: Bearer %s" ' +
     '-H "Content-Type: %s" --data-binary "@%s" ' +
     '"%s%s?id=%s"',
-    [ExtractFilePath(ParamStr(0)), Token, ContentType, RutaTemp, URL_WORKER, Ruta, IdInstancia]);
+    [ExtractFilePath(ParamStr(0)), Token, ContentType, RutaTemp, URL_WORKER, Ruta, IdDestino]);
 
   if not EjecutarComando(CmdLine, Salida) then
     raise Exception.Create('Fallo al subir con curl: ' + Salida);
+end;
+
+procedure TEdicionAgrupacion.SubirArchivoAWorker(const Contenido, NombreArchivo, ContentType, Ruta: string);
+begin
+  PublicarEnWorker(Contenido, NombreArchivo, ContentType, Ruta,
+  ReadStringFromIniFile('Instancia', 'Nombre', ''));
 end;
 
 procedure TEdicionAgrupacion.SubirAWorker(const HTMLContent: string);

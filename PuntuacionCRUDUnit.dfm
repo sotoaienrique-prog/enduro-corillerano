@@ -127,8 +127,8 @@ inherited PuntuacionCRUD: TPuntuacionCRUD
     end
     object btnImprTabla: TAeroButton
       AlignWithMargins = True
-      Left = 10
-      Top = 463
+      Left = 11
+      Top = 383
       Width = 140
       Height = 35
       ImageIndex = 4
@@ -142,8 +142,8 @@ inherited PuntuacionCRUD: TPuntuacionCRUD
     end
     object btnImprTablaEvento: TAeroButton
       AlignWithMargins = True
-      Left = 10
-      Top = 381
+      Left = 11
+      Top = 301
       Width = 140
       Height = 35
       ImageIndex = 4
@@ -156,8 +156,8 @@ inherited PuntuacionCRUD: TPuntuacionCRUD
     end
     object btnPuntuacionEvento: TAeroButton
       AlignWithMargins = True
-      Left = 10
-      Top = 422
+      Left = 11
+      Top = 336
       Width = 281
       Height = 35
       ImageIndex = 4
@@ -184,8 +184,8 @@ inherited PuntuacionCRUD: TPuntuacionCRUD
     end
     object btnExportarExcel: TAeroButton
       AlignWithMargins = True
-      Left = 152
-      Top = 381
+      Left = 153
+      Top = 301
       Width = 139
       Height = 35
       ImageIndex = 7
@@ -199,8 +199,8 @@ inherited PuntuacionCRUD: TPuntuacionCRUD
     end
     object btnImprTablaExcel: TAeroButton
       AlignWithMargins = True
-      Left = 151
-      Top = 463
+      Left = 152
+      Top = 383
       Width = 140
       Height = 35
       ImageIndex = 7
@@ -211,6 +211,20 @@ inherited PuntuacionCRUD: TPuntuacionCRUD
       Caption = 'Clasif. Gral. Camp'
       TabOrder = 7
       OnClick = btnImprTablaExcelClick
+    end
+    object btnClasifGralWeb: TAeroButton
+      AlignWithMargins = True
+      Left = 11
+      Top = 418
+      Width = 281
+      Height = 35
+      ImageIndex = 4
+      Images = cxButtonImageList
+      Spacing = 10
+      Version = '1.0.0.1'
+      Caption = 'Clasif. Gral. Camp. WEB (todas)'
+      TabOrder = 8
+      OnClick = btnClasifGralWebClick
     end
   end
   inherited mainPanel: TPanel
@@ -370,7 +384,7 @@ inherited PuntuacionCRUD: TPuntuacionCRUD
   end
   inherited cxButtonImageList: TcxImageList
     FormatVersion = 1
-    DesignInfo = 21102719
+    DesignInfo = 15859839
     ImageInfo = <
       item
         Image.Data = {
@@ -1058,7 +1072,7 @@ inherited PuntuacionCRUD: TPuntuacionCRUD
   end
   inherited cxFilterImageList: TcxImageList
     FormatVersion = 1
-    DesignInfo = 17432703
+    DesignInfo = 12189823
   end
   inherited AdvPopupMenu: TAdvPopupMenu
     inherited miNuevo: TMenuItem
@@ -1073,7 +1087,7 @@ inherited PuntuacionCRUD: TPuntuacionCRUD
   end
   inherited ilMain: TImageList
     Bitmap = {
-      494C010137003B00E80010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010137003B00EC0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000040000000E0000000010020000000000000E0
       00000000000000000000000000000000000000000000DBDBDB00C0C0C000B0AF
       B000B8B6B800B7B5B700B4B4B400B5B4B500B9B5B900B4B2B400B0B2B000B6B4
@@ -2993,17 +3007,17 @@ inherited PuntuacionCRUD: TPuntuacionCRUD
     TableName = 'campeonato'
     IndexFieldNames = 'nombre Asc'
     Left = 16
-    Top = 264
+    Top = 184
   end
   object DSCampeonato: TDataSource
     DataSet = ZCampeonato
     Left = 16
-    Top = 320
+    Top = 240
   end
   object DSEvento: TDataSource
     DataSet = ZEvento
     Left = 64
-    Top = 320
+    Top = 240
   end
   object ZCategoria: TZTable
     Connection = ConnectionModule.ZConnection
@@ -3033,7 +3047,7 @@ inherited PuntuacionCRUD: TPuntuacionCRUD
     MasterSource = DSCampeonato
     LinkedFields = 'campeonato_oid'
     Left = 64
-    Top = 264
+    Top = 184
   end
   object ZGetPuntoByPuesto: TZReadOnlyQuery
     Connection = ConnectionModule.ZConnection
@@ -3186,7 +3200,7 @@ inherited PuntuacionCRUD: TPuntuacionCRUD
         ParamType = ptInput
       end>
     Left = 240
-    Top = 320
+    Top = 240
     ParamData = <
       item
         DataType = ftInteger

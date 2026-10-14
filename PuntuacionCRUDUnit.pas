@@ -68,6 +68,7 @@ type
     ZReSetPosition: TZQuery;
     Excel: TExcelApplication;
     ZGetPuntoExtraByPuesto: TZReadOnlyQuery;
+    btnClasifGralWeb: TAeroButton;
     procedure cmbEventoExit(Sender: TObject);
     procedure cmbEventoKeyUp(Sender: TObject; var Key: Word;
       Shift: TShiftState);
@@ -86,6 +87,7 @@ type
     procedure btnExportarExcelClick(Sender: TObject);
     procedure btnImportPilotosClick(Sender: TObject);
     procedure btnImprTablaExcelClick(Sender: TObject);
+    procedure btnClasifGralWebClick(Sender: TObject);
   private
     procedure generateEventoCategoriaTable;
     procedure inicializarTablas;
@@ -95,7 +97,8 @@ type
 
     procedure setTListItemsByString(errorListView : TcxListView; stringMessage: String);
 
-    function buildSqlString(EventoOID: Integer): String;
+    function buildSqlString(EventoOID: Integer; TodasLasCategorias: Boolean = False): String;
+    function GenerarHTMLClasifCampeonato(Dataset, Eventos: TDataSet): String;
   protected
     procedure InitializeBinding; Override;
     procedure requestLoadInitialData(filterVO: TValueObject); Override;
@@ -116,7 +119,7 @@ var
 implementation
 
 uses
-  System.Win.ComObj;
+  System.Win.ComObj, ConfigureFilesUtilities, EditAgrupacionTomaTiempos;
 
 {$R *.dfm}
 
@@ -189,6 +192,267 @@ begin
   ZEvento.Active:= True;
   ZCategoria.Active:= True;
   JvMemoryData.Active:= True;
+end;
+
+procedure TPuntuacionCRUD.btnClasifGralWebClick(Sender: TObject);
+var
+  Query: TZReadOnlyQuery;
+  IdDestino: String;
+begin
+  if not ((cmbCampeonato.KeyValue > 0) and (cmbEvento.KeyValue > 0)) then
+  begin
+    setTListItemsByString(errorListView, 'Debe seleccionar un Evento y el Campeonato para publicar la Clasificación General Web.');
+    Exit;
+  end;
+
+  IdDestino := ReadStringFromIniFile('Instancia', 'IdCampeonato', 'campeonato');
+
+  // Query propia: no se pisa el SQL de ZSelectReporteEvento que usan los otros botones
+  Query := TZReadOnlyQuery.Create(nil);
+  Screen.Cursor := crHourGlass;
+  try
+    try
+      Query.Connection := ZSelectReporteEvento.Connection;
+
+      ZReSetPosition.ParamByName('posicion').AsInteger:= 0;
+      ZReSetPosition.ExecSQL;
+
+      // Mismo SQL que el Excel "Clasif. Gral. Camp", sin filtrar por categoría.
+      // buildSqlString deja ZEventos abierto por nro_fecha asc: es el orden de las columnas Pos #n / Ptos #n.
+      Query.SQL.Text := buildSqlString(cmbEvento.KeyValue, True);
+      Query.ParamByName('evento_oid').AsInteger:= cmbEvento.KeyValue;
+      Query.ParamByName('campeonato_oid').AsInteger:= cmbCampeonato.KeyValue;
+      Query.Open;
+
+      if Query.RecordCount = 0 then
+      begin
+        Screen.Cursor := crDefault;
+        TF_EE_Message.ShowMessage(TComponent(Self), 'Clasificación General Web',
+          'No hay puntos cargados para el evento seleccionado.', TF_EE_Message.WARNING, True);
+        Exit;
+      end;
+
+      PublicarEnWorker(GenerarHTMLClasifCampeonato(Query, ZEventos),
+        'campeonato_temp.html', 'text/html; charset=utf-8', '/', IdDestino);
+
+      Screen.Cursor := crDefault;
+      TF_EE_Message.ShowMessage(TComponent(Self), 'Clasificación General Web',
+        'Se publicó la clasificación general de todas las categorías del evento.' + sLineBreak +
+        'Id de publicación: ' + IdDestino, TF_EE_Message.INFORMATION, True);
+    except
+      on E: Exception do
+      begin
+        Screen.Cursor := crDefault;
+        TF_EE_Message.ShowMessage(TComponent(Self), 'Clasificación General Web',
+          'No se pudo publicar: ' + E.Message, TF_EE_Message.ERROR, True);
+      end;
+    end;
+  finally
+    Screen.Cursor := crDefault;
+    Query.Free;
+  end;
+end;
+
+function TPuntuacionCRUD.GenerarHTMLClasifCampeonato(Dataset, Eventos: TDataSet): String;
+var
+  List, Conteo: TStringList;
+  CabeceraFechas, SubCabeceraFechas, CategoriaActual, Fila, Clase: String;
+  PrimerPar, CantFechas, k, PosEnCat, NroCategoria, PosFecha, PtosFecha: Integer;
+
+  function HtmlEsc(const S: String): String;
+  begin
+    Result := StringReplace(S, '&', '&amp;', [rfReplaceAll]);
+    Result := StringReplace(Result, '<', '&lt;', [rfReplaceAll]);
+    Result := StringReplace(Result, '>', '&gt;', [rfReplaceAll]);
+    Result := StringReplace(Result, '"', '&quot;', [rfReplaceAll]);
+  end;
+
+  function Medalla(Pos: Integer): String;
+  begin
+    case Pos of
+      1: Result := '&#129351;';
+      2: Result := '&#129352;';
+      3: Result := '&#129353;';
+    else
+      Result := IntToStr(Pos);
+    end;
+  end;
+
+  procedure AbrirTabla(const Categoria: String);
+  begin
+    Inc(NroCategoria);
+    List.Add('  <div class="categoria-card" id="cat-' + IntToStr(NroCategoria) + '">');
+    List.Add('    <div class="categoria-header">');
+    List.Add('      <span class="categoria-nombre">' + HtmlEsc(Categoria) + '</span>');
+    List.Add('      <span class="categoria-count">' + Conteo.Values[Categoria] + ' pilotos</span>');
+    List.Add('    </div>');
+    List.Add('    <div class="tabla-scroll">');
+    List.Add('    <table class="tabla-camp">');
+    List.Add('      <thead>');
+    List.Add('        <tr><th rowspan="2">Pos</th><th rowspan="2">Num.</th><th rowspan="2">Tot</th>' +
+      '<th rowspan="2" class="izq">Competidor</th><th rowspan="2" class="izq">Localidad</th>' +
+      '<th rowspan="2" class="izq">Moto</th>' + CabeceraFechas + '<th rowspan="2">Total</th></tr>');
+    List.Add('        <tr>' + SubCabeceraFechas + '</tr>');
+    List.Add('      </thead>');
+    List.Add('      <tbody>');
+  end;
+
+  procedure CerrarTabla;
+  begin
+    List.Add('      </tbody>');
+    List.Add('    </table>');
+    List.Add('    </div>');
+    List.Add('  </div>');
+  end;
+
+begin
+  List := TStringList.Create;
+  Conteo := TStringList.Create;
+  try
+    // Las columnas Pos #n / Ptos #n van de a pares entre Categoria y Total (ver buildSqlString)
+    PrimerPar := Dataset.FieldByName('Categoria').Index + 1;
+    CantFechas := (Dataset.FieldByName('Total').Index - PrimerPar) div 2;
+
+    // Cabecera de fechas en el mismo orden (nro_fecha asc) con que buildSqlString armó las columnas
+    CabeceraFechas := '';
+    SubCabeceraFechas := '';
+    k := 0;
+    Eventos.First;
+    while (not Eventos.Eof) and (k < CantFechas) do
+    begin
+      Inc(k);
+      if k = CantFechas then
+        Clase := ' class="actual"'
+      else
+        Clase := '';
+      CabeceraFechas := CabeceraFechas + '<th colspan="2"' + Clase + '>Fecha ' +
+        Eventos.FieldByName('nro_fecha').AsString + '<br><span class="fecha-nombre">' +
+        HtmlEsc(Eventos.FieldByName('nombre').AsString) + '</span></th>';
+      SubCabeceraFechas := SubCabeceraFechas + '<th class="sub">Pos</th><th class="sub sep">Ptos</th>';
+      Eventos.Next;
+    end;
+
+    // Pilotos por categoría (y orden de categorías para el índice)
+    Dataset.First;
+    while not Dataset.Eof do
+    begin
+      CategoriaActual := Trim(Dataset.FieldByName('Categoria').AsString);
+      Conteo.Values[CategoriaActual] := IntToStr(StrToIntDef(Conteo.Values[CategoriaActual], 0) + 1);
+      Dataset.Next;
+    end;
+
+    List.Add('<style>');
+    List.Add('  body { background-color: #f5f6f8; }');
+    List.Add('  .camp-wrap { font-family: Arial, Helvetica, sans-serif; color: #1f2d3d; }');
+    List.Add('  .camp-header { background: #ffffff; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.12); padding: 16px 20px; margin-bottom: 16px; text-align: center; }');
+    List.Add('  .camp-titulo { font-size: 20px; font-weight: bold; color: #1f3b5c; }');
+    List.Add('  .camp-subtitulo { font-size: 14px; color: #4f6475; margin-top: 4px; }');
+    List.Add('  .camp-actualizado { font-size: 12px; color: #7f8c8d; margin-top: 8px; }');
+    List.Add('  .camp-indice { text-align: center; margin-bottom: 20px; line-height: 2.4; }');
+    List.Add('  .camp-indice a { display: inline-block; padding: 2px 12px; margin: 0 3px; border: 1px solid #95b3d7; border-radius: 14px; background: #ffffff; color: #1f3b5c; font-size: 13px; text-decoration: none; }');
+    List.Add('  .camp-indice a:hover { background: #dce6f1; }');
+    List.Add('  .categoria-card { background: #ffffff; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.12); margin-bottom: 24px; overflow: hidden; }');
+    List.Add('  .categoria-header { background: #366092; color: #ffffff; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }');
+    List.Add('  .categoria-nombre { font-size: 16px; font-weight: bold; }');
+    List.Add('  .categoria-count { font-size: 13px; opacity: 0.85; }');
+    List.Add('  .tabla-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }');
+    List.Add('  .tabla-camp { border-collapse: collapse; width: 100%; min-width: 900px; }');
+    List.Add('  .tabla-camp th { background: #4f81bd; color: #ffffff; font-size: 12px; padding: 6px 8px; border: 1px solid #95b3d7; white-space: nowrap; }');
+    List.Add('  .tabla-camp th.actual { background: #2f5f98; }');
+    List.Add('  .tabla-camp th.sub { background: #5b8ac6; font-weight: normal; }');
+    List.Add('  .tabla-camp .fecha-nombre { font-weight: normal; font-size: 11px; opacity: 0.9; }');
+    List.Add('  .tabla-camp td { padding: 6px 8px; text-align: center; font-size: 13px; border-bottom: 1px solid #95b3d7; white-space: nowrap; }');
+    List.Add('  .tabla-camp tbody tr:nth-child(odd) td { background: #dce6f1; }');
+    List.Add('  .tabla-camp tbody tr:hover td { background: #c5d9f1; }');
+    List.Add('  .tabla-camp .izq { text-align: left; }');
+    List.Add('  .tabla-camp .nombre { font-weight: bold; }');
+    List.Add('  .tabla-camp .sep { border-right: 1px solid #95b3d7; }');
+    List.Add('  .tabla-camp .nc { color: #9aa5b1; }');
+    List.Add('  .tabla-camp .pos, .tabla-camp .tot { font-weight: bold; }');
+    List.Add('  .tabla-camp .total { font-weight: bold; font-size: 14px; color: #1f3b5c; }');
+    List.Add('  .top1 { color: #d4af37; }');
+    List.Add('  .top2 { color: #a7a7ad; }');
+    List.Add('  .top3 { color: #cd7f32; }');
+    List.Add('</style>');
+
+    List.Add('<div class="camp-wrap">');
+    List.Add('  <div class="camp-header">');
+    List.Add('    <div class="camp-titulo">' + HtmlEsc(cmbCampeonato.Text) + '</div>');
+    List.Add('    <div class="camp-subtitulo">Clasificaci&oacute;n general del campeonato &middot; actualizada a la Fecha ' + HtmlEsc(cmbEvento.Text) + '</div>');
+    List.Add('    <div class="camp-actualizado">&Uacute;ltima actualizaci&oacute;n: ' + FormatDateTime('dd-mm-yyyy hh:nn', Now) + '</div>');
+    List.Add('  </div>');
+
+    // Índice de categorías (links a cada tabla)
+    Fila := '  <div class="camp-indice">';
+    for k := 0 to Conteo.Count - 1 do
+      Fila := Fila + '<a href="#cat-' + IntToStr(k + 1) + '">' + HtmlEsc(Conteo.Names[k]) + '</a>';
+    List.Add(Fila + '</div>');
+
+    CategoriaActual := '';
+    NroCategoria := 0;
+    PosEnCat := 0;
+    Dataset.First;
+    while not Dataset.Eof do
+    begin
+      if (NroCategoria = 0) or (Trim(Dataset.FieldByName('Categoria').AsString) <> CategoriaActual) then
+      begin
+        if NroCategoria > 0 then
+          CerrarTabla;
+        CategoriaActual := Trim(Dataset.FieldByName('Categoria').AsString);
+        AbrirTabla(CategoriaActual);
+        PosEnCat := 0;
+      end;
+
+      // Posición por categoría (el @posicion del SQL es corrido para todas)
+      Inc(PosEnCat);
+      case PosEnCat of
+        1: Clase := 'pos top1';
+        2: Clase := 'pos top2';
+        3: Clase := 'pos top3';
+      else
+        Clase := 'pos';
+      end;
+
+      Fila := '        <tr><td class="' + Clase + '">' + Medalla(PosEnCat) + '</td>' +
+        '<td>' + HtmlEsc(Dataset.FieldByName('Num.').AsString) + '</td>' +
+        '<td class="tot">' + IntToStr(Dataset.FieldByName('Tot').AsInteger) + '</td>' +
+        '<td class="izq nombre">' + HtmlEsc(Dataset.FieldByName('Competidor').AsString) + '</td>' +
+        '<td class="izq">' + HtmlEsc(Dataset.FieldByName('Localidad').AsString) + '</td>' +
+        '<td class="izq">' + HtmlEsc(Dataset.FieldByName('Moto').AsString) + '</td>';
+
+      for k := 0 to CantFechas - 1 do
+      begin
+        PosFecha := Dataset.Fields[PrimerPar + 2 * k].AsInteger;
+        PtosFecha := Dataset.Fields[PrimerPar + 2 * k + 1].AsInteger;
+        if (PosFecha = 0) and (PtosFecha = 0) then
+          // No corrió esa fecha
+          Fila := Fila + '<td class="nc">&ndash;</td><td class="nc sep">&ndash;</td>'
+        else
+        begin
+          if PosFecha = 0 then
+            Fila := Fila + '<td class="nc">&ndash;</td>'
+          else
+            Fila := Fila + '<td>' + IntToStr(PosFecha) + '</td>';
+          Fila := Fila + '<td class="sep">' + IntToStr(PtosFecha) + '</td>';
+        end;
+      end;
+
+      Fila := Fila + '<td class="total">' + IntToStr(Dataset.FieldByName('Total').AsInteger) + '</td></tr>';
+      List.Add(Fila);
+
+      Dataset.Next;
+    end;
+
+    if NroCategoria > 0 then
+      CerrarTabla;
+
+    List.Add('</div>');
+
+    Result := List.Text;
+  finally
+    Conteo.Free;
+    List.Free;
+  end;
 end;
 
 procedure TPuntuacionCRUD.btnExportarExcelClick(Sender: TObject);
@@ -917,13 +1181,19 @@ begin
 //    end;
 end;
 
-function TPuntuacionCRUD.buildSqlString(EventoOID: Integer): String;
+function TPuntuacionCRUD.buildSqlString(EventoOID: Integer; TodasLasCategorias: Boolean = False): String;
 var
-  stringSQLPrefix, stringSQLSufix, sqlDinamic, sql : String;
+  stringSQLPrefix, stringSQLSufix, sqlDinamic, sql, columnaOrden : String;
   i : Integer;
 begin
+    // Web (todas las categorías): orden de categoría igual que el export Web de tiempos
+    columnaOrden:= '';
+    if TodasLasCategorias then
+      columnaOrden:= ' IFNULL((select c.orden from categorias c where c.nombre = sel_nombre_categoria_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, eve.oid, p.oid)), 255) as cat_orden, ';
+
     stringSQLPrefix:=  ' SELECT @posicion:=@posicion+1 AS Pos, subquery.* FROM (' +
-    ' select distinct sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, eve.oid, p.oid) as '+QuotedStr('Num.')+', ' +
+    ' select distinct ' + columnaOrden +
+    ' sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, eve.oid, p.oid) as '+QuotedStr('Num.')+', ' +
     ' sel_total_puntos_by_event_oid_and_pilot_oid(:evento_oid, p.oid, :campeonato_oid, ipe.tipo_categoria_oid, sel_categoria_oid_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, :evento_oid, p.oid)) as Tot, ' +
     ' CONCAT(p.apellido, '+QuotedStr(', ')+'  , p.nombre) as '+QuotedStr('Competidor')+', ' +
     ' l.localidad Localidad, mm.nombre as Moto, sel_nombre_categoria_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, eve.oid, p.oid) as Categoria, ';
@@ -937,7 +1207,19 @@ begin
         ' join modelo_moto mm on p.modelo_moto_oid = mm.oid'+
 
         ' where eve.fecha <= (select fecha from evento e where e.oid = :evento_oid) '+
-        ' AND eve.campeonato_oid = :campeonato_oid '+
+        ' AND eve.campeonato_oid = :campeonato_oid ';
+
+    if TodasLasCategorias then
+      // Solo las categorías que se corrieron (con puntos cargados) en el evento seleccionado
+      stringSQLSufix:= stringSQLSufix +
+        ' AND sel_nombre_categoria_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, eve.oid, p.oid) IN ( '+
+        '   select sel_nombre_categoria_by_evento_and_tipo_categoria(ipe2.tipo_categoria_oid, ipe2.evento_oid, ipe2.piloto_oid) '+
+        '   from inscripcion_piloto_evento ipe2 '+
+        '   join puntos_piloto_evento ppe2 on ppe2.evento_oid = ipe2.evento_oid and ppe2.piloto_oid = ipe2.piloto_oid '+
+        '     and (ppe2.categoria_oid is null or ppe2.categoria_oid = sel_categoria_oid_by_evento_and_tipo_categoria(ipe2.tipo_categoria_oid, ipe2.evento_oid, ipe2.piloto_oid)) '+
+        '   where ipe2.evento_oid = :evento_oid) '
+    else
+      stringSQLSufix:= stringSQLSufix +
         ' AND sel_nombre_categoria_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, eve.oid, p.oid) = :nombre_categoria ';
 
   sqlDinamic:= '';
@@ -949,7 +1231,10 @@ begin
       SortedFields:= 'nro_fecha desc';
       Open;
 
-      stringSQLSufix:= stringSQLSufix  + ' order by Categoria, Total desc, ';
+      if TodasLasCategorias then
+        stringSQLSufix:= stringSQLSufix  + ' order by cat_orden, Categoria, Total desc, '
+      else
+        stringSQLSufix:= stringSQLSufix  + ' order by Categoria, Total desc, ';
 
       while not Eof do
         begin
