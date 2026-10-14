@@ -76,6 +76,7 @@
 			<DCC_RemoteDebug>true</DCC_RemoteDebug>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
+			<DCC_DebugInfoInExe>false</DCC_DebugInfoInExe>
 			<Icon_MainIcon>E:\Enduro CORDILLERNO\Iconos\senna_helmet.ico</Icon_MainIcon>
 			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
 			<VerInfo_Locale>1033</VerInfo_Locale>
