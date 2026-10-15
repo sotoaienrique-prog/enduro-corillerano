@@ -59,10 +59,9 @@ type
   end;
 
 implementation
+  {$R *.dfm}
 
-{$R *.dfm}
-
-uses AbstractCRUD;
+uses AbstractCRUD, LogUnit;
 
 constructor TAbstractEdit.Create(owner: TComponent; persistentVO: TPersistentObject);
 begin
@@ -130,6 +129,8 @@ begin
       validationPanel.Visible:= True;
       setTListItemsByTStringList(errorListView,
         self.getEditorValueObject().getValidationResult);
+      TLog.Aviso('ABM', 'Validación ' + persistentVO.ClassName + ': '
+        + self.getEditorValueObject().getValidationResult.CommaText);
     end
   else
     begin

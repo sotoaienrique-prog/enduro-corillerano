@@ -5,7 +5,7 @@ interface
 uses
   System.SysUtils, System.Classes, ZAbstractConnection, ZConnection,
   ConfigureFilesUtilities, F_EEMessage, Data.DB, ZAbstractRODataset, ZDataset,
-  ZAbstractDataset, ZSqlMonitor;
+  ZAbstractDataset, ZSqlMonitor, ZDbcLogging;
 
 type
   TConnectionModule = class(TDataModule)
@@ -142,6 +142,8 @@ type
     procedure DataModuleCreate(Sender: TObject);
   public
     procedure reloadConnectionParametersAndConnect;
+  private
+    procedure ZSQLMonitorTrace(Sender: TObject; Event: TZLoggingEvent; var LogTrace: Boolean);
   end;
 
 var
@@ -150,7 +152,7 @@ var
 implementation
 
 uses
-  Unit1;
+  Unit1, LogUnit, System.StrUtils, System.RegularExpressions;
 {%CLASSGROUP 'System.Classes.TPersistent'}
 
 {$R *.dfm}
@@ -185,6 +187,9 @@ begin
       //Principal.setButtonPanelEnable(True);
     except on E: Exception do
       begin
+        TLog.Error('Conexion', 'No se pudo conectar a ' + ZConnection.HostName + ':' +
+          IntToStr(ZConnection.Port) + '/' + ZConnection.Database + ' - ' + E.Message);
+
         TF_EE_Message.ShowMessage(TComponent(Principal),'Error de conexión a la Base de datos',
           'No se ha podido conectar con la Base de Datos ', TF_EE_Message.ERROR, True);
 
@@ -195,7 +200,35 @@ end;
 
 procedure TConnectionModule.DataModuleCreate(Sender: TObject);
 begin
+  // El SQL va al archivo diario de TLog (logs\sql_yyyy-mm-dd.log), no más a sql_log.txt
+  ZSQLMonitor.AutoSave := False;
+  ZSQLMonitor.FileName := '';
+  ZSQLMonitor.OnTrace := ZSQLMonitorTrace;
+  ZSQLMonitor.Active := TLog.SQLHabilitado;
+
   reloadConnectionParametersAndConnect;
+end;
+
+procedure TConnectionModule.ZSQLMonitorTrace(Sender: TObject; Event: TZLoggingEvent;
+  var LogTrace: Boolean);
+var
+  Linea: string;
+begin
+  // No se guarda en la lista interna de Zeos: lo escribe TLog
+  LogTrace := False;
+
+  // Metadata que pide Zeos por cada tabla: mucho ruido y ninguna información útil
+  if StartsText('SHOW ', Event.Message) then
+    Exit;
+
+  Linea := Event.AsString;
+  // El login viaja con la contraseña (XorEncode, reversible): nunca a disco
+  Linea := TRegEx.Replace(Linea, 'password\s*=\s*''[^'']*''', 'password = ''***''', [roIgnoreCase]);
+
+  TLog.SQL(Linea);
+
+  if Event.ErrorCode <> 0 then
+    TLog.Error('SQL', Linea);
 end;
 
 end.

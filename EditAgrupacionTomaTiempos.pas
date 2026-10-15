@@ -132,7 +132,7 @@ var
 implementation
 
 uses
-  System.Win.ComObj;
+  System.Win.ComObj, LogUnit;
 
 {$R *.dfm}
 
@@ -983,7 +983,9 @@ begin
         SubirArchivoAWorker(GenerarJSONResultados(zExportarAgrupacion),
           'datos_temp.json', 'application/json; charset=utf-8', '/datos');
       except
-        // Sin mensaje: si falla la red, ExportarAHTML ya avisó en este mismo ciclo.
+        // Sin mensaje en pantalla: si falla la red, ExportarAHTML ya avisó en este mismo ciclo.
+        on E: Exception do
+          TLog.Error('Worker', 'JSON de resultados: ' + E.Message);
       end;
 end;
 
@@ -1236,7 +1238,11 @@ begin
     [ExtractFilePath(ParamStr(0)), Token, ContentType, RutaTemp, URL_WORKER, Ruta, IdDestino]);
 
   if not EjecutarComando(CmdLine, Salida) then
+  begin
+    TLog.Error('Worker', 'Fallo al subir ' + NombreArchivo + ' a ' + Ruta + '?id=' + IdDestino + ': ' + Salida);
     raise Exception.Create('Fallo al subir con curl: ' + Salida);
+  end;
+  TLog.Info('Worker', 'Publicado ' + NombreArchivo + ' en ' + Ruta + '?id=' + IdDestino);
 end;
 
 procedure TEdicionAgrupacion.SubirArchivoAWorker(const Contenido, NombreArchivo, ContentType, Ruta: string);

@@ -158,7 +158,7 @@ type
 implementation
 
 uses
-  ZDataset;
+  ZDataset, LogUnit;
 
 var
   Instance : TBussinessDataSubsystemFacade  = nil;
@@ -1815,7 +1815,13 @@ procedure TBussinessDataSubsystemFacade.deletePuntos(OID: Integer);
 
       ConnectionModule.ZConnectionAntena.Commit;
     except
-      ConnectionModule.ZConnectionAntena.Rollback;
+      on E: Exception do
+      begin
+        ConnectionModule.ZConnectionAntena.Rollback;
+        TLog.Error('Antena', 'No se grabó la lectura TagID=' + lecturaTagsAntenaVO.TagID +
+          ' ts=' + IntToStr(lecturaTagsAntenaVO.Timestampux) + ': ' + E.Message);
+        raise;
+      end;
     end;
 
     Result:= lastInsertedOID;
