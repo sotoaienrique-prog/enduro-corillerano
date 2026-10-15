@@ -71,12 +71,14 @@ uses
   PuntosCRUDUnit in 'PuntosCRUDUnit.pas' {TPuntosCRUD: TFrame},
   PuntosEditUnit in 'PuntosEditUnit.pas' {PuntosEditor},
   AddTomaTiempoGrilla in 'AddTomaTiempoGrilla.pas' {TAddTomaTiempoGridForm},
-  Utomatiempoio in 'Utomatiempoio.pas';
+  Utomatiempoio in 'Utomatiempoio.pas', 
+  LogUnit in 'LogUnit.pas';
 
 {$R *.res}
 
 begin
   Application.Initialize;
+  Application.OnException := TLog.ManejarExcepcion;
   Application.MainFormOnTaskbar := True;
   Application.CreateForm(TConnectionModule, ConnectionModule);
   Application.CreateForm(TPrincipal, Principal);

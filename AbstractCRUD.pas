@@ -154,6 +154,7 @@ type
 
     procedure textKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure InitializeBinding; Virtual; Abstract;
+    function DescribirFila: string;
   public
     procedure DoSetShowGrouping(Value: boolean);
     procedure DoSetShowIndicator(Value: boolean);
@@ -190,10 +191,9 @@ type
   end;
 
 implementation
-
 {$R *.dfm}
 
-uses DataModule, F_EEMessage;
+uses DataModule, F_EEMessage, LogUnit, System.StrUtils;
 
 procedure TAbstractCRUDFrame.textKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
@@ -389,12 +389,26 @@ end;
 procedure TAbstractCRUDFrame.deleteObject;
 var
   selectedOID: Integer;
+  descripcion: string;
 begin
   if (TF_EE_Message.ShowMessage(TComponent(Self),'Confirmación de eliminación de Elemento',
     '¿Está seguro que desea eliminar el elemento seleccionado?', TF_EE_Message.QUESTION, False) = mrOk) then
   begin
     selectedOID:= queryGrid.FieldByName('OID').AsInteger;
-    requestDelete(selectedOID);
+    // Se lee antes de borrar: después la fila ya no está
+    descripcion:= DescribirFila;
+    try
+      requestDelete(selectedOID);
+      TLog.Aviso('ABM', 'Eliminado ' + ClassName + ' oid=' + IntToStr(selectedOID) +
+        ' ' + descripcion);
+    except
+      on E: Exception do
+      begin
+        TLog.Error('ABM', 'No se pudo eliminar ' + ClassName + ' oid=' +
+          IntToStr(selectedOID) + ': ' + E.Message);
+        raise;
+      end;
+    end;
     requestLoadInitialDataComplete(filterVO);
   end;
 end;
@@ -414,8 +428,23 @@ begin
 end;
 
 procedure TAbstractCRUDFrame.requestSave(persistentVO: TPersistentObject);
+var
+  esAlta: Boolean;
 begin
-  doRequestSave(persistentVO);
+  esAlta:= persistentVO.OID <= 0;
+  try
+    doRequestSave(persistentVO);
+  except
+    on E: Exception do
+    begin
+      TLog.Error('ABM', 'No se pudo guardar ' + persistentVO.ClassName + ' oid=' +
+        IntToStr(persistentVO.OID) + ': ' + E.Message);
+      raise;
+    end;
+  end;
+  // En las altas el OID no vuelve al VO: queda en 0
+  TLog.Info('ABM', IfThen(esAlta, 'Alta ', 'Modificación ') + persistentVO.ClassName +
+    ' oid=' + IntToStr(persistentVO.OID));
   requestSaveDone(persistentVO);
 end;
 
@@ -522,4 +551,20 @@ begin
   TcxGridTableController(TcxGridTableView(cxGrid.FocusedView).Controller).Customization := True;
 end;
 
+function TAbstractCRUDFrame.DescribirFila: string;
+const
+  Campos: array[0..4] of string = ('numero', 'apellido', 'nombre', 'username', 'descripcion');
+var
+  Campo: string;
+  F: TField;
+begin
+  Result:= '';
+  for Campo in Campos do
+  begin
+    F:= queryGrid.FindField(Campo);
+    if (F <> nil) and (F.AsString <> '') then
+      Result:= Result + Campo + '=' + F.AsString + ' ';
+  end;
+  Result:= Trim(Result);
+end;
 end.

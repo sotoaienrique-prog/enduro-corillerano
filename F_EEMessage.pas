@@ -43,8 +43,10 @@ var
   SecondsToClose: Integer;
 
 implementation
+uses
+  LogUnit, System.RegularExpressions;
+  {$R *.dfm}
 
-{$R *.dfm}
 procedure TF_EE_Message.btnAcceptClick(Sender: TObject);
 begin
   ModalResult:= mrOk;
@@ -115,6 +117,12 @@ class function TF_EE_Message.ShowMessage(var owner: TComponent; TitleCaption,
 var
   F_EE_Message : TF_EE_Message;
 begin
+  // Todo lo que se muestra como error o advertencia queda en el log (sin HTML)
+  case ImageIndex of
+    0: TLog.Error('UI', TitleCaption + ': ' + TRegEx.Replace(TMessage, '<[^>]*>', ' '));
+    3: TLog.Aviso('UI', TitleCaption + ': ' + TRegEx.Replace(TMessage, '<[^>]*>', ' '));
+  end;
+
   F_EE_Message:= TF_EE_Message.Create(nil);
   try
     with F_EE_Message do

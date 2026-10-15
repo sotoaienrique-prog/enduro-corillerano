@@ -67,7 +67,7 @@ implementation
 
 {$R *.dfm}
 
-uses Unit1, ConfigureFilesUtilities;
+uses Unit1, ConfigureFilesUtilities, LogUnit;
 
 procedure TLogin.CreateParams(var Params: TCreateParams);
 begin
@@ -169,6 +169,9 @@ begin
         Open;
         if RecordCount > 0 then
           begin
+            TLoggedUserSingleton.getInstance.LoggedUser:= LoggedUser;
+            TLog.Info('Login', 'Ingreso correcto: ' + txtUsuario.Text);
+
             // Crear Usuario
             LoggedUser:= TLoggedUser.Create;
             LoggedUser.OID:= FieldByName('oid').AsInteger;
@@ -184,7 +187,10 @@ begin
             ModalResult:= mrOk;
           end
         else
+          begin
+            TLog.Aviso('Login', 'Usuario o contraseña incorrectos: ' + txtUsuario.Text);
             setErrorMessage(errorListView, 'El "Usuario" o la "Contraseña" son incorrectos.');
+          end;
       end;
   except
     on E: Exception do TF_EE_Message.ShowMessage(TComponent(Self), 'Error de Conexión de Base de datos', 'Mensaje: No se puede conectar con la base de datos. <br><br>Error al conectarse con el host: <b>"'+ConnectionModule.ZConnection.HostName+'"</b> <br><br>Mensaje: '+E.Message, 0, True)
