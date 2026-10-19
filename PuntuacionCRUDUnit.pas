@@ -205,7 +205,9 @@ begin
     Exit;
   end;
 
-  IdDestino := ReadStringFromIniFile('Instancia', 'IdCampeonato', 'campeonato');
+  // Un id por campeonato: dos campeonatos no se pisan y el link de Wix queda fijo por campeonato
+  IdDestino := ReadStringFromIniFile('Instancia', 'IdCampeonato', 'campeonato') + '_' +
+    IntToStr(cmbCampeonato.KeyValue);
 
   // Query propia: no se pisa el SQL de ZSelectReporteEvento que usan los otros botones
   Query := TZReadOnlyQuery.Create(nil);
@@ -238,7 +240,8 @@ begin
       Screen.Cursor := crDefault;
       TF_EE_Message.ShowMessage(TComponent(Self), 'Clasificación General Web',
         'Se publicó la clasificación general de todas las categorías del evento.' + sLineBreak +
-        'Id de publicación: ' + IdDestino, TF_EE_Message.INFORMATION, True);
+        'Id de publicación: ' + IdDestino + sLineBreak +
+        'URL: ' + URL_WORKER + '/?id=' + IdDestino, TF_EE_Message.INFORMATION, True);
     except
       on E: Exception do
       begin
