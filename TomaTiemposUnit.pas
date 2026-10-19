@@ -260,7 +260,8 @@ type
   AThread: TCommThread;
   tipoCategoriaByEvento : TDictionary<Integer, Integer>;
 implementation
-
+uses
+  LogUnit, uFotocelula;
 {$R *.dfm}
 
 procedure TTomaTiempos.refreshDataSetPreservePosition(Query : TDataSet);
@@ -1734,6 +1735,7 @@ begin
 
       AThread.KeepRuning:= False;
       Timer.Enabled:= False;
+      DetenerFotocelula;
     end;
 end;
 
@@ -1947,6 +1949,8 @@ begin
   AThread.TomaTiempoOID:= TomaTiempoOID;
   AThread.KeepRuning:= True;
 //  Timer.Enabled:= True;
+  // Fotocélula: solo si config.ini tiene [Fotocelula] Habilitada=1
+  IniciarFotocelula;
 end;
 
 procedure TTomaTiempos.stopReadingAntena;
@@ -2014,6 +2018,7 @@ begin
           if (KeepRuning) then
             begin
               readLn:= Client.IOHandler.ReadLn;
+              WriteLn(F, FormatDateTime('[yyyy/mm/dd hh:nn:ss.zzz] ', Now) + 'RAW: ' + readLn);
 
               try
                   SplitList.Clear;
