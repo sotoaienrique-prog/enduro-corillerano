@@ -228,45 +228,6 @@ begin
   if Estaba then
     Info(Modulo, 'Recuperado: ' + Clave);
 end;
-end.
-
-class procedure TLog.ErrorRepetido(const Clave, Modulo, Mensaje: string);
-var
-  Nuevo: Boolean;
-begin
-  if FCritico = nil then
-    Exit;
-  FCritico.Enter;
-  try
-    Nuevo := FFallando.IndexOf(Clave) < 0;
-    if Nuevo then
-      FFallando.Add(Clave);
-  finally
-    FCritico.Leave;
-  end;
-  if Nuevo then
-    Error(Modulo, Mensaje + ' (se omiten repeticiones hasta que se recupere)');
-end;
-
-class procedure TLog.Recuperado(const Clave, Modulo: string);
-var
-  Estaba: Boolean;
-  I: Integer;
-begin
-  if FCritico = nil then
-    Exit;
-  FCritico.Enter;
-  try
-    I := FFallando.IndexOf(Clave);
-    Estaba := I >= 0;
-    if Estaba then
-      FFallando.Delete(I);
-  finally
-    FCritico.Leave;
-  end;
-  if Estaba then
-    Info(Modulo, 'Recuperado: ' + Clave);
-end;
 
 initialization
   TLog.Inicializar;
@@ -274,4 +235,4 @@ initialization
 finalization
   TLog.Finalizar;
 
-
+end.

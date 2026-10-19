@@ -111,6 +111,7 @@ type
     function getAgrupacionPuntosSQL(agrupacionTomaTiempoOID : Integer; paraReportePDF: Boolean = False): String;
     procedure OcultarCamposExportacion(Dataset: TDataSet; const NombresCampos: array of string);
     procedure ExportarAHTML(Dataset: TDataSet);
+    function ConstruirCabeceraEvento: string;
     procedure SubirAWorker(const HTMLContent: string);
     procedure SubirArchivoAWorker(const Contenido, NombreArchivo, ContentType, Ruta: string);
     function GenerarJSONResultados(Dataset: TDataSet): string;
@@ -129,16 +130,16 @@ var
   agrupacionTomaTiempoOID: Integer;
   tipoTomaTiempo: String;
   procedure PublicarEnWorker(const Contenido, NombreArchivo, ContentType, Ruta, IdDestino: string);
+const
+  URL_WORKER = 'https://resultados-carrera.sotoaienrique.workers.dev';
 implementation
 
 uses
   System.Win.ComObj, LogUnit;
-
 {$R *.dfm}
 
 const
   CAMPO_CATEGORIA_PUBLICACION = 'Cat';
-  URL_WORKER = 'https://resultados-carrera.sotoaienrique.workers.dev';
   // Formato Texto de Excel. Debe ser string tipado: el literal '@' es un Char y por OLE
   // viaja como el ordinal 64, y Excel recibe el formato "64" en lugar de Texto.
   FORMATO_TEXTO_EXCEL: WideString = '@';
@@ -1058,18 +1059,25 @@ var
   StartInfo: TStartupInfo;
   ProcInfo: TProcessInformation;
   Buffer: array[0..4095] of AnsiChar;
-  BytesRead, ExitCode: DWORD;
+  BytesRead, ExitCode, Espera: DWORD;
   CmdLineBuf: string;
 begin
   Result := False;
   Salida := '';
+  ExitCode := 0;
 
   SecurityAttr.nLength := SizeOf(TSecurityAttributes);
   SecurityAttr.bInheritHandle := True;
   SecurityAttr.lpSecurityDescriptor := nil;
 
   if not CreatePipe(StdOutRead, StdOutWrite, @SecurityAttr, 0) then
+  begin
+    Salida := 'CreatePipe: ' + SysErrorMessage(GetLastError);
     Exit;
+  end;
+
+  // curl solo hereda el extremo de escritura del pipe
+  SetHandleInformation(StdOutRead, HANDLE_FLAG_INHERIT, 0);
 
   try
     FillChar(StartInfo, SizeOf(StartInfo), 0);
@@ -1081,25 +1089,39 @@ begin
 
     CmdLineBuf := CmdLine; // CreateProcess necesita un buffer modificable
 
-    if CreateProcess(nil, PChar(CmdLineBuf), nil, nil, True, 0, nil, nil, StartInfo, ProcInfo) then
+    if not CreateProcess(nil, PChar(CmdLineBuf), nil, nil, True, 0, nil, nil, StartInfo, ProcInfo) then
     begin
-      CloseHandle(StdOutWrite);
-      StdOutWrite := 0;
-
-      repeat
-        if not ReadFile(StdOutRead, Buffer, SizeOf(Buffer) - 1, BytesRead, nil) or (BytesRead = 0) then
-          Break;
-        Buffer[BytesRead] := #0;
-        Salida := Salida + string(AnsiString(Buffer));
-      until False;
-
-      WaitForSingleObject(ProcInfo.hProcess, 15000); // timeout de 15s, no INFINITE
-      GetExitCodeProcess(ProcInfo.hProcess, ExitCode);
-      Result := (ExitCode = 0);
-
-      CloseHandle(ProcInfo.hProcess);
-      CloseHandle(ProcInfo.hThread);
+      Salida := 'No se pudo ejecutar curl: ' + SysErrorMessage(GetLastError);
+      Exit;
     end;
+
+    CloseHandle(StdOutWrite);
+    StdOutWrite := 0;
+
+    repeat
+      if not ReadFile(StdOutRead, Buffer, SizeOf(Buffer) - 1, BytesRead, nil) or (BytesRead = 0) then
+        Break;
+      Buffer[BytesRead] := #0;
+      Salida := Salida + string(AnsiString(Buffer));
+    until False;
+
+    Espera := WaitForSingleObject(ProcInfo.hProcess, 15000); // timeout de 15s, no INFINITE
+    if Espera = WAIT_TIMEOUT then
+    begin
+      TerminateProcess(ProcInfo.hProcess, 1);
+      Salida := Trim(Salida) + ' [curl no terminó en 15 s]';
+    end
+    else if GetExitCodeProcess(ProcInfo.hProcess, ExitCode) then
+    begin
+      Result := (ExitCode = 0);
+      if not Result then
+        Salida := Trim(Salida) + Format(' [curl exit code %d]', [ExitCode]);
+    end
+    else
+      Salida := Trim(Salida) + ' GetExitCodeProcess: ' + SysErrorMessage(GetLastError);
+
+    CloseHandle(ProcInfo.hProcess);
+    CloseHandle(ProcInfo.hThread);
   finally
     if StdOutWrite <> 0 then CloseHandle(StdOutWrite);
     CloseHandle(StdOutRead);
@@ -1231,8 +1253,10 @@ begin
 
   // -f: si el Worker responde 4xx/5xx (token inválido, JSON mal formado) curl
   // devuelve error y no se da por subido en silencio.
+  // -sS: sin barra de progreso pero con el mensaje de error.
+  // --max-time: que una red lenta no congele la pantalla (menor que la espera de 15 s de EjecutarComando).
   CmdLine := Format(
-    '"%scurl.exe" -s -f -X POST -H "Authorization: Bearer %s" ' +
+    '"%scurl.exe" -sS -f --connect-timeout 5 --max-time 12 -X POST -H "Authorization: Bearer %s" ' +
     '-H "Content-Type: %s" --data-binary "@%s" ' +
     '"%s%s?id=%s"',
     [ExtractFilePath(ParamStr(0)), Token, ContentType, RutaTemp, URL_WORKER, Ruta, IdDestino]);
@@ -1256,6 +1280,90 @@ begin
   SubirArchivoAWorker(HTMLContent, 'posiciones_temp.html', 'text/html; charset=utf-8', '/');
 end;
 
+function TEdicionAgrupacion.ConstruirCabeceraEvento: string;
+var
+  Q: TZReadOnlyQuery;
+  Lista: TStringList;
+  Titulo, Fechas, UnaFecha: string;
+
+  function HtmlEsc(const S: string): string;
+  begin
+    Result := StringReplace(S, '&', '&amp;', [rfReplaceAll]);
+    Result := StringReplace(Result, '<', '&lt;', [rfReplaceAll]);
+    Result := StringReplace(Result, '>', '&gt;', [rfReplaceAll]);
+  end;
+
+begin
+  Titulo := '';
+  Fechas := '';
+
+  // La(s) fecha(s) de la agrupación: tomas -> toma_tiempo_evento -> evento -> campeonato
+  Q := TZReadOnlyQuery.Create(nil);
+  try
+    try
+      Q.Connection := zExportarAgrupacion.Connection;
+      Q.SQL.Text :=
+        'SELECT DISTINCT e.nro_fecha nro_fecha, e.nombre nombre, e.fecha fecha, c.nombre campeonato ' +
+        'FROM toma_tiempo_agrupacion_tt tta ' +
+        'JOIN toma_tiempo_evento tte ON tte.oid = tta.toma_tiempo_oid ' +
+        'JOIN evento e ON e.oid = tte.evento_oid ' +
+        'LEFT JOIN campeonato c ON c.oid = e.campeonato_oid ' +
+        'WHERE tta.toma_tiempo_agrupacion_oid = :oid ' +
+        'ORDER BY e.nro_fecha, e.fecha';
+      Q.ParamByName('oid').AsInteger := agrupacionTomaTiempoOID;
+      Q.Open;
+
+      while not Q.Eof do
+      begin
+        if Titulo = '' then
+          Titulo := Trim(Q.FieldByName('campeonato').AsString);
+
+        UnaFecha := '';
+        if not Q.FieldByName('nro_fecha').IsNull then
+          UnaFecha := 'Fecha ' + Q.FieldByName('nro_fecha').AsString + ' - ';
+        if not Q.FieldByName('fecha').IsNull then
+          UnaFecha := UnaFecha + FormatDateTime('dd/mm/yyyy', Q.FieldByName('fecha').AsDateTime) + ' - ';
+        UnaFecha := UnaFecha + HtmlEsc(Trim(Q.FieldByName('nombre').AsString));
+
+        if Fechas = '' then
+          Fechas := UnaFecha
+        else
+          Fechas := Fechas + ' &middot; ' + UnaFecha;
+
+        Q.Next;
+      end;
+    except
+      on E: Exception do
+      begin
+        // Si falla la consulta de cabecera no se corta la publicación: solo se omite el título/fecha.
+        Titulo := '';
+        Fechas := '';
+        TLog.Error('Worker', 'Cabecera de evento: ' + E.Message);
+      end;
+    end;
+  finally
+    Q.Free;
+  end;
+
+  Lista := TStringList.Create;
+  try
+    Lista.Add('  <div class="evento-header">');
+    if Titulo <> '' then
+      Lista.Add('    <div class="evento-titulo">' + HtmlEsc(Titulo) + '</div>');
+    if Fechas <> '' then
+      Lista.Add('    <div class="evento-subtitulo">Tiempos en vivo &middot; ' + Fechas + '</div>')
+    else
+      Lista.Add('    <div class="evento-subtitulo">Tiempos en vivo</div>');
+    Lista.Add('    <div class="evento-datos">');
+    Lista.Add('      &Uacute;ltima actualizaci&oacute;n: ' + FormatDateTime('dd-mm-yyyy hh:nn:ss', Now));
+    Lista.Add('    </div>');
+    Lista.Add('  </div>');
+    Result := Lista.Text;
+  finally
+    Lista.Free;
+  end;
+end;
+
 
 procedure TEdicionAgrupacion.ExportarAHTML(Dataset: TDataSet);
 var
@@ -1265,6 +1373,7 @@ var
   Fila, CategoriaActual, NombreCampoCat: string;
   PrimeraFila: Boolean;
   PosicionEnCategoria: Integer;
+  NroCategoria: Integer;
 
   function ObtenerConteo(const Categoria: string): Integer;
   var
@@ -1292,7 +1401,8 @@ procedure AbrirTabla(const Categoria: string);
 var
   i: Integer;
 begin
-  List.Add('  <div class="categoria-card">');
+  Inc(NroCategoria);
+  List.Add('  <div class="categoria-card" id="cat-' + IntToStr(NroCategoria) + '">');
   List.Add('    <div class="categoria-header">');
   List.Add('      <span class="categoria-nombre">' + Categoria + '</span>');
   List.Add('      <span class="categoria-count">' + IntToStr(ObtenerConteo(Categoria)) +
@@ -1400,22 +1510,29 @@ begin
     List.Add('  .evento-subtitulo { font-size: 14px; color: #7f8c8d; margin-bottom: 10px; }');
     List.Add('  .evento-datos { font-size: 13px; color: #34495e; line-height: 1.6; }');
     List.Add('  .evento-datos strong { color: #2c3e50; }');
+    List.Add('  .cat-indice { text-align: center; margin: -4px 0 20px; line-height: 2.4; font-family: Arial, Helvetica, sans-serif; }');
+    List.Add('  .cat-indice a { display: inline-block; padding: 2px 12px; margin: 0 3px; border: 1px solid #95b3d7; border-radius: 14px; background: #ffffff; color: #2c3e50; font-size: 13px; text-decoration: none; }');
+    List.Add('  .cat-indice a:hover { background: #dce6f1; }');
     List.Add('</style>');
     List.Add('<div class="table-responsive">');
-    List.Add('  <div class="evento-header">');
-    //List.Add('    <div class="evento-titulo">' + 'NombreFecha' + '</div>');
-    //List.Add('    <div class="evento-subtitulo">Resultados por categorías</div>');
-    List.Add('    <div class="evento-datos">');
-    //List.Add('      Fecha: ' + FormatDateTime('dd-mm-yyyy', 'FechaEvento') + '<br>');
-    //List.Add('      Lugar: ' + 'Lugar' + '<br>');
-    List.Add('      Última actualización: ' + FormatDateTime('dd-mm-yyyy hh:nn:ss', Now));
-    List.Add('    </div>');
-    List.Add('  </div>');
+
+    // Cabecera: campeonato y fecha que se está corriendo (igual criterio que la Clasif. Gral. Campeonato Web)
+    List.Add(ConstruirCabeceraEvento);
+
+    // Índice de categorías: links a cada tarjeta para encontrar la categoría más rápido
+    if Conteo.Count > 0 then
+    begin
+      Fila := '  <div class="cat-indice">';
+      for i := 0 to Conteo.Count - 1 do
+        Fila := Fila + '<a href="#cat-' + IntToStr(i + 1) + '">' + Conteo.Names[i] + '</a>';
+      List.Add(Fila + '</div>');
+    end;
 
     // --- Recorrido principal ---
     PrimeraFila := True;
     CategoriaActual := '';
     PosicionEnCategoria := 0;
+    NroCategoria := 0;
 
     Dataset.First;
     while not Dataset.Eof do
