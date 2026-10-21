@@ -5,7 +5,7 @@ interface
 uses
   System.SysUtils, System.Classes, ZAbstractConnection, ZConnection,
   ConfigureFilesUtilities, F_EEMessage, Data.DB, ZAbstractRODataset, ZDataset,
-  ZAbstractDataset, ZSqlMonitor, ZDbcLogging;
+  ZAbstractDataset, ZSqlMonitor, ZDbcLogging, Vcl.ExtCtrls;
 
 type
   TConnectionModule = class(TDataModule)
@@ -143,7 +143,10 @@ type
   public
     procedure reloadConnectionParametersAndConnect;
   private
+    FKeepAlive: TTimer;
     procedure ZSQLMonitorTrace(Sender: TObject; Event: TZLoggingEvent; var LogTrace: Boolean);
+    procedure KeepAliveTimer(Sender: TObject);
+    procedure MantenerConexion(Conn: TZConnection);
   end;
 
 var
@@ -207,6 +210,12 @@ begin
   ZSQLMonitor.Active := TLog.SQLHabilitado;
 
   reloadConnectionParametersAndConnect;
+
+  // MySQL corta las conexiones sin uso después de wait_timeout (8 h por defecto)
+  FKeepAlive := TTimer.Create(Self);
+  FKeepAlive.Interval := 5 * 60 * 1000;
+  FKeepAlive.OnTimer := KeepAliveTimer;
+  FKeepAlive.Enabled := True;
 end;
 
 procedure TConnectionModule.ZSQLMonitorTrace(Sender: TObject; Event: TZLoggingEvent;
@@ -229,6 +238,30 @@ begin
 
   if Event.ErrorCode <> 0 then
     TLog.Error('SQL', Linea);
+end;
+
+procedure TConnectionModule.KeepAliveTimer(Sender: TObject);
+begin
+  MantenerConexion(ZConnection);
+  MantenerConexion(ZConnectionQueries);
+  MantenerConexion(ZConnectionUpdate);
+  MantenerConexion(ZConnectionAntena);
+end;
+
+procedure TConnectionModule.MantenerConexion(Conn: TZConnection);
+begin
+  if not Conn.Connected then
+    Exit;
+  try
+    if Conn.PingServer then
+      Exit;
+    TLog.Error('Conexion', Conn.Name + ': MySQL no responde, se reconecta');
+    Conn.Reconnect;
+    TLog.Info('Conexion', Conn.Name + ': reconectada');
+  except
+    on E: Exception do
+      TLog.Error('Conexion', Conn.Name + ': no se pudo reconectar - ' + E.Message);
+  end;
 end;
 
 end.

@@ -105,12 +105,14 @@ type
     procedure btnAddAllTomaTiempoClick(Sender: TObject);
     procedure btnDeleteAllTomaTiempoClick(Sender: TObject);
   private
-    { Private declarations }
+    FFallosWeb: Integer;
+    FCaptionWeb: string;
     procedure selectCombosByDate;
     function getAgrupacionSQL(agrupacionTomaTiempoOID : Integer; paraReportePDF: Boolean = False): String;
     function getAgrupacionPuntosSQL(agrupacionTomaTiempoOID : Integer; paraReportePDF: Boolean = False): String;
     procedure OcultarCamposExportacion(Dataset: TDataSet; const NombresCampos: array of string);
     procedure ExportarAHTML(Dataset: TDataSet);
+    procedure MarcarEstadoWeb(const Error: string);
     function ConstruirCabeceraEvento: string;
     procedure SubirAWorker(const HTMLContent: string);
     procedure SubirArchivoAWorker(const Contenido, NombreArchivo, ContentType, Ruta: string);
@@ -975,19 +977,46 @@ begin
 end;
 
 procedure TEdicionAgrupacion.JvReportTimerTimer(Sender: TObject);
-var
-  RutaArchivo, TextoCabecera, Instancia, Modo: string;
 begin
-      AbrirConsultaPublicacion(zExportarAgrupacion);
-      ExportarAHTML(zExportarAgrupacion);
-      try
-        SubirArchivoAWorker(GenerarJSONResultados(zExportarAgrupacion),
-          'datos_temp.json', 'application/json; charset=utf-8', '/datos');
-      except
-        // Sin mensaje en pantalla: si falla la red, ExportarAHTML ya avisó en este mismo ciclo.
-        on E: Exception do
-          TLog.Error('Worker', 'JSON de resultados: ' + E.Message);
-      end;
+  // Corre desatendido: un error no puede abrir una ventana modal, porque frena la
+  // publicación hasta que alguien la cierre. Se registra y se reintenta en el próximo ciclo.
+  try
+    AbrirConsultaPublicacion(zExportarAgrupacion);
+    ExportarAHTML(zExportarAgrupacion);
+    SubirArchivoAWorker(GenerarJSONResultados(zExportarAgrupacion),
+      'datos_temp.json', 'application/json; charset=utf-8', '/datos');
+    MarcarEstadoWeb('');
+  except
+    on E: Exception do
+    begin
+      TLog.Error('Worker', 'Ciclo de publicación: ' + E.Message);
+      MarcarEstadoWeb(E.Message);
+    end;
+  end;
+end;
+
+procedure TEdicionAgrupacion.MarcarEstadoWeb(const Error: string);
+begin
+  if Error = '' then
+  begin
+    if FFallosWeb > 0 then
+    begin
+      TLog.Info('Worker', Format('Publicación restablecida después de %d ciclo(s) con error', [FFallosWeb]));
+      btnexportarWEB.Caption := FCaptionWeb;
+      btnexportarWEB.Hint := '';
+    end;
+    FFallosWeb := 0;
+  end
+  else
+  begin
+    if FFallosWeb = 0 then
+      FCaptionWeb := btnexportarWEB.Caption;
+    Inc(FFallosWeb);
+    // Aviso sin ventana: el botón muestra cuántos ciclos seguidos fallaron
+    btnexportarWEB.Caption := Format('WEB: ERROR (%d)', [FFallosWeb]);
+    btnexportarWEB.Hint := Error;
+    btnexportarWEB.ShowHint := True;
+  end;
 end;
 
 procedure TEdicionAgrupacion.ExportarExcelYPDF(Dataset: TDataSet; const Instancia: string);
@@ -1573,13 +1602,8 @@ begin
 
     List.Add('</div>');
 
-    try
-      SubirAWorker(List.Text);
-    except
-  on E: Exception do
-    ShowMessage('Error: ' + E.Message + sLineBreak +
-                'DLL que Indy no pudo cargar: ' + WhichFailedToLoad);
-    end;
+    // Si falla, la excepción sube a JvReportTimerTimer, que la registra sin ventanas modales
+    SubirAWorker(List.Text);
   finally
     Conteo.Free;
     List.Free;

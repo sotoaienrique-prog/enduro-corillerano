@@ -146,6 +146,7 @@ type
     showConfirmationMessage : Boolean;
     procedure InitializeBinding; Override;
     procedure startReadingAntena();
+    procedure asignarNumeracionDisponible(Editor: TcxCurrencyEdit; CategoriaOID: Variant);
   public
     procedure setEditorValueObject(persistentVO : TPersistentObject); Override;
     procedure ClearEditor; Override;
@@ -440,41 +441,65 @@ end;
 
 procedure TPilotEditor.btnVerNumeracionDisponibleClick(Sender: TObject);
 begin
-  txtNumMoto.Value:= abrirNumeracionDisponible(cmbCategoria.KeyValue);
+  asignarNumeracionDisponible(txtNumMoto, cmbCategoria.KeyValue);
 end;
 
 procedure TPilotEditor.btnVerNumeracionDisponibleCuatriClick(Sender: TObject);
 begin
-  txtNumCuatris.Value:= abrirNumeracionDisponible(cmbCategoriaCuatris.KeyValue);
+  asignarNumeracionDisponible(txtNumCuatris, cmbCategoriaCuatris.KeyValue);
+end;
+
+procedure TPilotEditor.btnVerNumeracionDisponibleMotocrossClick(
+  Sender: TObject);
+begin
+  asignarNumeracionDisponible(txtNumMotoCross, cmbCategoriaMotocross.KeyValue);
+end;
+
+procedure TPilotEditor.btnVerNumeracionDisponibleExternoClick(Sender: TObject);
+begin
+  inherited;
+  asignarNumeracionDisponible(txtNumExterno, cmbCategoriaExterna.KeyValue);
+end;
+
+procedure TPilotEditor.asignarNumeracionDisponible(Editor: TcxCurrencyEdit; CategoriaOID: Variant);
+var
+  numero : Integer;
+begin
+  if VarIsNull(CategoriaOID) or VarIsEmpty(CategoriaOID) or (CategoriaOID <= 0) then
+  begin
+    TF_EE_Message.ShowMessage(TComponent(Self), 'Numeración disponible',
+      'Seleccione primero la categoría.', TF_EE_Message.WARNING, True);
+    Exit;
+  end;
+
+  numero:= abrirNumeracionDisponible(CategoriaOID);
+
+  if numero > 0 then
+  begin
+    Editor.Value:= numero;
+    // Sin esto el valor no llega al TPiloto hasta que el editor pierde el foco
+    BindingsList.Notify(Editor, 'Text');
+  end;
 end;
 
 function TPilotEditor.abrirNumeracionDisponible(CategoriaOID : Integer): Integer;
 var
   formNumeracionDisponible : TFormNumeracionDisponible;
 begin
+  Result:= 0;
+
   if CategoriaOID > 0 then
   begin
+    formNumeracionDisponible:= TFormNumeracionDisponible.Create(self);
     try
-      formNumeracionDisponible:= TFormNumeracionDisponible.Create(self);
       formNumeracionDisponible.CategoriaOID:= CategoriaOID;
-      formNumeracionDisponible.ShowModal;
-      Result:= formNumeracionDisponible.ZNumeracion.FieldByName('num_moto').AsInteger;
+
+      if formNumeracionDisponible.ShowModal = mrOk then
+        Result:= formNumeracionDisponible.ZNumeracion.FieldByName('num_moto').AsInteger;
     finally
       formNumeracionDisponible.Free;
     end;
   end;
-end;
-
-procedure TPilotEditor.btnVerNumeracionDisponibleMotocrossClick(
-  Sender: TObject);
-begin
-  txtNumMotoCross.Value:= abrirNumeracionDisponible(cmbCategoriaMotocross.KeyValue);
-end;
-
-procedure TPilotEditor.btnVerNumeracionDisponibleExternoClick(Sender: TObject);
-begin
-  inherited;
-  txtNumExterno.Value:= abrirNumeracionDisponible(cmbCategoriaExterna.KeyValue);
 end;
 
 procedure TPilotEditor.btnAcceptClick(Sender: TObject);

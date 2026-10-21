@@ -131,6 +131,11 @@ type
     procedure btnDesinscripcionMasivaClick(Sender: TObject);
   private
     FEstiloSinNumero: TcxStyle;
+    FEstiloRepetido: TcxStyle;
+    FColPilotoOID: TcxGridDBColumn;
+    FRepetidos: TStringList;   // piloto_oid con número repetido en su categoría del evento
+    procedure CargarNumerosRepetidos(EventoOID: Integer);
+    function EsNumeroRepetido(ARecord: TcxCustomGridRecord): Boolean;
     procedure initializeTables;
     procedure generateReport(Pilotos: TStringList; tipoCategoriaOID, eventoOID: Integer);
     procedure setTListItemsByString(errorListView : TcxListView; stringMessage: String);
@@ -152,6 +157,7 @@ type
     procedure requestDelete(OID: Integer); Override;
   public
     constructor Create(owner: TComponent); Override;
+    destructor Destroy; override;
     function getEditorValueObject(): TPersistentObject;
     procedure setTListItemsByTStringList(errorListView : TcxListView; stringList : TStringList);
     procedure RefreshCRUDData;
@@ -161,7 +167,7 @@ type
 implementation
 
 uses
-  System.Win.ComObj;
+  System.Win.ComObj, LogUnit;
 
 {$R *.dfm}
 
@@ -958,17 +964,41 @@ constructor TInscripcionesCRUD.Create(owner: TComponent);
 var
   pilotoVO : TPiloto;
 begin
+  // Antes del inherited: el inherited ya carga y pinta la grilla (pie y estilos usan esta lista)
+  FRepetidos := TStringList.Create;
+  FRepetidos.Sorted := True;
+  FRepetidos.Duplicates := dupIgnore;
+
   inherited Create(owner);
 
   initializeTables;
 
   pilotoVO:= TPiloto.Create;
   abstractEdit:= TPilotEditor.Create(self, pilotoVO);
-                                                                       // Resaltar inscriptos sin número (Nro. 0) para asignarlo a mano
+
+  // Resaltar inscriptos sin número (Nro. 0) para asignarlo a mano
   FEstiloSinNumero := TcxStyle.Create(Self);
   FEstiloSinNumero.Color := RGB(255, 199, 206);
   FEstiloSinNumero.TextColor := RGB(156, 0, 6);
+
+  // Resaltar inscriptos con el mismo número que otro de su categoría en el evento
+  FEstiloRepetido := TcxStyle.Create(Self);
+  FEstiloRepetido.Color := RGB(255, 235, 156);
+  FEstiloRepetido.TextColor := RGB(156, 87, 0);
+
+  // Columna oculta con el piloto_oid de la fila (no hace falta tocar el .dfm)
+  FColPilotoOID := cxGridDBTableView.CreateColumn;
+  FColPilotoOID.DataBinding.FieldName := 'piloto_oid';
+  FColPilotoOID.Visible := False;
+  FColPilotoOID.VisibleForCustomization := False;
+
   cxGridDBTableView.Styles.OnGetContentStyle := cxGridDBTableViewGetContentStyleSinNumero;
+end;
+
+destructor TInscripcionesCRUD.Destroy;
+begin
+  FreeAndNil(FRepetidos);  // nil: si la grilla se repinta durante el inherited, el pie no la toca
+  inherited;
 end;
 
 procedure TInscripcionesCRUD.cxGridDBTableViewTcxGridDBDataControllerTcxDataSummaryFooterSummaryItems0GetText(
@@ -979,6 +1009,8 @@ begin
   AText:= 'Cantidad de Inscriptos: ' + VarToStr(AValue);
   if ContarInscriptosSinNumero > 0 then
     AText:= AText + '   -   Sin número: ' + IntToStr(ContarInscriptosSinNumero);
+  if Assigned(FRepetidos) and (FRepetidos.Count > 0) then
+    AText:= AText + '   -   Nº repetido: ' + IntToStr(FRepetidos.Count);
 end;
 
 procedure TInscripcionesCRUD.initializeTables;
@@ -1006,6 +1038,8 @@ begin
       ParamByName('categoria_oid').AsInteger:= inscripcionFilterVO.CategoriaOID;
       Open;
     end;
+
+  CargarNumerosRepetidos(inscripcionFilterVO.EventoOID);
 end;
 
 procedure TInscripcionesCRUD.InitializeBinding;
@@ -1036,9 +1070,13 @@ end;
 function TInscripcionesCRUD.requestElement(OID: Integer): TPersistentObject;
 var
   Inscripcion : TInscripcion;
+  Piloto : TPiloto;
 begin
   Inscripcion:= TBussinessDataSubsystemFacade.getInstance.getInscripcion(OID);
-  Result:= TBussinessDataSubsystemFacade.getInstance.getPiloto(Inscripcion.PilotoOID);
+  Piloto:= TBussinessDataSubsystemFacade.getInstance.getPiloto(Inscripcion.PilotoOID);
+  // Al guardar desde la grilla se valida que el número no se repita en la categoría del evento
+  Piloto.EventoValidacionOID:= Inscripcion.EventoOID;
+  Result:= Piloto;
 end;
 
 procedure TInscripcionesCRUD.requestDelete(OID: Integer);
@@ -1212,8 +1250,88 @@ procedure TInscripcionesCRUD.cxGridDBTableViewGetContentStyleSinNumero(Sender: T
   ARecord: TcxCustomGridRecord; AItem: TcxCustomGridTableItem; out AStyle: TcxStyle);
 begin
   AStyle := nil;
-  if Assigned(ARecord) and
-     TieneNumeroCero(VarToStr(ARecord.Values[cxGridDBTableViewNroMoto.Index])) then
-    AStyle := FEstiloSinNumero;
+  if not Assigned(ARecord) then
+    Exit;
+  if TieneNumeroCero(VarToStr(ARecord.Values[cxGridDBTableViewNroMoto.Index])) then
+    AStyle := FEstiloSinNumero   // rojo: sin número (gana sobre el repetido)
+  else if EsNumeroRepetido(ARecord) then
+    AStyle := FEstiloRepetido;   // naranja: mismo número que otro de su categoría
 end;
+
+procedure TInscripcionesCRUD.CargarNumerosRepetidos(EventoOID: Integer);
+const
+  SQL_INSCRIPTOS =
+    'select ipe.piloto_oid, ipe.tipo_categoria_oid, ' +
+    '  sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, ipe.evento_oid, ipe.piloto_oid) as nro, ' +
+    '  sel_categoria_oid_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, ipe.evento_oid, ipe.piloto_oid) as categoria_oid ' +
+    'from inscripcion_piloto_evento ipe ' +
+    'where ipe.evento_oid = :evento_oid';
+var
+  Q: TZReadOnlyQuery;
+  Conteo: TStringList;
+  Clave: String;
+
+  // tipo|categoría|número; vacío si no tiene número (el 0 no cuenta como repetido)
+  function ClaveNumero: String;
+  var
+    Nro: String;
+  begin
+    Nro := Trim(Q.FieldByName('nro').AsString);
+    if (Nro = '') or (Nro = '0') then
+      Result := ''
+    else
+      Result := Q.FieldByName('tipo_categoria_oid').AsString + '|' +
+        Q.FieldByName('categoria_oid').AsString + '|' + Nro;
+  end;
+
+begin
+  if not Assigned(FRepetidos) then
+    Exit;
+  FRepetidos.Clear;
+  // Sin evento elegido la grilla mezcla eventos: no se marca nada
+  if EventoOID <= 0 then
+    Exit;
+
+  Q := TZReadOnlyQuery.Create(nil);
+  Conteo := TStringList.Create;
+  try
+    Q.Connection := queryGrid.Connection;
+    Q.SQL.Text := SQL_INSCRIPTOS;
+    Q.ParamByName('evento_oid').AsInteger := EventoOID;
+    Q.Open;
+
+    // 1ra pasada: cuántos inscriptos hay por tipo|categoría|número
+    while not Q.Eof do
+    begin
+      Clave := ClaveNumero;
+      if Clave <> '' then
+        Conteo.Values[Clave] := IntToStr(StrToIntDef(Conteo.Values[Clave], 0) + 1);
+      Q.Next;
+    end;
+
+    // 2da pasada: los pilotos cuya clave aparece más de una vez
+    Q.First;
+    while not Q.Eof do
+    begin
+      Clave := ClaveNumero;
+      if (Clave <> '') and (StrToIntDef(Conteo.Values[Clave], 0) > 1) then
+        FRepetidos.Add(Q.FieldByName('piloto_oid').AsString);
+      Q.Next;
+    end;
+
+    if FRepetidos.Count > 0 then
+      TLog.Aviso('Inscripcion', Format('Evento %d: %d inscriptos con número repetido en su categoría',
+        [EventoOID, FRepetidos.Count]));
+  finally
+    Conteo.Free;
+    Q.Free;
+  end;
+end;
+
+function TInscripcionesCRUD.EsNumeroRepetido(ARecord: TcxCustomGridRecord): Boolean;
+begin
+  Result := Assigned(FRepetidos) and Assigned(FColPilotoOID) and (FRepetidos.Count > 0) and
+    (FRepetidos.IndexOf(VarToStr(ARecord.Values[FColPilotoOID.Index])) >= 0);
+end;
+
 end.
