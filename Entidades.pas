@@ -127,6 +127,7 @@ type
     fLocalidad: String;
     fValidacionNumericaCategoria: Boolean;
     fValidacionNumericaEnCategoria: Boolean;
+    fEventoValidacionOID: Integer;
 
     fUtilizaHandicup: Boolean;
     fEsCampeon: Boolean;
@@ -168,6 +169,8 @@ type
     property ValidacionNumericaCategoria: Boolean read fValidacionNumericaCategoria write fValidacionNumericaCategoria;
     property ValidacionNumericaEnCategoria: Boolean read fValidacionNumericaEnCategoria write fValidacionNumericaEnCategoria;
     property Navegante: TNavegante read fNavegante write fNavegante;
+    // > 0: se está editando desde la inscripción de ese evento; valida números repetidos en la categoría
+    property EventoValidacionOID: Integer read fEventoValidacionOID write fEventoValidacionOID;
 
     function getValidationResult(): TStringList; Override;
     function getNombreCompleto(): String;
@@ -676,6 +679,7 @@ implementation
   function TPiloto.getValidationResult(): TStringList;
   var
     stringList : TStringList;
+    otroPiloto : String;
   begin
     stringList := TStringList.Create;
 
@@ -745,27 +749,27 @@ implementation
         if (TValidationHelper.validateUnique('piloto', 'nro_docu', self.fNroDocumento, self.OID)) then
             stringList.Add('NroDocumento - Ya se encuentra asignado el número de documento.');
       end;
-//    if (self.EsCampeon = True) then
-//    begin
-//      if (not TValidationHelper.isIntegerNull(self.NumMoto)) then
-//      begin
-//        if TValidationHelper.validateUniqueCampeonInCategoria(self.CategoriaOID, self.OID) then
-//          stringList.Add('Nº Moto Enduro - Ya se encuentra asignado un campeón en la Categoría Enduro seleccionada.');
-//      end;
 
-//      if (not TValidationHelper.isIntegerNull(self.NumMotoCross)) then
-//      begin
-//        if TValidationHelper.validateUniqueCampeonInCategoriaMotocross(self.MotoCrossOID, self.OID) then
-//          stringList.Add('Nº Moto Motocross - Ya se encuentra asignado un campeón en la Categoría Motocross seleccionada.');
-//      end;
+    if (self.EventoValidacionOID > 0) then
+      begin
+        otroPiloto:= TValidationHelper.getPilotoConNumeroEnEvento(self.EventoValidacionOID, 1,
+          self.CategoriaOID, self.NumMoto, self.OID);
+        if (otroPiloto <> '') then
+          stringList.Add('Nº Moto Enduro - El ' + IntToStr(self.NumMoto) + ' ya lo tiene ' +
+            otroPiloto + ' en la misma categoría de este evento.');
 
-//      if (not TValidationHelper.isIntegerNull(self.NumCuatriciclos)) then
-//      begin
-//        if TValidationHelper.validateUniqueCampeonInCategoriaCuatriciclos(self.CuatriciclosOID, self.OID) then
-//          stringList.Add('Nº Moto Cuatriciclos - Ya se encuentra asignado un campeón en la Categoría Cuatriciclo seleccionada.');
-//      end;
+        otroPiloto:= TValidationHelper.getPilotoConNumeroEnEvento(self.EventoValidacionOID, 2,
+          self.CuatriciclosOID, self.NumCuatriciclos, self.OID);
+        if (otroPiloto <> '') then
+          stringList.Add('Nº Cuatriciclos - El ' + IntToStr(self.NumCuatriciclos) + ' ya lo tiene ' +
+            otroPiloto + ' en la misma categoría de este evento.');
 
-//    end;
+        otroPiloto:= TValidationHelper.getPilotoConNumeroEnEvento(self.EventoValidacionOID, 3,
+          self.MotoCrossOID, self.NumMotoCross, self.OID);
+        if (otroPiloto <> '') then
+          stringList.Add('Nº Moto Motocross - El ' + IntToStr(self.NumMotoCross) + ' ya lo tiene ' +
+            otroPiloto + ' en la misma categoría de este evento.');
+      end;
 
     Result:= stringList;
   end;

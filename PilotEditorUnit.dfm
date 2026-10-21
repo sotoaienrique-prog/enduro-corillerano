@@ -6,7 +6,6 @@ inherited PilotEditor: TPilotEditor
   OnMouseWheelDown = FormMouseWheelDown
   OnMouseWheelUp = FormMouseWheelUp
   OnShow = FormShow
-  ExplicitTop = -84
   ExplicitWidth = 683
   ExplicitHeight = 669
   PixelsPerInch = 96
