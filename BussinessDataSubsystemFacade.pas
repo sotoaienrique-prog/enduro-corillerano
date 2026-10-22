@@ -163,6 +163,72 @@ uses
 var
   Instance : TBussinessDataSubsystemFacade  = nil;
 
+const
+  // Las notas de un piloto son texto corto; el límite evita que un dato roto crezca sin control
+  LARGO_MAXIMO_NOTAS = 2000;
+
+// Las notas viajan en hexadecimal (HEX/UNHEX en MySQL). El campo memo de Zeos leía los bytes
+// UTF-8 como Windows-1252: cada guardado duplicaba la codificación (º -> Âº -> Ã‚Âº ...) hasta
+// desbordar memoria al grabar (access violation con "Write of address A2C3A080").
+function NotasAHex(const Notas: string): string;
+var
+  Bytes: TBytes;
+  i: Integer;
+begin
+  Result := '';
+  Bytes := TEncoding.UTF8.GetBytes(Copy(Notas, 1, LARGO_MAXIMO_NOTAS));
+  for i := 0 to High(Bytes) do
+    Result := Result + IntToHex(Bytes[i], 2);
+end;
+
+function HexANotas(const Hex: string): string;
+var
+  Bytes: TBytes;
+  i: Integer;
+begin
+  Result := '';
+  if Length(Hex) < 2 then
+    Exit;
+  SetLength(Bytes, Length(Hex) div 2);
+  for i := 0 to High(Bytes) do
+    Bytes[i] := StrToInt('$' + Copy(Hex, i * 2 + 1, 2));
+  Result := Copy(TEncoding.UTF8.GetString(Bytes), 1, LARGO_MAXIMO_NOTAS);
+end;
+
+function LeerNotasPiloto(PilotoOID: Integer): string;
+var
+  Q: TZReadOnlyQuery;
+begin
+  Result := '';
+  Q := TZReadOnlyQuery.Create(nil);
+  try
+    Q.Connection := ConnectionModule.ZConnection;
+    Q.SQL.Text := 'SELECT HEX(notas) AS notas_hex FROM piloto WHERE oid = :oid';
+    Q.ParamByName('oid').AsInteger := PilotoOID;
+    Q.Open;
+    if not Q.Eof then
+      Result := HexANotas(Q.FieldByName('notas_hex').AsString);
+  finally
+    Q.Free;
+  end;
+end;
+
+procedure GrabarNotasPiloto(PilotoOID: Integer; const Notas: string);
+var
+  Q: TZQuery;
+begin
+  Q := TZQuery.Create(nil);
+  try
+    Q.Connection := ConnectionModule.ZConnection;
+    Q.SQL.Text := 'UPDATE piloto SET notas = CONVERT(UNHEX(:notas_hex) USING utf8) WHERE oid = :oid';
+    Q.ParamByName('notas_hex').AsString := NotasAHex(Notas);
+    Q.ParamByName('oid').AsInteger := PilotoOID;
+    Q.ExecSQL;
+  finally
+    Q.Free;
+  end;
+end;
+
   class function TBussinessDataSubsystemFacade.getInstance: TBussinessDataSubsystemFacade;
   begin
     if ( not Assigned( Instance ) ) then
@@ -346,7 +412,7 @@ var
           pilotoVO.Localidad:= FieldByName('localidad').AsString;
           pilotoVO.Ranking:= FieldByName('ranking').AsInteger;
           pilotoVO.RankingExterno:= FieldByName('ranking_externo').AsInteger;
-          pilotoVO.Notas:= FieldByName('notas').AsWideString;
+          pilotoVO.Notas:= LeerNotasPiloto(pilotoVO.OID);
           pilotoVO.TagID:= FieldByName('tid').AsString;
           pilotoVO.NumExterno:= FieldByName('nro_campeonato_externo').AsInteger;
           pilotoVO.CatExternoOID:= FieldByName('categoria_externa_oid').AsInteger;
@@ -572,7 +638,8 @@ var
             ParamByName('es_campeon').AsInteger:= 0;
 
           ParamByName('tag').AsString:= StringReplace(pilotoVO.NroDocumento, '.', '', [rfReplaceAll, rfIgnoreCase]);
-          ParamByName('notas').AsWideString:= pilotoVO.Notas;
+          // Las notas se graban aparte, en hexadecimal (GrabarNotasPiloto)
+          ParamByName('notas').AsWideString:= '';
           ParamByName('tid').AsString:= pilotoVO.TagID;
           ParamByName('telefono_fijo').AsString:= pilotoVO.TelefonoFijo;
           ExecSQL;
@@ -585,6 +652,8 @@ var
 
           lastInsertedOID:= FieldByName('OID').AsInteger;
         end;
+
+      GrabarNotasPiloto(lastInsertedOID, pilotoVO.Notas);
 
      if (pilotoVO.Navegante<>nil) then
      begin
@@ -648,16 +717,15 @@ begin
             ParamByName('es_campeon').AsInteger:= 0;
 
           ParamByName('tag').AsString:= StringReplace(pilotoVO.NroDocumento, '.', '', [rfReplaceAll, rfIgnoreCase]);
-          // Opción de seguridad: Si está corrupto o es larguísimo, lo truncamos o limpiamos
-          if Length(pilotoVO.Notas) > 5000 then
-            ParamByName('notas').AsString := Copy(pilotoVO.Notas, 1, 1000) // Evita el desborde de memoria
-          else
-            ParamByName('notas').AsString := pilotoVO.Notas;
+          // Las notas se graban aparte, en hexadecimal (GrabarNotasPiloto)
+          ParamByName('notas').AsString := '';
           ParamByName('tid').AsString:= pilotoVO.TagID;
           ParamByName('telefono_fijo').AsString:= pilotoVO.TelefonoFijo;
           ParamByName('oid').AsInteger:= pilotoVO.OID;
           ExecSQL;
         end;
+
+        GrabarNotasPiloto(pilotoVO.OID, pilotoVO.Notas);
 
         if (pilotoVO.Navegante<>nil) then
         begin

@@ -287,10 +287,10 @@ end;
 
 destructor TAbstractCRUDFrame.Destroy();
 begin
-  if Assigned(abstractEdit) then
-  begin
-    FreeAndNil(abstractEdit);
-  end;
+  // El editor es de este frame: se libera primero para que no lo libere el inherited
+  // mientras su formulario todavía puede recibir mensajes
+  FreeAndNil(abstractEdit);
+  inherited;
 end;
 
 procedure TAbstractCRUDFrame.acIndicatorExecute(Sender: TObject);

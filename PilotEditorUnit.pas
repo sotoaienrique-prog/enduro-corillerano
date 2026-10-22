@@ -399,6 +399,8 @@ var
   motoEditor : TMotoEditor;
 begin
   inherited;
+  motoCRUD:= nil;
+  motoEditor:= nil;
   try
     motoVO:= TMoto.Create;
 
@@ -407,9 +409,13 @@ begin
     motoEditor.ClearEditor;
     motoEditor.ShowModal;
   finally
-    motoCRUD.Free;
-    motoEditor.Free;
+    // Primero el editor (todavía tiene dueño vivo), después el CRUD
+    FreeAndNil(motoEditor);
+    FreeAndNil(motoCRUD);
   end;
+
+  ZTipoMoto.Close;
+  ZTipoMoto.Open;
 end;
 
 procedure TPilotEditor.btnAgregarAcompanianteClick(Sender: TObject);
