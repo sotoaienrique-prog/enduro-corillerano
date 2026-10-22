@@ -128,6 +128,7 @@ type
     fValidacionNumericaCategoria: Boolean;
     fValidacionNumericaEnCategoria: Boolean;
     fEventoValidacionOID: Integer;
+    fTipoInscripcionOID: Integer;
 
     fUtilizaHandicup: Boolean;
     fEsCampeon: Boolean;
@@ -171,6 +172,9 @@ type
     property Navegante: TNavegante read fNavegante write fNavegante;
     // > 0: se está editando desde la inscripción de ese evento; valida números repetidos en la categoría
     property EventoValidacionOID: Integer read fEventoValidacionOID write fEventoValidacionOID;
+    // > 0: se está inscribiendo en ese tipo de categoría (todavía no figura en la inscripción);
+    // el número de ese tipo se controla igual
+    property TipoInscripcionOID: Integer read fTipoInscripcionOID write fTipoInscripcionOID;
 
     function getValidationResult(): TStringList; Override;
     function getNombreCompleto(): String;
@@ -750,25 +754,26 @@ implementation
             stringList.Add('NroDocumento - Ya se encuentra asignado el número de documento.');
       end;
 
+    // El número de moto es único en el evento, en cualquier categoría
     if (self.EventoValidacionOID > 0) then
       begin
         otroPiloto:= TValidationHelper.getPilotoConNumeroEnEvento(self.EventoValidacionOID, 1,
-          self.CategoriaOID, self.NumMoto, self.OID);
+          self.NumMoto, self.OID, self.TipoInscripcionOID <> 1);
         if (otroPiloto <> '') then
           stringList.Add('Nº Moto Enduro - El ' + IntToStr(self.NumMoto) + ' ya lo tiene ' +
-            otroPiloto + ' en la misma categoría de este evento.');
+            otroPiloto + ' en este evento. El número de moto no se puede repetir.');
 
         otroPiloto:= TValidationHelper.getPilotoConNumeroEnEvento(self.EventoValidacionOID, 2,
-          self.CuatriciclosOID, self.NumCuatriciclos, self.OID);
+          self.NumCuatriciclos, self.OID, self.TipoInscripcionOID <> 2);
         if (otroPiloto <> '') then
           stringList.Add('Nº Cuatriciclos - El ' + IntToStr(self.NumCuatriciclos) + ' ya lo tiene ' +
-            otroPiloto + ' en la misma categoría de este evento.');
+            otroPiloto + ' en este evento. El número de moto no se puede repetir.');
 
         otroPiloto:= TValidationHelper.getPilotoConNumeroEnEvento(self.EventoValidacionOID, 3,
-          self.MotoCrossOID, self.NumMotoCross, self.OID);
+          self.NumMotoCross, self.OID, self.TipoInscripcionOID <> 3);
         if (otroPiloto <> '') then
           stringList.Add('Nº Moto Motocross - El ' + IntToStr(self.NumMotoCross) + ' ya lo tiene ' +
-            otroPiloto + ' en la misma categoría de este evento.');
+            otroPiloto + ' en este evento. El número de moto no se puede repetir.');
       end;
 
     Result:= stringList;

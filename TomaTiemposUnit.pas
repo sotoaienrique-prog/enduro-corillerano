@@ -768,8 +768,16 @@ begin
   //if ZFilterPiloto.Locate('oid', pilotoOID, []) then
   RecargoTomaTiempoEvento.cmbFilterPiloto.KeyValue := pilotoOID;
 
-  RecargoTomaTiempoEvento.ShowModal;
-  RecargoTomaTiempoEvento.Free;
+  try
+    RecargoTomaTiempoEvento.ShowModal;
+  finally
+    RecargoTomaTiempoEvento.Free;
+  end;
+
+  // Un recargo (No Largó, Abandono, Desclasificación) cambia los contadores y las posiciones:
+  // se recalculan ahora y no recién con la próxima pasada
+  RefreshPilotCount;
+  RefreshPosiciones;
 end;
 
 procedure TTomaTiempos.addTomaTiempo;

@@ -5,6 +5,11 @@ interface
 uses
   DataModule, SysUtils, DateUtils, Variants;
 
+const
+  // Tipos de categoría en los que el número de moto no se puede repetir dentro del evento
+  // (1 Enduro, 2 Cuatriciclos, 3 Motocross). La Categoría Externa (4) queda afuera: a confirmar.
+  TIPOS_NUMERO_UNICO = '1, 2, 3';
+
 type
   TValidationHelper = class(TObject)
   public
@@ -27,8 +32,8 @@ type
     class function getNumMotoByTipoCategoria(const pilotOID, tipoCategoriaOID: Integer): Boolean;
     class function IsEmptyOrNull(const Value: TObject): Boolean;
     class function validateCategoriaNavegante(CategoriaOID: Integer): Boolean;
-    class function getPilotoConNumeroEnEvento(EventoOID, TipoCategoriaOID, CategoriaOID,
-      NumMoto, PilotoOID: Integer): String;
+    class function getPilotoConNumeroEnEvento(EventoOID, TipoCategoriaOID, NumMoto,
+      PilotoOID: Integer; SoloSiInscripto: Boolean = True): String;
   end;
 
 implementation
@@ -47,44 +52,51 @@ implementation
     end;
   end;
 
-  // Otro inscripto del evento con ese número, en el mismo tipo y la misma categoría ('' si no hay).
-  // Solo se controla si el piloto está inscripto en ese tipo de categoría en el evento.
-  // Número y categoría del evento: piloto_historico_evento si existe; si no, los actuales del piloto.
-  class function TValidationHelper.getPilotoConNumeroEnEvento(EventoOID, TipoCategoriaOID, CategoriaOID,
-    NumMoto, PilotoOID: Integer): String;
+  // Otro inscripto del evento que ya usa ese número, en cualquier tipo y categoría ('' si no hay).
+  // Devuelve "Apellido, Nombre (Categoría)".
+  // TipoCategoriaOID es el tipo al que corresponde el número del piloto. Con SoloSiInscripto solo
+  // se controla si el piloto está inscripto en ese tipo en el evento (si no, ese número no se usa).
+  // Al inscribir todavía no está inscripto: se llama con SoloSiInscripto = False.
+  // Número de los demás: piloto_historico_evento si existe; si no, el actual del piloto.
+  class function TValidationHelper.getPilotoConNumeroEnEvento(EventoOID, TipoCategoriaOID, NumMoto,
+    PilotoOID: Integer; SoloSiInscripto: Boolean = True): String;
   begin
     Result:= '';
-    if (NumMoto <= 0) or (CategoriaOID <= 0) then
+    if (NumMoto <= 0) or (EventoOID <= 0) then
       Exit;
 
     with ConnectionModule.ZUniqueValidation do
     begin
       Close;
-      SQL.Text:= 'select CONCAT(p.apellido, '', '', p.nombre) as piloto' +
+      SQL.Text:= 'select CONCAT(p.apellido, '', '', p.nombre) as piloto, c.nombre as categoria' +
         ' from inscripcion_piloto_evento ipe' +
         ' join piloto p on p.oid = ipe.piloto_oid' +
+        ' left join categorias c on c.oid = sel_categoria_oid_by_evento_and_tipo_categoria(' +
+        '      ipe.tipo_categoria_oid, ipe.evento_oid, ipe.piloto_oid)' +
         ' where ipe.evento_oid = :evento_oid' +
-        '   and ipe.tipo_categoria_oid = :tipo_categoria_oid' +
+        '   and ipe.tipo_categoria_oid in (' + TIPOS_NUMERO_UNICO + ')' +
         '   and ipe.piloto_oid <> :piloto_oid' +
-        '   and exists (select 1 from inscripcion_piloto_evento yo' +
-        '               where yo.evento_oid = :evento_oid and yo.piloto_oid = :piloto_oid' +
-        '                 and yo.tipo_categoria_oid = :tipo_categoria_oid)' +
+        '   and (:solo_si_inscripto = 0 or exists (select 1 from inscripcion_piloto_evento yo' +
+        '        where yo.evento_oid = :evento_oid and yo.piloto_oid = :piloto_oid' +
+        '          and yo.tipo_categoria_oid = :tipo_categoria_oid))' +
         '   and sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, ipe.evento_oid, ipe.piloto_oid) = :nro_moto' +
-        '   and sel_categoria_oid_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, ipe.evento_oid, ipe.piloto_oid) = :categoria_oid' +
         ' limit 1';
       ParamByName('evento_oid').AsInteger:= EventoOID;
       ParamByName('tipo_categoria_oid').AsInteger:= TipoCategoriaOID;
       ParamByName('piloto_oid').AsInteger:= PilotoOID;
+      ParamByName('solo_si_inscripto').AsInteger:= Ord(SoloSiInscripto);
       ParamByName('nro_moto').AsString:= IntToStr(NumMoto);  // la función devuelve varchar
-      ParamByName('categoria_oid').AsInteger:= CategoriaOID;
       Open;
 
       if not IsEmpty then
+      begin
         Result:= FieldByName('piloto').AsString;
+        if FieldByName('categoria').AsString <> '' then
+          Result:= Result + ' (' + FieldByName('categoria').AsString + ')';
+      end;
       Close;
     end;
   end;
-
   class function TValidationHelper.IsEmptyOrNull(const Value: TObject): Boolean;
 
   begin

@@ -133,9 +133,10 @@ type
     FEstiloSinNumero: TcxStyle;
     FEstiloRepetido: TcxStyle;
     FColPilotoOID: TcxGridDBColumn;
-    FRepetidos: TStringList;   // piloto_oid con número repetido en su categoría del evento
+    FRepetidos: TStringList;   // piloto_oid con un número que usa otro inscripto del evento
     procedure CargarNumerosRepetidos(EventoOID: Integer);
     function EsNumeroRepetido(ARecord: TcxCustomGridRecord): Boolean;
+    function NumeroRepetidoAlInscribir(piloto: TPiloto): String;
     procedure initializeTables;
     procedure generateReport(Pilotos: TStringList; tipoCategoriaOID, eventoOID: Integer);
     procedure setTListItemsByString(errorListView : TcxListView; stringMessage: String);
@@ -167,7 +168,7 @@ type
 implementation
 
 uses
-  System.Win.ComObj, LogUnit;
+  System.Win.ComObj, LogUnit, ValidationHelper;
 
 {$R *.dfm}
 
@@ -291,7 +292,7 @@ var
   EventoVO: TEvento;
   InscripcionVO, InscripcionEVO: TInscripcion;
   SinNumero, NoEncontrados, Avisos: TStringList;
-  NroDocumento, Categoria, Fila, Mensaje: string;
+  NroDocumento, Categoria, Fila, Mensaje, OtroPiloto: string;
   FilaBase, TotalFilas, TotalCols, r, NumMoto, PilotoOID: Integer;
   Inscriptos, YaInscriptos: Integer;
   Fecha: TDateTime;
@@ -453,9 +454,18 @@ begin
               [Fila, Piloto.getNombreCompleto, CeldaTexto(r, 3)]));
         end;
 
-        // Col. D: número de moto (opcional; vacío o texto = queda como está)
+        // Col. D: número de moto (opcional; vacío o texto = queda como está).
+        // No se asigna si ya lo usa otro inscripto del evento: el número de moto es único.
         if TryStrToInt(CeldaTexto(r, 4), NumMoto) and (NumMoto > 0) then
-          Piloto.NumMoto := NumMoto;
+        begin
+          OtroPiloto := TValidationHelper.getPilotoConNumeroEnEvento(cmbEvento.KeyValue, 1,
+            NumMoto, PilotoOID, False);
+          if OtroPiloto <> '' then
+            Avisos.Add(Format('%s (%s): el número %d ya lo tiene %s; se mantiene el %d.',
+              [Fila, Piloto.getNombreCompleto, NumMoto, OtroPiloto, Piloto.NumMoto]))
+          else
+            Piloto.NumMoto := NumMoto;
+        end;
 
         if Piloto.isValidObject then
           TBussinessDataSubsystemFacade.getInstance.savePiloto(Piloto)
@@ -687,7 +697,7 @@ procedure TInscripcionesCRUD.btnNewClick(Sender: TObject);
 var
   pilotoOID: Integer;
   piloto: TPiloto;
-  nroDocumento, texoNroDocumento: String;
+  nroDocumento, texoNroDocumento, numeroRepetido: String;
   pilotoVO, pilot2VO : TPiloto;
 
   pilotoCRUD : TPilotCRUD;
@@ -701,28 +711,32 @@ begin
     pilotoOID:= TBussinessDataSubsystemFacade.getInstance.getPilotoOIDByTag(nroDocumento);
     piloto:= TBussinessDataSubsystemFacade.getInstance.getPiloto(pilotoOID);
 
-    TInscripcion(getEditorValueObject()).PilotoOID:= pilotoOID;
-    if Assigned(piloto) then
-      begin
-        TInscripcion(getEditorValueObject()).PilotoResponsabilidad:= piloto.Responsabilidad;
-        TInscripcion(getEditorValueObject()).PilotoTag:= piloto.TagID;
+        // El número de moto es único en el evento: el editor del piloto no deja guardar un número
+        // que ya usa otro inscripto (también el del tipo en el que se está inscribiendo)
+        piloto.EventoValidacionOID:= cmbEvento.KeyValue;
+        piloto.TipoInscripcionOID:= cmbTipoCategoria.KeyValue;
+        numeroRepetido:= NumeroRepetidoAlInscribir(piloto);
 
-        if (not self.getEditorValueObject().isValidObject()) then
+        if (not self.getEditorValueObject().isValidObject()) or (numeroRepetido <> '') then
           begin
             validationPanel.Visible:= True;
-            setTListItemsByTStringList(errorListView,
-              self.getEditorValueObject().getValidationResult);
+            if (not self.getEditorValueObject().isValidObject()) then
+              setTListItemsByTStringList(errorListView,
+                self.getEditorValueObject().getValidationResult)
+            else
+              setTListItemsByString(errorListView, numeroRepetido);
 
               if (pilotoOID > 0) then
               begin
-                // En casi de error en el piloto, enviar a editar
+                // En caso de error en el piloto o número repetido, enviar a editar
                 try
                     pilotoCRUD:= TPilotCRUD.Create(nil);
                     pilotoEditor:= TPilotInnerEditor.Create(pilotoCRUD, piloto, False);
 
                     if (pilotoEditor.ShowModal = mrOk) then
                       begin
-                        if (self.getEditorValueObject().isValidObject()) then
+                        if (self.getEditorValueObject().isValidObject())
+                          and (NumeroRepetidoAlInscribir(piloto) = '') then
                           inscribirPiloto(piloto)
                         else
                           txtNroDocumento.Text:= texoNroDocumento;
@@ -1255,35 +1269,21 @@ begin
   if TieneNumeroCero(VarToStr(ARecord.Values[cxGridDBTableViewNroMoto.Index])) then
     AStyle := FEstiloSinNumero   // rojo: sin número (gana sobre el repetido)
   else if EsNumeroRepetido(ARecord) then
-    AStyle := FEstiloRepetido;   // naranja: mismo número que otro de su categoría
+    AStyle := FEstiloRepetido;   // naranja: número que usa otro inscripto del evento
 end;
 
 procedure TInscripcionesCRUD.CargarNumerosRepetidos(EventoOID: Integer);
 const
   SQL_INSCRIPTOS =
-    'select ipe.piloto_oid, ipe.tipo_categoria_oid, ' +
-    '  sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, ipe.evento_oid, ipe.piloto_oid) as nro, ' +
-    '  sel_categoria_oid_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, ipe.evento_oid, ipe.piloto_oid) as categoria_oid ' +
+    'select ipe.piloto_oid, ' +
+    '  sel_nro_moto_by_evento_and_tipo_categoria(ipe.tipo_categoria_oid, ipe.evento_oid, ipe.piloto_oid) as nro ' +
     'from inscripcion_piloto_evento ipe ' +
-    'where ipe.evento_oid = :evento_oid';
+    'where ipe.evento_oid = :evento_oid ' +
+    '  and ipe.tipo_categoria_oid in (' + TIPOS_NUMERO_UNICO + ')';
 var
   Q: TZReadOnlyQuery;
-  Conteo: TStringList;
-  Clave: String;
-
-  // tipo|categoría|número; vacío si no tiene número (el 0 no cuenta como repetido)
-  function ClaveNumero: String;
-  var
-    Nro: String;
-  begin
-    Nro := Trim(Q.FieldByName('nro').AsString);
-    if (Nro = '') or (Nro = '0') then
-      Result := ''
-    else
-      Result := Q.FieldByName('tipo_categoria_oid').AsString + '|' +
-        Q.FieldByName('categoria_oid').AsString + '|' + Nro;
-  end;
-
+  Conteo, Vistos: TStringList;
+  Nro, Clave: String;
 begin
   if not Assigned(FRepetidos) then
     Exit;
@@ -1294,35 +1294,48 @@ begin
 
   Q := TZReadOnlyQuery.Create(nil);
   Conteo := TStringList.Create;
+  Vistos := TStringList.Create;
   try
+    Vistos.Sorted := True;
+    Vistos.Duplicates := dupIgnore;
+
     Q.Connection := queryGrid.Connection;
     Q.SQL.Text := SQL_INSCRIPTOS;
     Q.ParamByName('evento_oid').AsInteger := EventoOID;
     Q.Open;
 
-    // 1ra pasada: cuántos inscriptos hay por tipo|categoría|número
+    // 1ra pasada: cuántos pilotos distintos usan cada número (el 0 no cuenta).
+    // El mismo piloto con el mismo número en dos tipos cuenta una sola vez.
     while not Q.Eof do
     begin
-      Clave := ClaveNumero;
-      if Clave <> '' then
-        Conteo.Values[Clave] := IntToStr(StrToIntDef(Conteo.Values[Clave], 0) + 1);
+      Nro := Trim(Q.FieldByName('nro').AsString);
+      if (Nro <> '') and (Nro <> '0') then
+      begin
+        Clave := Nro + '|' + Q.FieldByName('piloto_oid').AsString;
+        if Vistos.IndexOf(Clave) < 0 then
+        begin
+          Vistos.Add(Clave);
+          Conteo.Values[Nro] := IntToStr(StrToIntDef(Conteo.Values[Nro], 0) + 1);
+        end;
+      end;
       Q.Next;
     end;
 
-    // 2da pasada: los pilotos cuya clave aparece más de una vez
+    // 2da pasada: los pilotos con un número que usa más de un piloto
     Q.First;
     while not Q.Eof do
     begin
-      Clave := ClaveNumero;
-      if (Clave <> '') and (StrToIntDef(Conteo.Values[Clave], 0) > 1) then
+      Nro := Trim(Q.FieldByName('nro').AsString);
+      if (Nro <> '') and (Nro <> '0') and (StrToIntDef(Conteo.Values[Nro], 0) > 1) then
         FRepetidos.Add(Q.FieldByName('piloto_oid').AsString);
       Q.Next;
     end;
 
     if FRepetidos.Count > 0 then
-      TLog.Aviso('Inscripcion', Format('Evento %d: %d inscriptos con número repetido en su categoría',
+      TLog.Aviso('Inscripcion', Format('Evento %d: %d inscriptos con número de moto repetido en el evento',
         [EventoOID, FRepetidos.Count]));
   finally
+    Vistos.Free;
     Conteo.Free;
     Q.Free;
   end;
@@ -1332,6 +1345,24 @@ function TInscripcionesCRUD.EsNumeroRepetido(ARecord: TcxCustomGridRecord): Bool
 begin
   Result := Assigned(FRepetidos) and Assigned(FColPilotoOID) and (FRepetidos.Count > 0) and
     (FRepetidos.IndexOf(VarToStr(ARecord.Values[FColPilotoOID.Index])) >= 0);
+end;
+
+// Mensaje de error si el número con el que se inscribe el piloto ya lo usa otro inscripto
+// del evento ('' si está libre). El piloto todavía no está inscripto: se controla igual.
+function TInscripcionesCRUD.NumeroRepetidoAlInscribir(piloto: TPiloto): String;
+var
+  tipoCategoriaOID, nroMoto: Integer;
+  otroPiloto: String;
+begin
+  Result:= '';
+  tipoCategoriaOID:= cmbTipoCategoria.KeyValue;
+  nroMoto:= StrToIntDef(getNroMoto(tipoCategoriaOID, piloto), 0);
+
+  otroPiloto:= TValidationHelper.getPilotoConNumeroEnEvento(cmbEvento.KeyValue, tipoCategoriaOID,
+    nroMoto, piloto.OID, False);
+  if (otroPiloto <> '') then
+    Result:= 'Nº Moto - El ' + IntToStr(nroMoto) + ' ya lo tiene ' + otroPiloto +
+      ' en este evento. Asigne otro número antes de inscribir.';
 end;
 
 end.

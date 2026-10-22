@@ -2792,7 +2792,7 @@ object TomaTiempos: TTomaTiempos
       '          FROM recargo_toma_tiempo_evento r'
       '          WHERE r.toma_tiempo_evento_oid = tte.oid'
       '            AND r.piloto_oid = tt.piloto_oid'
-      '            AND r.tipo_recargo IN (2, 7)'
+      '             AND r.tipo_recargo IN (2, 3, 7)'
       '      )'
       '    GROUP BY tt.piloto_oid, tl.oid, enc.nro_vueltas'
       
@@ -2849,7 +2849,14 @@ object TomaTiempos: TTomaTiempos
         '                   WHERE tt_ins.toma_tiempo_evento_oid = tt.toma' +
         '_tiempo_evento_oid'
       '                         AND tt_ins.piloto_oid = tt.piloto_oid'
-      '                         AND tt_ins.categoria_oid IS NOT NULL) )')
+      '                         AND tt_ins.categoria_oid IS NOT NULL) )'
+      '  AND NOT EXISTS ('
+      '      SELECT 1'
+      '      FROM recargo_toma_tiempo_evento r'
+      '      WHERE r.toma_tiempo_evento_oid = tte.oid'
+      '        AND r.piloto_oid = tt.piloto_oid'
+      '        AND r.tipo_recargo = 3'
+      '  )')
     Params = <
       item
         DataType = ftUnknown
