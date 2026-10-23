@@ -711,6 +711,12 @@ begin
     pilotoOID:= TBussinessDataSubsystemFacade.getInstance.getPilotoOIDByTag(nroDocumento);
     piloto:= TBussinessDataSubsystemFacade.getInstance.getPiloto(pilotoOID);
 
+    TInscripcion(getEditorValueObject()).PilotoOID:= pilotoOID;
+    if Assigned(piloto) then
+      begin
+        TInscripcion(getEditorValueObject()).PilotoResponsabilidad:= piloto.Responsabilidad;
+        TInscripcion(getEditorValueObject()).PilotoTag:= piloto.TagID;
+
         // El número de moto es único en el evento: el editor del piloto no deja guardar un número
         // que ya usa otro inscripto (también el del tipo en el que se está inscribiendo)
         piloto.EventoValidacionOID:= cmbEvento.KeyValue;
@@ -726,25 +732,25 @@ begin
             else
               setTListItemsByString(errorListView, numeroRepetido);
 
-              if (pilotoOID > 0) then
+            if (pilotoOID > 0) then
               begin
                 // En caso de error en el piloto o número repetido, enviar a editar
                 try
-                    pilotoCRUD:= TPilotCRUD.Create(nil);
-                    pilotoEditor:= TPilotInnerEditor.Create(pilotoCRUD, piloto, False);
+                  pilotoCRUD:= TPilotCRUD.Create(nil);
+                  pilotoEditor:= TPilotInnerEditor.Create(pilotoCRUD, piloto, False);
 
-                    if (pilotoEditor.ShowModal = mrOk) then
-                      begin
-                        if (self.getEditorValueObject().isValidObject())
-                          and (NumeroRepetidoAlInscribir(piloto) = '') then
-                          inscribirPiloto(piloto)
-                        else
-                          txtNroDocumento.Text:= texoNroDocumento;
-                      end;
+                  if (pilotoEditor.ShowModal = mrOk) then
+                    begin
+                      if (self.getEditorValueObject().isValidObject())
+                        and (NumeroRepetidoAlInscribir(piloto) = '') then
+                        inscribirPiloto(piloto)
+                      else
+                        txtNroDocumento.Text:= texoNroDocumento;
+                    end;
                 finally
-                   pilotoEditor.Free;
-                   pilotoCRUD.Free;
-                   txtNroDocumento.SetFocus;
+                  pilotoEditor.Free;
+                  pilotoCRUD.Free;
+                  txtNroDocumento.SetFocus;
                 end;
               end;
           end
